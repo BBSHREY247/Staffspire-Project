@@ -1,0 +1,19 @@
+backend/
+│
+├── config/
+│
+├── controllers/
+│
+├── middleware/
+│
+├── models/
+│
+├── routes/
+│
+├── utils/
+│
+├── .env
+│
+├── server.js
+│
+└── package.json
