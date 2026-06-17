@@ -93,7 +93,17 @@ const loginUser = (req, res) => {
   });
 };
 
+const getProfile = (req, res) => {
+
+    res.status(200).json({
+        success: true,
+        user: req.user
+    });
+
+};
+
 module.exports = {
-  registerUser,
-  loginUser
+    registerUser,
+    loginUser,
+    getProfile
 };
