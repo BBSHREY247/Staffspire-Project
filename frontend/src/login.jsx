@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 
+
 function Login({switchPage}) {
 
     const [email, setEmail] = useState("");
@@ -41,7 +42,9 @@ function Login({switchPage}) {
                 JSON.stringify(response.data.user)
             );
 
-            setAlertMsg("Login Successful");
+            setAlertMsg(
+                `Welcome ${response.data.user.name} (${response.data.user.role})`
+            );
             setAlertType("success");
 
         } catch (error) {
