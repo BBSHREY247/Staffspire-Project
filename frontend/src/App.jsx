@@ -1,17 +1,24 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
+import { useState } from "react";
+import Login from "./Login";
 
 function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
-    </BrowserRouter>
-  );
+
+    const [isLogin, setIsLogin] = useState(true);
+
+    return (
+        <div>
+            <header>
+                
+            </header>
+
+            {
+                isLogin
+                    ? <Login switchPage={() => setIsLogin(false)} />
+                    : <Register switchPage={() => setIsLogin(true)} />
+            }
+
+        </div>
+    );
 }
 
 export default App;
