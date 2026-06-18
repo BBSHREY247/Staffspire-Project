@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const adminRoutes =
+require("./routes/adminRoutes");
 
 dotenv.config();
 
@@ -14,6 +16,8 @@ require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 
 app.use("/api/auth", authRoutes);
+
+app.use("/api/admin", adminRoutes);
 
 app.get("/", (req, res) => {
     res.send("StaffSpire Backend Running");
