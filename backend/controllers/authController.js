@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const db = require("../config/db");
+const generateToken = require("../utils/generateToken");
 
 const registerUser = async (req, res) => {
   try {
@@ -73,14 +74,14 @@ const loginUser = (req, res) => {
       });
     }
 
-    // const token = generateToken(
-    //   user.id,
-    //   user.role_name
-    // );
+    const token = generateToken(
+      user.id,
+      user.role_name
+    );
 
     res.status(200).json({
       success: true,
-      // token,
+      token,
       user: {
         id: user.id,
         name: user.name,
@@ -92,7 +93,17 @@ const loginUser = (req, res) => {
   });
 };
 
+const getProfile = (req, res) => {
+
+    res.status(200).json({
+        success: true,
+        user: req.user
+    });
+
+};
+
 module.exports = {
-    registerUser,
-    loginUser,
+  registerUser,
+  loginUser,
+  getProfile
 };
