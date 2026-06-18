@@ -1,23 +1,54 @@
-import { useState } from "react";
-import Login from "./auth/Login";
+import {
+    BrowserRouter,
+    Routes,
+    Route
+} from "react-router-dom";
+
+import Login from "./pages/auth/Login";
+
+import AdminDashboard
+from "./pages/AdminDashboard";
+
+import ManagerDashboard
+from "./pages/ManagerDashboard";
+
+import EmployeeDashboard
+from "./pages/EmployeeDashboard";
+
+import "./styles/dashboard.css"
 
 function App() {
 
-    const [isLogin, setIsLogin] = useState(true);
-
     return (
-        <div>
-            <header>
-                
-            </header>
 
-            {
-                isLogin
-                    ? <Login switchPage={() => setIsLogin(false)} />
-                    : <Register switchPage={() => setIsLogin(true)} />
-            }
+        <BrowserRouter>
 
-        </div>
+            <Routes>
+
+                <Route
+                    path="/"
+                    element={<Login />}
+                />
+
+                <Route
+                    path="/admin/dashboard"
+                    element={<AdminDashboard />}
+                />
+
+                <Route
+                    path="/manager/dashboard"
+                    element={<ManagerDashboard />}
+                />
+
+                <Route
+                    path="/employee/dashboard"
+                    element={<EmployeeDashboard />}
+                />
+
+            </Routes>
+
+        </BrowserRouter>
+
     );
 }
 

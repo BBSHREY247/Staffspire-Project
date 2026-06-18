@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
 
 function Login({switchPage}) {
 
@@ -8,7 +8,7 @@ function Login({switchPage}) {
     const [password, setPassword] = useState("");
     const [alertMsg, setAlertMsg] = useState("");
     const [alertType, setAlertType] = useState("");
-
+    const navigate = useNavigate();
     const handleLogin = async (e) => {
         if (e) e.preventDefault();
         setAlertMsg("");
@@ -46,6 +46,18 @@ function Login({switchPage}) {
                 `Welcome ${response.data.user.name} (${response.data.user.role})`
             );
             setAlertType("success");
+            const role = response.data.user.role;
+        
+        if(role === "Admin"){
+            navigate("/admin/dashboard");
+        }
+        if(role === "Manager"){
+            navigate("/manager/dashboard");
+        }
+
+        if(role === "Employee"){
+            navigate("/employee/dashboard");
+        }
 
         } catch (error) {
 
@@ -55,7 +67,7 @@ function Login({switchPage}) {
             setAlertType("error");
 
         }
-
+        
     };
 
     return (

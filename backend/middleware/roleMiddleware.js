@@ -12,6 +12,32 @@ const adminOnly = (req, res, next) => {
     next();
 };
 
+const managerOnly = (req,res,next)=>{
+
+    if(req.user.role !== "Manager"){
+        return res.status(403).json({
+            success:false,
+            message:"Manager Access Required"
+        });
+    }
+
+    next();
+};
+
+const employeeOnly = (req,res,next)=>{
+
+    if(req.user.role !== "Employee"){
+        return res.status(403).json({
+            success:false,
+            message:"Employee Access Required"
+        });
+    }
+
+    next();
+};
+
 module.exports = {
-    adminOnly
+    adminOnly,
+    managerOnly,
+    employeeOnly
 };

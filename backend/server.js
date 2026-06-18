@@ -14,6 +14,10 @@ app.use(express.json());
 require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
+app.use(
+    "/api/admin",
+    adminRoutes
+);
 
 app.use("/api/auth", authRoutes);
 
