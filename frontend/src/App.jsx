@@ -18,37 +18,27 @@ from "./pages/EmployeeDashboard";
 import "./styles/dashboard.css"
 
 function App() {
-
     return (
-
         <BrowserRouter>
-
             <Routes>
-
                 <Route
                     path="/"
                     element={<Login />}
                 />
-
                 <Route
                     path="/admin/dashboard"
                     element={<AdminDashboard />}
                 />
-
                 <Route
                     path="/manager/dashboard"
                     element={<ManagerDashboard />}
                 />
-
                 <Route
                     path="/employee/dashboard"
                     element={<EmployeeDashboard />}
                 />
-
             </Routes>
-
         </BrowserRouter>
-
     );
 }
 
