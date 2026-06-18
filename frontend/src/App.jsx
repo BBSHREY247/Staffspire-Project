@@ -4,7 +4,7 @@ import {
     Route
 } from "react-router-dom";
 
-import Login from "./pages/auth/Login";
+import Login from "./auth/Login";
 
 import AdminDashboard
 from "./pages/AdminDashboard";
