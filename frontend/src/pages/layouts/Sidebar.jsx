@@ -16,6 +16,13 @@ function Sidebar() {
     return (
         <div className="sidebar">
             <h2>StaffSpire</h2>
+            <li
+                onClick={() =>
+                navigate("/admin/employees")
+            }
+            >
+                Employees
+            </li>
             <ul>
                 <li onClick={handleLogout}>
                     Logout

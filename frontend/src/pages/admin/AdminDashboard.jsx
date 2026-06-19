@@ -1,5 +1,4 @@
-import DashboardLayout
-from "./layouts/dashboardLayout";
+import DashboardLayout from "../layouts/DashboardLayout";
 
 function AdminDashboard() {
 
