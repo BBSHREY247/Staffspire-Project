@@ -15,7 +15,7 @@ from "./pages/ManagerDashboard";
 import EmployeeDashboard
 from "./pages/EmployeeDashboard";
 
-import "./styles/dashboard.css"
+
 
 function App() {
     return (
