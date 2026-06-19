@@ -22,8 +22,7 @@
 }
 
 .sidebar li{
-    width: 75px;
-    padding:12px;
+    width: 50px;
     cursor:pointer;
     color: rgb(0, 179, 255);
     text-decoration: underline;
