@@ -1,8 +1,9 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function Sidebar() {
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleLogout = () => {
 
@@ -16,17 +17,61 @@ function Sidebar() {
     return (
         <div className="sidebar">
             <h2>StaffSpire</h2>
-            <li
-                onClick={() =>
-                navigate("/admin/employees")
-            }
-            >
-                Employees
-            </li>
-            <ul>
+            <ul className="sidebar-menu">
+
+                <li
+                    className={
+                        location.pathname === "/admin/dashboard"
+                        ? "active-menu"
+                        : ""
+                    }
+                    onClick={() =>
+                        navigate("/admin/dashboard")
+                    }
+                >
+                    Dashboard
+                </li>
+
+                <li
+                    className={
+                        location.pathname === "/admin/employees"
+                        ? "active-menu"
+                        : ""
+                    }
+                    onClick={() =>
+                        navigate("/admin/employees")
+                    }
+                >
+                    Employees
+                </li>
+
+                <li>
+                    Departments
+                </li>
+
+                <li>
+                    Attendance
+                </li>
+
+                <li>
+                    Leaves
+                </li>
+
+                <li>
+                    Tasks
+                </li>
+
+                <li>
+                    Reports
+                </li>
+
+                <li>
+                    Settings
+                </li>
                 <li onClick={handleLogout}>
                     Logout
                 </li>
+
             </ul>
         </div>
     );

@@ -10,6 +10,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManagerDashboard from "./pages/manager/ManagerDashboard";
 import EmployeeDashboard from "./pages/employee/EmployeeDashboard";
 import EmployeeList from "./pages/admin/EmployeeList";
+import AddEmployee from "./pages/admin/AddEmployee";
 
 function App() {
     return (
@@ -39,6 +40,10 @@ function App() {
                 <Route
                     path="/employee/dashboard"
                     element={<EmployeeDashboard />}
+                />
+                <Route
+                    path="/admin/employees/add"
+                    element={<AddEmployee />}
                 />
 
             </Routes>

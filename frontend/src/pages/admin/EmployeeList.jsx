@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
+import { useNavigate }
+from "react-router-dom";
 
 function EmployeeList() {
 
     const [employees, setEmployees] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
 
@@ -50,7 +53,19 @@ function EmployeeList() {
             <h1>
                 Employee List
             </h1>
+            <div className="employee-header">
 
+
+            <button
+                className="add-btn"
+                onClick={() =>
+                    navigate("/admin/employees/add")
+                }
+            >
+                + Add Employee
+            </button>
+
+        </div>
             <table border="1">
 
                 <thead>
