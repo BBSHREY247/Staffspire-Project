@@ -11,10 +11,13 @@ const {
 
 const {
     getEmployees,
-    createEmployee
-} = require(
-    "../controllers/employeeController"
-);
+    createEmployee,
+    getEmployeeById,
+    updateEmployee,
+    deleteEmployee
+}
+=
+require("../controllers/employeeController");
 
 router.get(
     "/",
@@ -28,6 +31,27 @@ router.post(
     protect,
     adminOnly,
     createEmployee
+);
+
+router.get(
+    "/:id",
+    protect,
+    adminOnly,
+    getEmployeeById
+);
+
+router.put(
+    "/:id",
+    protect,
+    adminOnly,
+    updateEmployee
+);
+
+router.delete(
+    "/:id",
+    protect,
+    adminOnly,
+    deleteEmployee
 );
 
 module.exports = router;

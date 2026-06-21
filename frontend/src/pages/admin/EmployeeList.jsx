@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
-import { useNavigate }
-from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function EmployeeList() {
 
     const [employees, setEmployees] = useState([]);
     const navigate = useNavigate();
+    
 
     useEffect(() => {
 
@@ -66,7 +66,7 @@ function EmployeeList() {
             </button>
 
         </div>
-            <table border="1">
+            <table className="employee-table">
 
                 <thead>
 
@@ -78,38 +78,33 @@ function EmployeeList() {
                         <th>Email</th>
                         <th>Department</th>
                         <th>Designation</th>
-
+     
                     </tr>
 
                 </thead>
 
                 <tbody>
 
-                    {employees.map((employee)=>(
+                    {employees.map((employee) => (
 
-                        <tr key={employee.id}>
+                        <tr
+                            key={employee.id}
+                            onClick={() =>
+                                navigate(
+                                    `/admin/employees/${employee.id}`
+                                )
+                            }
+                            style={{
+                                cursor: "pointer"
+                            }}
+                        >
 
                             <td>{employee.id}</td>
-
-                            <td>
-                                {employee.first_name}
-                            </td>
-
-                            <td>
-                                {employee.last_name}
-                            </td>
-
-                            <td>
-                                {employee.email}
-                            </td>
-
-                            <td>
-                                {employee.department}
-                            </td>
-
-                            <td>
-                                {employee.designation}
-                            </td>
+                            <td>{employee.first_name}</td>
+                            <td>{employee.last_name}</td>
+                            <td>{employee.email}</td>
+                            <td>{employee.department}</td>
+                            <td>{employee.designation}</td>
 
                         </tr>
 

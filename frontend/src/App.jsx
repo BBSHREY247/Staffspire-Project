@@ -11,7 +11,7 @@ import ManagerDashboard from "./pages/manager/ManagerDashboard";
 import EmployeeDashboard from "./pages/employee/EmployeeDashboard";
 import EmployeeList from "./pages/admin/EmployeeList";
 import AddEmployee from "./pages/admin/AddEmployee";
-
+import EmployeeDetails from "./pages/admin/EmployeeDetails";
 function App() {
     return (
         <BrowserRouter>
@@ -44,6 +44,10 @@ function App() {
                 <Route
                     path="/admin/employees/add"
                     element={<AddEmployee />}
+                />
+                <Route
+                    path="/admin/employees/:id"
+                    element={<EmployeeDetails />}
                 />
 
             </Routes>
