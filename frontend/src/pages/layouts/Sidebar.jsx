@@ -65,12 +65,31 @@ function Sidebar() {
                     Reports
                 </li>
 
-                <li>
+                <li
+                    className={
+                        location.pathname === "/settings"
+                        ? "active-menu"
+                        : ""
+                    }
+                    onClick={() =>
+                        navigate("/settings")
+                    }
+                >
                     Settings
                 </li>
+                {/* <li
+                    className="active-menu"
+                    onClick={() =>
+                        navigate("/change-password")
+                    }
+                >
+                    Change Password
+                </li> */}
+
                 <li onClick={handleLogout}>
                     Logout
                 </li>
+                
 
             </ul>
         </div>

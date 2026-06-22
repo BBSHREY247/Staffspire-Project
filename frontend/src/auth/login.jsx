@@ -1,6 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+
 
 function Login({switchPage}) {
 
@@ -8,6 +10,7 @@ function Login({switchPage}) {
     const [password, setPassword] = useState("");
     const [alertMsg, setAlertMsg] = useState("");
     const [alertType, setAlertType] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
     const handleLogin = async (e) => {
         if (e) e.preventDefault();
@@ -99,19 +102,43 @@ function Login({switchPage}) {
                     <label htmlFor="password">
                         Enter Password
                     </label>
-                    <input
-                        type="password"
-                        id="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        autoComplete="new-password"
-                        required
-                    />
+                    <div className="password-field">
+
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            id="password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            autoComplete="new-password"
+                            required
+                        />
+
+                        <span
+                            className="eye-icon"
+                            onClick={() => setShowPassword(!showPassword)}
+                        >
+                            {showPassword ? <FaEyeSlash /> : <FaEye />}
+                        </span>
+
+                    </div>
 
                     <button type="submit">
                         Login
                     </button>
+                    <br />
+                    <br />
+                    <p className="forgot-text">
+                        forgot password? click the link below.
+                    </p>
+                    <p
+                        className="forgot-link"
+                        onClick={() =>
+                            navigate("/forgot-password")
+                        }
+                    >
+                        Forgot Password?
+                    </p>
 
                 </form>
             </div>

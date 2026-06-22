@@ -12,6 +12,9 @@ import EmployeeDashboard from "./pages/employee/EmployeeDashboard";
 import EmployeeList from "./pages/admin/EmployeeList";
 import AddEmployee from "./pages/admin/AddEmployee";
 import EmployeeDetails from "./pages/admin/EmployeeDetails";
+import ChangePassword from "./pages/admin/changePassword";
+import Settings from "./pages/settings/settings";
+
 function App() {
     return (
         <BrowserRouter>
@@ -48,6 +51,14 @@ function App() {
                 <Route
                     path="/admin/employees/:id"
                     element={<EmployeeDetails />}
+                />
+                <Route
+                    path="/change-password"
+                    element={<ChangePassword />}
+                />
+                <Route
+                    path="/settings"
+                    element={<Settings />}
                 />
 
             </Routes>
