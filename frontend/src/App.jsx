@@ -17,6 +17,7 @@ import Settings from "./pages/settings/settings";
 import ForgotPassword from "./auth/ForgotPassword";
 import VerifyOTP from "./auth/VerifyOTP";
 import ResetPassword from "./auth/ResetPassword";
+import RegisterAdmin from "./auth/RegisterAdmin";
 function App() {
     return (
         <BrowserRouter>
@@ -74,6 +75,11 @@ function App() {
                 <Route
                     path="/verify-otp"
                     element={<VerifyOTP />}
+                />
+
+                <Route
+                    path="/register-admin"
+                    element={<RegisterAdmin />}
                 />
 
             </Routes>

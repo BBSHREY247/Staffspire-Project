@@ -387,6 +387,112 @@ const verifyOTP = async (req, res) => {
 
 };
 
+const checkAdminExists = async (req, res) => {
+  try {
+    const [admins] = await db.promise().query(
+      "SELECT * FROM users WHERE role_id = 1"
+    );
+    res.status(200).json({
+      success: true,
+      exists: admins.length > 0
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error"
+    });
+  }
+};
+
+const registerAdmin = async (req, res) => {
+  try {
+    const { name, email, password, authEmail, authPassword } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required"
+      });
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+
+    // Check if any admin already exists in the system
+    const [admins] = await db.promise().query(
+      "SELECT * FROM users WHERE role_id = 1"
+    );
+
+    if (admins.length > 0) {
+      // If admin already exists, require authorizing credentials
+      if (!authEmail || !authPassword) {
+        return res.status(401).json({
+          success: false,
+          message: "An existing admin's credentials are required to authorize this registration."
+        });
+      }
+
+      const cleanAuthEmail = authEmail.trim().toLowerCase();
+
+      // Find the authorizing user by email
+      const [authUsers] = await db.promise().query(
+        "SELECT * FROM users WHERE email = ? AND role_id = 1",
+        [cleanAuthEmail]
+      );
+
+      if (authUsers.length === 0) {
+        return res.status(401).json({
+          success: false,
+          message: "Invalid authorizing admin credentials."
+        });
+      }
+
+      const authUser = authUsers[0];
+
+      // Compare passwords
+      const isMatch = await bcrypt.compare(authPassword, authUser.password);
+      if (!isMatch) {
+        return res.status(401).json({
+          success: false,
+          message: "Invalid authorizing admin password."
+        });
+      }
+    }
+
+    // Check if the email is already registered
+    const [existing] = await db.promise().query(
+      "SELECT * FROM users WHERE email = ?",
+      [cleanEmail]
+    );
+
+    if (existing.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already exists"
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Insert user with role_id = 1 (Admin)
+    await db.promise().query(
+      "INSERT INTO users (name, email, password, role_id) VALUES (?, ?, ?, 1)",
+      [name, cleanEmail, hashedPassword]
+    );
+
+    res.status(201).json({
+      success: true,
+      message: "Admin registered successfully"
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error"
+    });
+  }
+};
 
 module.exports = {
   registerUser,
@@ -395,5 +501,7 @@ module.exports = {
   changePassword,
   forgotPassword,
   resetPassword,
-  verifyOTP
+  verifyOTP,
+  registerAdmin,
+  checkAdminExists
 };

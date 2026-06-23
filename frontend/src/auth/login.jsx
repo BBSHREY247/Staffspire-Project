@@ -137,6 +137,19 @@ function Login({switchPage}) {
                     >
                         Forgot Password?
                     </p>
+                    <br />
+                    <p className="forgot-text">
+                        Register Admin with Below Link
+                    </p>
+                    <p
+                        className="forgot-link"
+                        onClick={() =>
+                            navigate("/register-admin")
+                        }
+                        style={{ marginTop: "10px" }}
+                    >
+                        Register Admin
+                    </p>
 
                 </form>
             </div>

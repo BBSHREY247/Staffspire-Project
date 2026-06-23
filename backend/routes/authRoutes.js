@@ -13,9 +13,15 @@ const {
     registerUser,
     loginUser,
     getProfile,
+    registerAdmin,
+    checkAdminExists
 } = require("../controllers/authController");
 
 router.post("/register", registerUser);
+
+router.get("/check-admin-exists", checkAdminExists);
+
+router.post("/register-admin", registerAdmin);
 
 router.post("/login", loginUser);
 
