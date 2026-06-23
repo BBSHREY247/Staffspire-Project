@@ -168,9 +168,96 @@ const changePassword = async (req, res) => {
 
 };
 
+const forgotPassword = async (req, res) => {
+
+    const { email } = req.body;
+
+    try {
+
+        const [users] =
+        await db.promise().query(
+            "SELECT * FROM users WHERE email = ?",
+            [email]
+        );
+
+        if(users.length === 0){
+
+            return res.status(404).json({
+                success:false,
+                message:"Email Not Found"
+            });
+
+        }
+
+        res.json({
+            success:true,
+            message:"Email Verified"
+        });
+
+    }
+    catch(error){
+
+        console.log(error);
+
+        res.status(500).json({
+            success:false,
+            message:"Server Error"
+        });
+
+    }
+
+};
+
+const resetPassword = async (req, res) => {
+
+    const {
+        email,
+        newPassword
+    } = req.body;
+
+    try {
+
+        const hashedPassword =
+        await bcrypt.hash(
+            newPassword,
+            10
+        );
+
+        await db.promise().query(
+
+            "UPDATE users SET password=? WHERE email=?",
+
+            [
+                hashedPassword,
+                email
+            ]
+
+        );
+
+        res.json({
+            success:true,
+            message:"Password Reset Successfully"
+        });
+
+    }
+    catch(error){
+
+        console.log(error);
+
+        res.status(500).json({
+            success:false,
+            message:"Server Error"
+        });
+
+    }
+
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getProfile,
-  changePassword
+  changePassword,
+  forgotPassword,
+  resetPassword
 };

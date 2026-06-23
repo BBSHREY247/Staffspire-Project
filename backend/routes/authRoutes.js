@@ -27,4 +27,21 @@ router.put(
     changePassword
 );
 
+const {
+    forgotPassword,
+    resetPassword
+}
+=
+require("../controllers/authController");
+
+router.post(
+    "/forgot-password",
+    forgotPassword
+);
+
+router.put(
+    "/reset-password",
+    resetPassword
+);
+
 module.exports = router;

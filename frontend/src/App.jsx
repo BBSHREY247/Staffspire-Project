@@ -14,6 +14,8 @@ import AddEmployee from "./pages/admin/AddEmployee";
 import EmployeeDetails from "./pages/admin/EmployeeDetails";
 import ChangePassword from "./pages/admin/changePassword";
 import Settings from "./pages/settings/settings";
+import ForgotPassword from "./auth/ForgotPassword";
+import ResetPassword from "./auth/ResetPassword";
 
 function App() {
     return (
@@ -59,6 +61,15 @@ function App() {
                 <Route
                     path="/settings"
                     element={<Settings />}
+                />
+                <Route
+                    path="/forgot-password"
+                    element={<ForgotPassword />}
+                />
+
+                <Route
+                    path="/reset-password"
+                    element={<ResetPassword />}
                 />
 
             </Routes>
