@@ -1,6 +1,8 @@
 const bcrypt = require("bcryptjs");
 const db = require("../config/db");
 const generateToken = require("../utils/generateToken");
+const transporter =
+require("../config/mailConfig");
 
 const registerUser = async (req, res) => {
   try {
@@ -95,163 +97,296 @@ const loginUser = (req, res) => {
 
 const getProfile = (req, res) => {
 
-    res.status(200).json({
-        success: true,
-        user: req.user
-    });
+  res.status(200).json({
+    success: true,
+    user: req.user
+  });
 
 };
 
 const changePassword = async (req, res) => {
 
-    try {
+  try {
 
-        const { currentPassword, newPassword } =
-        req.body;
+    const { currentPassword, newPassword } =
+      req.body;
 
-        const userId = req.user.id;
+    const userId = req.user.id;
 
-        const [users] = await db.promise().query(
-            "SELECT * FROM users WHERE id = ?",
-            [userId]
-        );
+    const [users] = await db.promise().query(
+      "SELECT * FROM users WHERE id = ?",
+      [userId]
+    );
 
-        const user = users[0];
+    const user = users[0];
 
-        if (!user) {
+    if (!user) {
 
-            return res.status(404).json({
-                success: false,
-                message: "User Not Found"
-            });
-
-        }
-
-        const isMatch = await bcrypt.compare(
-            currentPassword,
-            user.password
-        );
-
-        if (!isMatch) {
-
-            return res.status(400).json({
-                success: false,
-                message: "Current Password Incorrect"
-            });
-
-        }
-
-        const hashedPassword =
-        await bcrypt.hash(newPassword, 10);
-
-        await db.promise().query(
-            "UPDATE users SET password = ? WHERE id = ?",
-            [hashedPassword, userId]
-        );
-
-        res.json({
-            success: true,
-            message: "Password Changed Successfully"
-        });
+      return res.status(404).json({
+        success: false,
+        message: "User Not Found"
+      });
 
     }
-    catch (error) {
 
-        console.log(error);
+    const isMatch = await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
 
-        res.status(500).json({
-            success: false,
-            message: "Server Error"
-        });
+    if (!isMatch) {
+
+      return res.status(400).json({
+        success: false,
+        message: "Current Password Incorrect"
+      });
 
     }
+
+    const hashedPassword =
+      await bcrypt.hash(newPassword, 10);
+
+    await db.promise().query(
+      "UPDATE users SET password = ? WHERE id = ?",
+      [hashedPassword, userId]
+    );
+
+    res.json({
+      success: true,
+      message: "Password Changed Successfully"
+    });
+
+  }
+  catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server Error"
+    });
+
+  }
 
 };
 
 const forgotPassword = async (req, res) => {
 
-    const { email } = req.body;
+  const { email } = req.body;
 
-    try {
+  try {
 
-        const [users] =
-        await db.promise().query(
-            "SELECT * FROM users WHERE email = ?",
-            [email]
-        );
+    const [users] =
+      await db.promise().query(
+        "SELECT * FROM users WHERE email=?",
+        [email]
+      );
 
-        if(users.length === 0){
+    if (users.length === 0) {
 
-            return res.status(404).json({
-                success:false,
-                message:"Email Not Found"
-            });
-
-        }
-
-        res.json({
-            success:true,
-            message:"Email Verified"
-        });
+      return res.status(404).json({
+        success: false,
+        message: "Email Not Found"
+      });
 
     }
-    catch(error){
 
-        console.log(error);
+    const otp =
+      Math.floor(
+        100000 + Math.random() * 900000
+      ).toString();
 
-        res.status(500).json({
-            success:false,
-            message:"Server Error"
-        });
+    await transporter.sendMail({
 
-    }
+      from: process.env.EMAIL_USER,
+
+      to: email,
+
+      subject: "StaffSpire Password Reset OTP",
+
+      html: `
+        <h2>Password Reset Request</h2>
+
+        <p>Your OTP is:</p>
+
+        <h1>${otp}</h1>
+
+        <p>
+            Valid for 10 minutes.
+        </p>
+    `
+
+    });
+
+    await db.promise().query(
+
+      `
+            UPDATE users
+            SET
+                reset_otp=?,
+                otp_expiry=
+                DATE_ADD(
+                    NOW(),
+                    INTERVAL 10 MINUTE
+                )
+            WHERE email=?
+            `,
+
+      [
+        otp,
+        email
+      ]
+
+    );
+
+    res.status(200).json({
+
+      success: true,
+      message: "OTP Sent To Email"
+
+    });
+
+  }
+  catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server Error"
+    });
+
+  }
 
 };
 
 const resetPassword = async (req, res) => {
 
-    const {
-        email,
-        newPassword
-    } = req.body;
+  const {
+    email,
+    newPassword
+  } = req.body;
 
-    try {
+  try {
 
-        const hashedPassword =
-        await bcrypt.hash(
-            newPassword,
-            10
-        );
+    const hashedPassword =
+      await bcrypt.hash(
+        newPassword,
+        10
+      );
 
-        await db.promise().query(
+    await db.promise().query(
 
-            "UPDATE users SET password=? WHERE email=?",
+      `
+      UPDATE users
+      SET
+          password=?,
+          reset_otp=NULL,
+          otp_expiry=NULL
+      WHERE email=?
+      `,
 
-            [
-                hashedPassword,
-                email
-            ]
+      [
+        hashedPassword,
+        email
+      ]
 
-        );
+    );
 
-        res.json({
-            success:true,
-            message:"Password Reset Successfully"
-        });
+    res.json({
+      success: true,
+      message: "Password Reset Successfully"
+    });
 
-    }
-    catch(error){
+  }
+  catch (error) {
 
-        console.log(error);
+    console.log(error);
 
-        res.status(500).json({
-            success:false,
-            message:"Server Error"
-        });
+    res.status(500).json({
+      success: false,
+      message: "Server Error"
+    });
 
-    }
+  }
 
 };
+
+const verifyOTP = async (req, res) => {
+
+  const {
+    email,
+    otp
+  } = req.body;
+
+  try {
+
+    const [users] =
+      await db.promise().query(
+
+        `
+            SELECT *
+            FROM users
+            WHERE email=?
+            `,
+
+        [email]
+
+      );
+
+    if (users.length === 0) {
+
+      return res.status(404).json({
+        success: false,
+        message: "User Not Found"
+      });
+
+    }
+
+    const user = users[0];
+
+    if (user.reset_otp !== otp) {
+
+      return res.status(400).json({
+        success: false,
+        message: "Invalid OTP"
+      });
+
+    }
+
+    if (
+      new Date() >
+      new Date(user.otp_expiry)
+    ) {
+
+      return res.status(400).json({
+        success: false,
+        message: "OTP Expired"
+      });
+
+    }
+
+    res.status(200).json({
+
+      success: true,
+      message: "OTP Verified"
+
+    });
+
+  }
+  catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server Error"
+    });
+
+  }
+
+};
+
 
 module.exports = {
   registerUser,
@@ -259,5 +394,6 @@ module.exports = {
   getProfile,
   changePassword,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  verifyOTP
 };

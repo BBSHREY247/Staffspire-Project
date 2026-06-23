@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import "../styles/login.css";
 
 function ForgotPassword() {
 
@@ -26,7 +27,11 @@ function ForgotPassword() {
                 email
             );
 
-            navigate("/reset-password");
+            localStorage.setItem(
+                "generatedOTP",
+                response.data.otp
+            );
+            navigate("/verify-otp");
 
         }
         catch(error){
@@ -47,7 +52,7 @@ function ForgotPassword() {
 
                 <h1>Forgot Password</h1>
 
-                <form onSubmit={handleSubmit}>
+                <form className="login" onSubmit={handleSubmit} >
 
                     <input
                         type="email"

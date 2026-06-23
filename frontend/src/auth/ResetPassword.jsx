@@ -1,8 +1,14 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function ResetPassword() {
+    const [showNewPassword, setShowNewPassword] =
+    useState(false);
+
+    const [showConfirmPassword, setShowConfirmPassword] =
+    useState(false);
 
     const [newPassword, setNewPassword] =
     useState("");
@@ -75,31 +81,76 @@ function ResetPassword() {
 
                 <h1>Reset Password</h1>
 
-                <form onSubmit={handleSubmit}>
+                <form className="login" onSubmit={handleSubmit}>
+                    <div className="password-field">
 
-                    <input
-                        type="password"
-                        placeholder="New Password"
-                        value={newPassword}
-                        onChange={(e)=>
-                            setNewPassword(
-                                e.target.value
-                            )
-                        }
-                        required
-                    />
+                        <input
+                            type={
+                                showNewPassword
+                                ? "text"
+                                : "password"
+                            }
+                            placeholder="New Password"
+                            value={newPassword}
+                            onChange={(e)=>
+                                setNewPassword(
+                                    e.target.value
+                                )
+                            }
+                            required
+                        />
 
-                    <input
-                        type="password"
-                        placeholder="Confirm Password"
-                        value={confirmPassword}
-                        onChange={(e)=>
-                            setConfirmPassword(
-                                e.target.value
-                            )
-                        }
-                        required
-                    />
+                        <span
+                            className="eye-icon"
+                            onClick={() =>
+                                setShowNewPassword(
+                                    !showNewPassword
+                                )
+                            }
+                        >
+                            {
+                                showNewPassword
+                                ? <FaEyeSlash />
+                                : <FaEye />
+                            }
+                        </span>
+
+                    </div>
+
+                    <div className="password-field">
+
+                        <input
+                            type={
+                                showConfirmPassword
+                                ? "text"
+                                : "password"
+                            }
+                            placeholder="Confirm Password"
+                            value={confirmPassword}
+                            onChange={(e)=>
+                                setConfirmPassword(
+                                    e.target.value
+                                )
+                            }
+                            required
+                        />
+
+                        <span
+                            className="eye-icon"
+                            onClick={() =>
+                                setShowConfirmPassword(
+                                    !showConfirmPassword
+                                )
+                            }
+                        >
+                            {
+                                showConfirmPassword
+                                ? <FaEyeSlash />
+                                : <FaEye />
+                            }
+                        </span>
+
+                    </div>
 
                     <button type="submit">
                         Reset Password

@@ -15,8 +15,8 @@ import EmployeeDetails from "./pages/admin/EmployeeDetails";
 import ChangePassword from "./pages/admin/changePassword";
 import Settings from "./pages/settings/settings";
 import ForgotPassword from "./auth/ForgotPassword";
+import VerifyOTP from "./auth/VerifyOTP";
 import ResetPassword from "./auth/ResetPassword";
-
 function App() {
     return (
         <BrowserRouter>
@@ -70,6 +70,10 @@ function App() {
                 <Route
                     path="/reset-password"
                     element={<ResetPassword />}
+                />
+                <Route
+                    path="/verify-otp"
+                    element={<VerifyOTP />}
                 />
 
             </Routes>

@@ -90,10 +90,8 @@ function Login({switchPage}) {
                     </label>
                     <input
                         type="email"
-                        name="email"
-                        id="email"
                         placeholder="Email Address"
-                        value={email}
+                        value={ email }
                         onChange={(e) => setEmail(e.target.value)}
                         autoComplete="off"
                         required
