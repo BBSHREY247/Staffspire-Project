@@ -62,7 +62,10 @@ const createEmployee = (req, res) => {
 
             if (err) {
 
+                console.log("CREATE EMPLOYEE ERROR:");
                 console.log(err);
+                console.log("REQUEST BODY:");
+                console.log(req.body);
 
                 return res.status(500).json({
                     success: false,
@@ -82,6 +85,7 @@ const createEmployee = (req, res) => {
     );
 
 };
+
 const getEmployeeById = async (req, res) => {
 
     try {
