@@ -82,14 +82,14 @@ function RegisterAdmin() {
         } catch (err) {
             const errMsg = err.response?.data?.message || "Registration Failed";
             setAlertMsg(errMsg);
-            setAlertType("error");
+            setAlertType("error");ḍ
         }
     };
 
     return (
         <div className="auth-container">
             <div className="auth-card">
-                <h1>Admin Register</h1>
+                <h1>User Register</h1>
                 
                 {alertMsg && (
                     <div className={`alert-box alert-${alertType}`}>
