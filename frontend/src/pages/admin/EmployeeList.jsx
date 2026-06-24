@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useNavigate } from "react-router-dom";
+import { FaEye } from "react-icons/fa";
 
 function EmployeeList() {
 
     const [employees, setEmployees] = useState([]);
     const navigate = useNavigate();
-    
+
 
     useEffect(() => {
 
@@ -20,25 +21,25 @@ function EmployeeList() {
         try {
 
             const token =
-            localStorage.getItem("token");
+                localStorage.getItem("token");
 
             const response =
-            await axios.get(
-                "http://localhost:5000/api/employees",
-                {
-                    headers: {
-                        Authorization:
-                        `Bearer ${token}`
+                await axios.get(
+                    "http://localhost:5000/api/employees",
+                    {
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`
+                        }
                     }
-                }
-            );
+                );
 
             setEmployees(
                 response.data.employees
             );
 
         }
-        catch(error){
+        catch (error) {
 
             console.log(error);
 
@@ -56,16 +57,16 @@ function EmployeeList() {
             <div className="employee-header">
 
 
-            <button
-                className="add-btn"
-                onClick={() =>
-                    navigate("/admin/employees/add")
-                }
-            >
-                + Add Employee
-            </button>
+                <button
+                    className="add-btn"
+                    onClick={() =>
+                        navigate("/admin/employees/add")
+                    }
+                >
+                    + Add Employee
+                </button>
 
-        </div>
+            </div>
             <table className="employee-table">
 
                 <thead>
@@ -78,7 +79,8 @@ function EmployeeList() {
                         <th>Email</th>
                         <th>Department</th>
                         <th>Designation</th>
-     
+                        <th>Action</th>
+
                     </tr>
 
                 </thead>
@@ -87,17 +89,7 @@ function EmployeeList() {
 
                     {employees.map((employee) => (
 
-                        <tr
-                            key={employee.id}
-                            onClick={() =>
-                                navigate(
-                                    `/admin/employees/${employee.id}`
-                                )
-                            }
-                            style={{
-                                cursor: "pointer"
-                            }}
-                        >
+                        <tr key={employee.id}>
 
                             <td>{employee.id}</td>
                             <td>{employee.first_name}</td>
@@ -105,6 +97,18 @@ function EmployeeList() {
                             <td>{employee.email}</td>
                             <td>{employee.department}</td>
                             <td>{employee.designation}</td>
+                            <td>
+                                <button
+                                    className="view-btn"
+                                    onClick={() =>
+                                        navigate(
+                                            `/admin/employees/${employee.id}`
+                                        )
+                                    }
+                                >
+                                    <FaEye />
+                                </button>
+                            </td>
 
                         </tr>
 

@@ -90,3 +90,17 @@
     user-select:none;
     color:#555;
 }
+
+.view-btn {
+    background: #4f83f1;
+    color: white;
+    border: none;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.view-btn:hover {
+    background: #3467d6;
+}
