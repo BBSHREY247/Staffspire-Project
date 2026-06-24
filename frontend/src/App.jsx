@@ -18,6 +18,8 @@ import ForgotPassword from "./auth/ForgotPassword";
 import VerifyOTP from "./auth/VerifyOTP";
 import ResetPassword from "./auth/ResetPassword";
 import RegisterAdmin from "./auth/RegisterAdmin";
+import Departments from "./pages/admin/Departments";
+
 function App() {
     return (
         <BrowserRouter>
@@ -80,6 +82,10 @@ function App() {
                 <Route
                     path="/register-admin"
                     element={<RegisterAdmin />}
+                />
+                <Route
+                    path="/admin/departments"
+                    element={<Departments />}
                 />
 
             </Routes>

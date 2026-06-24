@@ -37,6 +37,14 @@ app.get("/", (req, res) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const departmentRoutes =
+require("./routes/departmentRoutes");
+
+app.use(
+    "/api/departments",
+    departmentRoutes
+);
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

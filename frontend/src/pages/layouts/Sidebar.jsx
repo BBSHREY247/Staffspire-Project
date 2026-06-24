@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Sidebar() {
 
@@ -22,8 +23,8 @@ function Sidebar() {
                 <li
                     className={
                         location.pathname === "/admin/dashboard"
-                        ? "active-menu"
-                        : ""
+                            ? "active-menu"
+                            : ""
                     }
                     onClick={() =>
                         navigate("/admin/dashboard")
@@ -35,8 +36,8 @@ function Sidebar() {
                 <li
                     className={
                         location.pathname === "/admin/employees"
-                        ? "active-menu"
-                        : ""
+                            ? "active-menu"
+                            : ""
                     }
                     onClick={() =>
                         navigate("/admin/employees")
@@ -45,7 +46,7 @@ function Sidebar() {
                     Employees
                 </li>
 
-                <li>
+                <li onClick={() => navigate("/admin/departments")}>
                     Departments
                 </li>
 
@@ -68,8 +69,8 @@ function Sidebar() {
                 <li
                     className={
                         location.pathname === "/settings"
-                        ? "active-menu"
-                        : ""
+                            ? "active-menu"
+                            : ""
                     }
                     onClick={() =>
                         navigate("/settings")
@@ -89,7 +90,7 @@ function Sidebar() {
                 <li onClick={handleLogout}>
                     Logout
                 </li>
-                
+
 
             </ul>
         </div>

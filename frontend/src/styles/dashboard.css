@@ -353,3 +353,49 @@
     user-select:none;
     color:#555;
 }
+
+.departments-container {
+    padding: 20px;
+}
+
+.departments-container h1 {
+    margin-bottom: 20px;
+}
+
+.department-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.department-form input {
+    padding: 10px;
+    width: 300px;
+}
+
+.department-form button {
+    background: #4f83f1;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.department-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.department-table th,
+.department-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.department-table th {
+    background: #4f83f1;
+    color: white;
+}
