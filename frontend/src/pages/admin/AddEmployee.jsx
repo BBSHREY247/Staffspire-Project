@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate }
 from "react-router-dom";
 import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
+import Departments from "./Departments";
 
 function AddEmployee() {
 
     const navigate = useNavigate();
-    
 
     const [formData, setFormData] = useState({
         first_name: "",
@@ -25,6 +25,7 @@ function AddEmployee() {
         });
 
     };
+    const [departments, setDepartments] = useState([]);
 
     const handleSubmit = async (e) => {
 
@@ -65,6 +66,23 @@ function AddEmployee() {
 
     };
 
+    const fetchDepartments = async () => {
+        try {
+            const res = await axios.get(
+                "http://localhost:5000/api/departments"
+            );
+
+            setDepartments(res.data);
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchDepartments();
+    }, []);
+
     return (
 
         <DashboardLayout>
@@ -101,13 +119,22 @@ function AddEmployee() {
                     />
                     <br />
 
-                    <input
-                        type="text"
+                    <select
                         name="department"
-                        placeholder="Department"
+                        value={formData.department}
                         onChange={handleChange}
-                        required
-                    />
+                    >
+                        <option value="">Select Department</option>
+
+                        {departments.map((dept) => (
+                            <option
+                                key={dept.id}
+                                value={dept.department_name}
+                            >
+                                {dept.department_name}
+                            </option>
+                        ))}
+                    </select>
                     <br />
 
                     <input

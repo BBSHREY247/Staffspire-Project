@@ -10,12 +10,9 @@ function EmployeeDetails() {
     const [editing, setEditing] =
     useState(false);
     const [employee, setEmployee] = useState(null);
+    const [departments, setDepartments] = useState([]);
 
-    useEffect(() => {
-
-        fetchEmployee();
-
-    }, []);
+    
 
     const fetchEmployee = async () => {
 
@@ -90,6 +87,19 @@ function EmployeeDetails() {
 
     };
 
+    const fetchDepartments = async () => {
+        try {
+            const res = await axios.get(
+                "http://localhost:5000/api/departments"
+            );
+
+            setDepartments(res.data);
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     const handleDelete = async () => {
 
         const confirmDelete =
@@ -134,6 +144,12 @@ function EmployeeDetails() {
         }
 
     };
+    useEffect(() => {
+
+        fetchEmployee();
+        fetchDepartments();
+
+    }, []);
 
     return (
 
@@ -225,16 +241,22 @@ function EmployeeDetails() {
                     {
                         editing
                         ?
-                        <input
-                            type="text"
-                            value={employee.department}
-                            onChange={(e)=>
-                                setEmployee({
-                                    ...employee,
-                                    department:e.target.value
-                                })
-                            }
-                        />
+                            <select
+                                name="department"
+                                value={employee.department}
+                                onChange={handleChange}
+                            >
+                                <option value="">Select Department</option>
+
+                                {departments.map((dept) => (
+                                    <option
+                                        key={dept.id}
+                                        value={dept.department_name}
+                                    >
+                                        {dept.department_name}
+                                    </option>
+                                ))}
+                            </select>
                         :
                         employee.department
                     }
