@@ -1,20 +1,26 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
-
+import {
+    useParams,
+    useNavigate
+} from "react-router-dom";
 
 function EmployeeDetails() {
+
+    console.log("EmployeeDetails rendered");
 
     const { id } = useParams();
     const [editing, setEditing] =
     useState(false);
     const [employee, setEmployee] = useState(null);
     const [departments, setDepartments] = useState([]);
+    const navigate = useNavigate();
 
     
 
     const fetchEmployee = async () => {
+        console.log("fetchEmployee called");
 
         try {
 
@@ -31,6 +37,8 @@ function EmployeeDetails() {
                 }
             );
 
+            console.log(response.data);
+
             setEmployee(
                 response.data.employee
             );
@@ -43,6 +51,26 @@ function EmployeeDetails() {
         }
 
     };
+
+        const fetchDepartments = async () => {
+        try {
+            const res = await axios.get(
+                "http://localhost:5000/api/departments"
+            );
+
+            setDepartments(res.data);
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        console.log("useEffect running");
+        fetchEmployee();
+        fetchDepartments();
+    }, []);
+
     if(!employee){
 
         return <p>Loading...</p>;
@@ -85,19 +113,6 @@ function EmployeeDetails() {
 
         }
 
-    };
-
-    const fetchDepartments = async () => {
-        try {
-            const res = await axios.get(
-                "http://localhost:5000/api/departments"
-            );
-
-            setDepartments(res.data);
-
-        } catch (error) {
-            console.log(error);
-        }
     };
 
     const handleDelete = async () => {
@@ -144,12 +159,6 @@ function EmployeeDetails() {
         }
 
     };
-    useEffect(() => {
-
-        fetchEmployee();
-        fetchDepartments();
-
-    }, []);
 
     return (
 
@@ -244,7 +253,12 @@ function EmployeeDetails() {
                             <select
                                 name="department"
                                 value={employee.department}
-                                onChange={handleChange}
+                                onChange={(e) =>
+                                    setEmployee({
+                                        ...employee,
+                                        department: e.target.value
+                                    })
+                                }
                             >
                                 <option value="">Select Department</option>
 

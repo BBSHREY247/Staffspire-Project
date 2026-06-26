@@ -46,7 +46,13 @@ function Sidebar() {
                     Employees
                 </li>
 
-                <li onClick={() => navigate("/admin/departments")}>
+                <li
+                    className={
+                        location.pathname === "/admin/departments"
+                            ? "active-menu"
+                            : ""
+                    }
+                    onClick={() => navigate("/admin/departments")}>
                     Departments
                 </li>
 

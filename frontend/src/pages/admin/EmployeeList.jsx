@@ -9,13 +9,6 @@ function EmployeeList() {
     const [employees, setEmployees] = useState([]);
     const navigate = useNavigate();
 
-
-    useEffect(() => {
-
-        fetchEmployees();
-
-    }, []);
-
     const fetchEmployees = async () => {
 
         try {
@@ -47,6 +40,11 @@ function EmployeeList() {
 
     };
 
+    useEffect(() => {
+
+        fetchEmployees();
+
+    }, []);
     return (
 
         <DashboardLayout>
