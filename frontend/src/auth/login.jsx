@@ -64,11 +64,11 @@ function Login({switchPage}) {
 
         } catch (error) {
 
-            console.error(error);
-            const errorMsg = error.response?.data?.message || "Login Failed. Try again.";
-            setAlertMsg(errorMsg);
-            setAlertType("error");
+            setAlertMsg(
+                error.response?.data?.message || "Login Failed"
+            );
 
+            setAlertType("error");
         }
         
     };

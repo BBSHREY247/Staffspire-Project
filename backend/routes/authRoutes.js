@@ -5,7 +5,6 @@ const router = express.Router();
 const protect = require("../middleware/authMiddleware");
 
 const {
-    login,
     changePassword
 } = require("../controllers/authController");
 
