@@ -3,7 +3,6 @@ const db = require("../config/db");
 const generateToken = require("../utils/generateToken");
 const transporter =
 require("../config/mailConfig");
-console.log("AUTH CONTROLLER LOADED");
 
 const registerUser = async (req, res) => {
   try {
@@ -43,9 +42,6 @@ const registerUser = async (req, res) => {
 const loginUser = (req, res) => {
   const { email, password } = req.body;
 
-  console.log("Email entered:", email);
-  console.log("Password entered:", password);
-
   const sql = `
         SELECT users.*, roles.role_name
         FROM users
@@ -54,12 +50,6 @@ const loginUser = (req, res) => {
     `;
 
   db.query(sql, [email], async (err, result) => {
-
-    console.log("Database result:", result);
-
-    if (result.length > 0) {
-      console.log("Password in DB:", result[0].password);
-    }
 
     if (err) {
       return res.status(500).json({
