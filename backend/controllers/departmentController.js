@@ -83,3 +83,36 @@ exports.deleteDepartment = async (req, res) => {
         });
     }
 };
+
+exports.getDepartmentById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const [rows] = await db.promise().query(
+            "SELECT * FROM departments WHERE id = ?",
+            [id]
+        );
+        if (rows.length === 0) {
+            return res.status(404).json({
+                message: "Department not found"
+            });
+        }
+        const dept = rows[0];
+
+        // Count employees in this department (matches by string name stored in department column)
+        const [[{ employeeCount }]] = await db.promise().query(
+            "SELECT COUNT(*) AS employeeCount FROM employees WHERE department = ?",
+            [dept.department_name]
+        );
+
+        res.json({
+            success: true,
+            department: dept,
+            employeeCount: employeeCount || 0
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: "Server Error"
+        });
+    }
+};

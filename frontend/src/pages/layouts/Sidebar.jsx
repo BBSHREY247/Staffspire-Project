@@ -38,7 +38,7 @@ function Sidebar() {
 
     const employeeMenuItems = [
         { name: "Dashboard", path: "/employee/dashboard", icon: <FaHome /> },
-        { name: "My Profile", path: "#", icon: <FaUserCircle /> },
+        { name: "My Profile", path: "/employee/profile", icon: <FaUserCircle /> },
         { name: "Attendance", path: "#", icon: <FaCalendarCheck /> },
         { name: "Leave Requests", path: "#", icon: <FaClipboardList /> },
         { name: "My Tasks", path: "#", icon: <FaTasks /> },

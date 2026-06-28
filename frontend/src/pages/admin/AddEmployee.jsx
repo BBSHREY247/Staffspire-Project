@@ -271,7 +271,7 @@ function AddEmployee() {
                                     textTransform: "uppercase",
                                     letterSpacing: "0.05em"
                                 }}>
-                                    Temporary Password
+                                    Password
                                 </span>
                                 <div style={{
                                     fontSize: "1.125rem",
