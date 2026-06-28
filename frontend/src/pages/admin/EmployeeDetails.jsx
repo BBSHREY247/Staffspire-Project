@@ -130,7 +130,7 @@ function EmployeeDetails() {
 
                     <div className="details-card-info-item">
                         <span className="details-card-info-label">Employee ID</span>
-                        <span className="details-card-info-value">#{employee.id}</span>
+                        <span className="details-card-info-value">{employee.employee_id || `#${employee.id}`}</span>
                     </div>
 
                     <div className="details-card-info-item">

@@ -3,8 +3,8 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const adminRoutes = require("./routes/adminRoutes");
-const employeeRoutes =
-require("./routes/employeeRoutes");
+const employeeRoutes = require("./routes/employeeRoutes");
+const employeeDashboardRoutes = require("./routes/employeeDashboardRoutes");
 
 dotenv.config();
 
@@ -28,6 +28,11 @@ app.use("/api/admin", adminRoutes);
 app.use(
     "/api/employees",
     employeeRoutes
+);
+
+app.use(
+    "/api/employee",
+    employeeDashboardRoutes
 );
 
 app.get("/", (req, res) => {

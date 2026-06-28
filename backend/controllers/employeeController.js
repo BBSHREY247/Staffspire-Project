@@ -1,4 +1,5 @@
 const db = require("../config/db");
+const bcrypt = require("bcryptjs");
 
 const getEmployees = (req, res) => {
 
@@ -27,63 +28,103 @@ const getEmployees = (req, res) => {
 
 };
 
-const createEmployee = (req, res) => {
-
-    const {
-        first_name,
-        last_name,
-        email,
-        department,
-        designation
-    } = req.body;
-
-    const sql = `
-        INSERT INTO employees
-        (
-            first_name,
-            last_name,
-            email,
-            department,
-            designation
-        )
-        VALUES (?, ?, ?, ?, ?)
-    `;
-
-    db.query(
-        sql,
-        [
-            first_name,
-            last_name,
-            email,
-            department,
-            designation
-        ],
-        (err, result) => {
-
-            if (err) {
-
-                console.log("CREATE EMPLOYEE ERROR:");
-                console.log(err);
-                console.log("REQUEST BODY:");
-                console.log(req.body);
-
-                return res.status(500).json({
-                    success: false,
-                    message: "Database Error"
-                });
-
-            }
-
-            res.status(201).json({
-                success: true,
-                message:
-                "Employee Created Successfully"
-                
-            });
-
+const generateUniqueEmployeeId = async () => {
+    let isUnique = false;
+    let employeeId = "";
+    while (!isUnique) {
+        const randNum = Math.floor(1000 + Math.random() * 9000);
+        employeeId = `EM${randNum}SS`;
+        const [rows] = await db.promise().query("SELECT id FROM employees WHERE employee_id = ?", [employeeId]);
+        if (rows.length === 0) {
+            isUnique = true;
         }
-    );
+    }
+    return employeeId;
+};
 
+const generateTempPassword = () => {
+    const uppers = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lowers = "abcdefghijklmnopqrstuvwxyz";
+    const numbers = "0123456789";
+    const all = uppers + lowers + numbers;
+    const length = Math.floor(8 + Math.random() * 3); // 8, 9, or 10 characters
+    
+    let password = [
+        uppers[Math.floor(Math.random() * uppers.length)],
+        lowers[Math.floor(Math.random() * lowers.length)],
+        numbers[Math.floor(Math.random() * numbers.length)]
+    ];
+    
+    for (let i = 3; i < length; i++) {
+        password.push(all[Math.floor(Math.random() * all.length)]);
+    }
+    
+    // Shuffle
+    for (let i = password.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [password[i], password[j]] = [password[j], password[i]];
+    }
+    
+    return password.join("");
+};
+
+const createEmployee = async (req, res) => {
+    try {
+        const {
+            first_name,
+            last_name,
+            email,
+            department,
+            designation
+        } = req.body;
+
+        if (!first_name || !last_name || !email || !department || !designation) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required"
+            });
+        }
+
+        const [existingUser] = await db.promise().query("SELECT id FROM users WHERE email = ?", [email]);
+        const [existingEmp] = await db.promise().query("SELECT id FROM employees WHERE email = ?", [email]);
+        if (existingUser.length > 0 || existingEmp.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Email is already registered"
+            });
+        }
+
+        const employeeId = await generateUniqueEmployeeId();
+        const tempPassword = generateTempPassword();
+        const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+        // Insert into employees
+        const insertEmpSql = `
+            INSERT INTO employees (first_name, last_name, email, department, designation, employee_id)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `;
+        await db.promise().query(insertEmpSql, [first_name, last_name, email, department, designation, employeeId]);
+
+        // Insert into users (role_id = 3 is Employee)
+        const insertUserSql = `
+            INSERT INTO users (name, email, password, role_id, login_id)
+            VALUES (?, ?, ?, 3, ?)
+        `;
+        await db.promise().query(insertUserSql, [`${first_name} ${last_name}`, email, hashedPassword, employeeId]);
+
+        return res.status(201).json({
+            success: true,
+            message: "Employee Created Successfully",
+            employeeId,
+            temporaryPassword: tempPassword
+        });
+    } catch (error) {
+        console.error("CREATE EMPLOYEE ERROR:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Database Error"
+        });
+    }
 };
 
 const getEmployeeById = async (req, res) => {

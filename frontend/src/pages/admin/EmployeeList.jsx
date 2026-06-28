@@ -70,7 +70,7 @@ function EmployeeList() {
                                         {getInitials(employee.first_name, employee.last_name)}
                                     </div>
                                 </td>
-                                <td>#{employee.id}</td>
+                                <td>{employee.employee_id || `#${employee.id}`}</td>
                                 <td style={{ fontWeight: "600" }}>
                                     {employee.first_name} {employee.last_name}
                                 </td>

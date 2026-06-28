@@ -42,14 +42,38 @@ const registerUser = async (req, res) => {
 const loginUser = (req, res) => {
   const { email, password } = req.body;
 
-  const sql = `
-        SELECT users.*, roles.role_name
-        FROM users
-        JOIN roles ON users.role_id = roles.id
-        WHERE email = ?
-    `;
+  if (!email || !password) {
+    return res.status(400).json({
+      success: false,
+      message: "Email/Employee ID and Password are required"
+    });
+  }
 
-  db.query(sql, [email], async (err, result) => {
+  const identifier = email.trim();
+  const isEmployeeId = /^EM\d{4}SS$/i.test(identifier);
+
+  let sql = "";
+  let queryParam = "";
+
+  if (isEmployeeId) {
+    sql = `
+      SELECT users.*, roles.role_name
+      FROM users
+      JOIN roles ON users.role_id = roles.id
+      WHERE login_id = ?
+    `;
+    queryParam = identifier.toUpperCase();
+  } else {
+    sql = `
+      SELECT users.*, roles.role_name
+      FROM users
+      JOIN roles ON users.role_id = roles.id
+      WHERE email = ?
+    `;
+    queryParam = identifier.toLowerCase();
+  }
+
+  db.query(sql, [queryParam], async (err, result) => {
 
     if (err) {
       return res.status(500).json({
@@ -61,9 +85,9 @@ const loginUser = (req, res) => {
     if (result.length === 0) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password"
-    });
-}
+        message: isEmployeeId ? "Invalid Employee ID or password" : "Invalid email or password"
+      });
+    }
 
     const user = result[0];
 
@@ -76,7 +100,7 @@ const loginUser = (req, res) => {
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password"
+        message: isEmployeeId ? "Invalid Employee ID or password" : "Invalid email or password"
       });
     }
 

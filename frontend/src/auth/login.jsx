@@ -17,7 +17,12 @@ function Login({switchPage}) {
         setAlertMsg("");
         setAlertType("");
 
-        const cleanEmail = email.trim().toLowerCase();
+        let cleanEmail = email.trim();
+        if (/^em\d{4}ss$/i.test(cleanEmail)) {
+            cleanEmail = cleanEmail.toUpperCase();
+        } else {
+            cleanEmail = cleanEmail.toLowerCase();
+        }
 
         if (!cleanEmail || !password) {
             setAlertMsg("Email and Password Are Required");
@@ -86,11 +91,11 @@ function Login({switchPage}) {
                     )}
 
                     <label htmlFor="email">
-                        Enter Your Existing Email
+                        Email or Employee ID
                     </label>
                     <input
-                        type="email"
-                        placeholder="Email Address"
+                        type="text"
+                        placeholder="Enter Email or Employee ID"
                         value={ email }
                         onChange={(e) => setEmail(e.target.value)}
                         autoComplete="off"

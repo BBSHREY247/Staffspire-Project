@@ -31,7 +31,7 @@ function Header() {
     // Dynamically set title based on the active path
     const getPageTitle = () => {
         const path = location.pathname;
-        if (path.includes("/admin/dashboard")) return "Dashboard";
+        if (path.includes("/dashboard")) return "Dashboard";
         if (path.includes("/admin/employees")) return "Employee List";
         if (path.includes("/admin/departments")) return "Departments";
         if (path.includes("/settings")) return "Settings";
@@ -51,7 +51,7 @@ function Header() {
         <header className="header">
             {/* Left Brand and Title */}
             <div className="header-left">
-                <div className="logo-brand" onClick={() => navigate("/admin/dashboard")} style={{cursor: "pointer"}}>
+                <div className="logo-brand" onClick={() => navigate(user.role === "Admin" ? "/admin/dashboard" : "/employee/dashboard")} style={{cursor: "pointer"}}>
                     <span>⚡</span>
                     <span>SoftSpire</span>
                 </div>
