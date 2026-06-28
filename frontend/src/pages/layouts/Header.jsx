@@ -62,7 +62,7 @@ function Header() {
             </div>
 
             {/* Center Search Bar */}
-            <div className="header-center">
+            {/* <div className="header-center">
                 <div className="search-container">
                     <FaSearch />
                     <input 
@@ -71,7 +71,7 @@ function Header() {
                         placeholder="Search employees, departments, attendance..." 
                     />
                 </div>
-            </div>
+            </div> */}
 
             {/* Right Side Actions */}
             <div className="header-right">
