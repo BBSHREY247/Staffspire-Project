@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaUser, FaEnvelope, FaBuilding, FaIdBadge, FaEdit, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaBuilding, FaIdBadge, FaEdit, FaTrash, FaCheck, FaTimes, FaLock, FaKey } from "react-icons/fa";
 
 function EmployeeDetails() {
     console.log("EmployeeDetails rendered");
@@ -11,6 +11,9 @@ function EmployeeDetails() {
     const [editing, setEditing] = useState(false);
     const [employee, setEmployee] = useState(null);
     const [departments, setDepartments] = useState([]);
+    const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
+    const [adminPasswordInput, setAdminPasswordInput] = useState("");
+    const [revealedPassword, setRevealedPassword] = useState("");
     const navigate = useNavigate();
 
     const fetchEmployee = async () => {
@@ -43,6 +46,47 @@ function EmployeeDetails() {
         fetchEmployee();
         fetchDepartments();
     }, []);
+
+    const handleVerifyAdminPassword = async () => {
+        if (!adminPasswordInput) {
+            alert("Admin password is required");
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.post(
+                `http://localhost:5000/api/employees/${id}/reveal-password`,
+                { adminPassword: adminPasswordInput },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            if (response.data.success) {
+                setRevealedPassword(response.data.password);
+                setShowPasswordPrompt(false);
+                setAdminPasswordInput("");
+            }
+        } catch (error) {
+            console.log(error);
+            alert(
+                error.response?.data?.message ||
+                "Failed to verify admin password"
+            );
+        }
+    };
+
+    const handleRevealPasswordClick = () => {
+        if (revealedPassword) {
+            setRevealedPassword("");
+        } else {
+            setAdminPasswordInput(""); // clear any stale value before opening
+            setShowPasswordPrompt(true);
+        }
+    };
 
     if (!employee) {
         return (
@@ -251,8 +295,43 @@ function EmployeeDetails() {
                                 <span className="details-info-label"><FaIdBadge style={{ marginRight: "8px", verticalAlign: "middle" }} /> Designation</span>
                                 <span className="details-info-value">{employee.designation}</span>
                             </div>
+                            
+                            {/* Reversibly Encrypted Password Reveal Row */}
+                            <div className="details-info-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <span className="details-info-label">
+                                    <FaKey style={{ marginRight: "8px", verticalAlign: "middle" }} /> Password
+                                </span>
+                                <span className="details-info-value" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                    {revealedPassword ? (
+                                        <span style={{ fontWeight: "700", fontFamily: "monospace", fontSize: "16px", color: "#4f46e5", background: "#eeebff", padding: "4px 8px", borderRadius: "6px" }}>
+                                            {revealedPassword}
+                                        </span>
+                                    ) : (
+                                        <span style={{ color: "#94a3b8", letterSpacing: "3px", fontWeight: "700" }}>••••••••</span>
+                                    )}
+                                    <button
+                                        type="button"
+                                        onClick={handleRevealPasswordClick}
+                                        style={{
+                                            border: "none",
+                                            background: "#e0e7ff",
+                                            color: "#4f46e5",
+                                            padding: "6px 12px",
+                                            borderRadius: "6px",
+                                            fontSize: "12.5px",
+                                            fontWeight: "600",
+                                            cursor: "pointer",
+                                            transition: "background 0.2s"
+                                        }}
+                                        onMouseEnter={(e) => e.currentTarget.style.background = "#c7d2fe"}
+                                        onMouseLeave={(e) => e.currentTarget.style.background = "#e0e7ff"}
+                                    >
+                                        {revealedPassword ? "Hide" : "Show Password"}
+                                    </button>
+                                </span>
+                            </div>
 
-                            <div className="actions-container">
+                            <div className="actions-container" style={{ marginTop: "24px" }}>
                                 <button
                                     className="action-btn-custom action-btn-danger"
                                     onClick={handleDelete}
@@ -270,6 +349,85 @@ function EmployeeDetails() {
                     )}
                 </div>
             </div>
+
+            {/* Admin Password Prompt Modal */}
+            {showPasswordPrompt && (
+                <div style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: "rgba(15, 23, 42, 0.4)",
+                    backdropFilter: "blur(4px)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 1000
+                }}>
+                    <div style={{
+                        width: "100%",
+                        maxWidth: "400px",
+                        padding: "30px",
+                        borderRadius: "12px",
+                        background: "white",
+                        boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)",
+                        border: "1px solid #e2e8f0"
+                    }}>
+                        <h3 style={{ margin: "0 0 12px 0", fontWeight: "700", display: "flex", alignItems: "center", gap: "8px", color: "#1e293b" }}>
+                            <FaLock style={{ color: "#4f46e5" }} /> Verify Admin Identity
+                        </h3>
+                        <p style={{ margin: "0 0 20px 0", fontSize: "13.5px", color: "#64748b", lineHeight: "1.5" }}>
+                            To show the employee's password, please enter your administrator password below.
+                        </p>
+
+                        <div className="form-group-custom" style={{ marginBottom: "20px" }}>
+                            <label className="form-label-custom" style={{ fontSize: "13px", fontWeight: "600", color: "#475569" }}>Admin Password</label>
+                            <input
+                                type="password"
+                                placeholder="Enter your admin password"
+                                value={adminPasswordInput}
+                                onChange={(e) => setAdminPasswordInput(e.target.value)}
+                                autoComplete="new-password"
+                                style={{
+                                    padding: "10px",
+                                    width: "100%",
+                                    borderRadius: "6px",
+                                    border: "1px solid #cbd5e1",
+                                    marginTop: "6px",
+                                    fontSize: "14px"
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") handleVerifyAdminPassword();
+                                }}
+                                autoFocus
+                            />
+                        </div>
+
+                        <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
+                            <button
+                                type="button"
+                                className="action-btn-custom action-btn-secondary"
+                                onClick={() => {
+                                    setShowPasswordPrompt(false);
+                                    setAdminPasswordInput("");
+                                }}
+                                style={{ padding: "8px 16px", fontSize: "13px" }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                className="action-btn-custom action-btn-primary"
+                                onClick={handleVerifyAdminPassword}
+                                style={{ padding: "8px 16px", fontSize: "13px" }}
+                            >
+                                Verify & Show
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </DashboardLayout>
     );
 }

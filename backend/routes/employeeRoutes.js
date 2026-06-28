@@ -14,7 +14,8 @@ const {
     createEmployee,
     getEmployeeById,
     updateEmployee,
-    deleteEmployee
+    deleteEmployee,
+    revealEmployeePassword
 }
 =
 require("../controllers/employeeController");
@@ -52,6 +53,13 @@ router.delete(
     protect,
     adminOnly,
     deleteEmployee
+);
+
+router.post(
+    "/:id/reveal-password",
+    protect,
+    adminOnly,
+    revealEmployeePassword
 );
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const db = require("../config/db");
 const bcrypt = require("bcryptjs");
+const { encryptPassword, decryptPassword } = require("../utils/cryptoHelper");
 
 const getEmployees = (req, res) => {
 
@@ -103,7 +104,8 @@ const createEmployee = async (req, res) => {
             INSERT INTO employees (first_name, last_name, email, department, designation, employee_id, password)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
-        await db.promise().query(insertEmpSql, [first_name, last_name, email, department, designation, employeeId, hashedPassword]);
+        const encryptedPassword = encryptPassword(tempPassword);
+        await db.promise().query(insertEmpSql, [first_name, last_name, email, department, designation, employeeId, encryptedPassword]);
 
         // Insert into users (role_id = 3 is Employee)
         const insertUserSql = `
@@ -244,10 +246,66 @@ const deleteEmployee = async (req, res) => {
 
 };
 
+const revealEmployeePassword = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { adminPassword } = req.body;
+        const adminId = req.user.id;
+
+        if (!adminPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "Admin password is required"
+            });
+        }
+
+        const [admins] = await db.promise().query("SELECT * FROM users WHERE id = ?", [adminId]);
+        if (admins.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Admin account not found"
+            });
+        }
+        const admin = admins[0];
+
+        const isMatch = await bcrypt.compare(adminPassword, admin.password);
+        if (!isMatch) {
+            return res.status(401).json({
+                success: false,
+                message: "Authentication failed. Invalid admin password."
+            });
+        }
+
+        const [employees] = await db.promise().query("SELECT * FROM employees WHERE id = ?", [id]);
+        if (employees.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Employee not found"
+            });
+        }
+        const emp = employees[0];
+
+        const plainPassword = decryptPassword(emp.password);
+
+        return res.json({
+            success: true,
+            password: plainPassword
+        });
+
+    } catch (error) {
+        console.error("Reveal password error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to reveal employee password"
+        });
+    }
+};
+
 module.exports = {
     getEmployees,
     createEmployee,
     getEmployeeById,
     updateEmployee,
-    deleteEmployee
+    deleteEmployee,
+    revealEmployeePassword
 };

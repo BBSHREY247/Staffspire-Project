@@ -286,7 +286,7 @@ function AddEmployee() {
                         </div>
 
                         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                            <button
+                            {/* <button
                                 type="button"
                                 onClick={handleCopy}
                                 style={{
@@ -320,7 +320,7 @@ function AddEmployee() {
                                         Copy Credentials
                                     </>
                                 )}
-                            </button>
+                            </button> */}
 
                             <button
                                 type="button"
