@@ -25,7 +25,7 @@ const getEmployeeDashboard = async (req, res) => {
         );
         const emp = employees[0] || {};
 
-        const dashboardData = {
+        return res.status(200).json({
             success: true,
             employee: {
                 name: emp.first_name ? `${emp.first_name} ${emp.last_name}` : user.name,
@@ -34,35 +34,8 @@ const getEmployeeDashboard = async (req, res) => {
                 designation: emp.designation || "N/A",
                 email: emp.email || user.email,
                 phone: emp.mobile || "N/A"
-            },
-            attendance: {
-                percentage: 95,
-                today: "Present"
-            },
-            leave: {
-                pending: 2,
-                remaining: 10,
-                casual: 10,
-                sick: 5,
-                paid: 12
-            },
-            tasks: {
-                active: 3,
-                dueToday: 1,
-                list: [
-                    { id: 1, title: "Complete Monthly Report", done: false },
-                    { id: 2, title: "Update Profile", done: false },
-                    { id: 3, title: "Attend Team Meeting", done: false }
-                ]
-            },
-            activity: [
-                { id: 1, text: "Checked In", time: "Today" },
-                { id: 2, text: "Leave Approved", time: "Yesterday" },
-                { id: 3, text: "Password Changed", time: "2 Days Ago" }
-            ]
-        };
-
-        return res.status(200).json(dashboardData);
+            }
+        });
     } catch (error) {
         console.error("Employee dashboard controller error:", error);
         return res.status(500).json({

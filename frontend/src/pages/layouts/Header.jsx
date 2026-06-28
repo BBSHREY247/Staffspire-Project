@@ -75,7 +75,7 @@ function Header() {
             <div className="header-right">
                 {/* Notifications Bell */}
                 <div style={{position: "relative"}}>
-                    <button 
+                    {/* <button 
                         className="header-action-btn" 
                         onClick={() => {
                             setShowNotifMenu(!showNotifMenu);
@@ -84,7 +84,7 @@ function Header() {
                     >
                         <FaBell />
                         <span className="badge-count">5</span>
-                    </button>
+                    </button> */}
 
                     {showNotifMenu && (
                         <div className="notifications-dropdown">

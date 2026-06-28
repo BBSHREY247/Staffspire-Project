@@ -98,12 +98,12 @@ const createEmployee = async (req, res) => {
         const tempPassword = generateTempPassword();
         const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
-        // Insert into employees
+        // Insert into employees (storing encrypted password as requested)
         const insertEmpSql = `
-            INSERT INTO employees (first_name, last_name, email, department, designation, employee_id)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO employees (first_name, last_name, email, department, designation, employee_id, password)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
-        await db.promise().query(insertEmpSql, [first_name, last_name, email, department, designation, employeeId]);
+        await db.promise().query(insertEmpSql, [first_name, last_name, email, department, designation, employeeId, hashedPassword]);
 
         // Insert into users (role_id = 3 is Employee)
         const insertUserSql = `
