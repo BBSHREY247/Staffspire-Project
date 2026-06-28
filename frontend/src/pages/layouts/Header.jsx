@@ -53,7 +53,7 @@ function Header() {
             <div className="header-left">
                 <div className="logo-brand" onClick={() => navigate("/admin/dashboard")} style={{cursor: "pointer"}}>
                     <span>⚡</span>
-                    <span>StaffSpire</span>
+                    <span>SoftSpire</span>
                 </div>
                 <div className="header-title-divider"></div>
                 <h2 className="header-page-title">{getPageTitle()}</h2>

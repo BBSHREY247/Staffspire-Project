@@ -2,124 +2,115 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useNavigate } from "react-router-dom";
-import { FaEye } from "react-icons/fa";
+import { FaEye, FaPlus } from "react-icons/fa";
 
 function EmployeeList() {
-
     const [employees, setEmployees] = useState([]);
     const navigate = useNavigate();
 
     const fetchEmployees = async () => {
-
         try {
-
-            const token =
-                localStorage.getItem("token");
-
-            const response =
-                await axios.get(
-                    "http://localhost:5000/api/employees",
-                    {
-                        headers: {
-                            Authorization:
-                                `Bearer ${token}`
-                        }
+            const token = localStorage.getItem("token");
+            const response = await axios.get(
+                "http://localhost:5000/api/employees",
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
                     }
-                );
-
-            setEmployees(
-                response.data.employees
+                }
             );
-
-        }
-        catch (error) {
-
+            setEmployees(response.data.employees);
+        } catch (error) {
             console.log(error);
-
         }
-
     };
 
     useEffect(() => {
-
         fetchEmployees();
-
     }, []);
+
+    // Helper to get initials for employee avatar
+    const getInitials = (firstName, lastName) => {
+        const f = firstName ? firstName.charAt(0).toUpperCase() : "";
+        const l = lastName ? lastName.charAt(0).toUpperCase() : "";
+        return `${f}${l}` || "EE";
+    };
+
     return (
-
         <DashboardLayout>
-
-            <h1>
-                Employee List
-            </h1>
-            <div className="employee-header">
-
-
+            <div className="employee-header" style={{ marginBottom: "24px" }}>
+                <h1 className="page-title" style={{ margin: 0 }}>Employee Directory</h1>
                 <button
                     className="add-btn"
-                    onClick={() =>
-                        navigate("/admin/employees/add")
-                    }
+                    onClick={() => navigate("/admin/employees/add")}
+                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontWeight: "600" }}
                 >
-                    + Add Employee
+                    <FaPlus /> Add Employee
                 </button>
-
             </div>
-            <table className="employee-table">
 
-                <thead>
-
-                    <tr>
-
-                        <th>ID</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Email</th>
-                        <th>Department</th>
-                        <th>Designation</th>
-                        <th>Action</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    {employees.map((employee) => (
-
-                        <tr key={employee.id}>
-
-                            <td>{employee.id}</td>
-                            <td>{employee.first_name}</td>
-                            <td>{employee.last_name}</td>
-                            <td>{employee.email}</td>
-                            <td>{employee.department}</td>
-                            <td>{employee.designation}</td>
-                            <td>
-                                <button
-                                    className="view-btn"
-                                    onClick={() =>
-                                        navigate(
-                                            `/admin/employees/${employee.id}`
-                                        )
-                                    }
-                                >
-                                    <FaEye />
-                                </button>
-                            </td>
-
+            <div className="table-container-custom">
+                <table className="employee-table">
+                    <thead>
+                        <tr>
+                            <th>Avatar</th>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Designation</th>
+                            <th style={{ textAlign: "center" }}>Action</th>
                         </tr>
-
-                    ))}
-
-                </tbody>
-
-            </table>
-
+                    </thead>
+                    <tbody>
+                        {employees.map((employee) => (
+                            <tr key={employee.id}>
+                                <td>
+                                    <div className="avatar-badge">
+                                        {getInitials(employee.first_name, employee.last_name)}
+                                    </div>
+                                </td>
+                                <td>#{employee.id}</td>
+                                <td style={{ fontWeight: "600" }}>
+                                    {employee.first_name} {employee.last_name}
+                                </td>
+                                <td>{employee.email}</td>
+                                <td>
+                                    <span style={{ 
+                                        background: "#f1f5f9", 
+                                        color: "#475569", 
+                                        padding: "4px 10px", 
+                                        borderRadius: "20px", 
+                                        fontSize: "12.5px", 
+                                        fontWeight: "600" 
+                                    }}>
+                                        {employee.department || "N/A"}
+                                    </span>
+                                </td>
+                                <td style={{ color: "#64748b", fontWeight: "500" }}>{employee.designation}</td>
+                                <td style={{ textAlign: "center" }}>
+                                    <button
+                                        className="table-action-btn"
+                                        onClick={() => navigate(`/admin/employees/${employee.id}`)}
+                                        title="View Details"
+                                    >
+                                        <FaEye />
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                        {employees.length === 0 && (
+                            <tr>
+                                <td colSpan="7" style={{ textAlign: "center", color: "#64748b", padding: "40px" }}>
+                                    No employees found in the directory.
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
         </DashboardLayout>
-
     );
-
 }
 
 export default EmployeeList;
