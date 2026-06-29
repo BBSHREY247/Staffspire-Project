@@ -1,12 +1,13 @@
 const db = require("../config/db");
 
 const getEmployeeDashboard = async (req, res) => {
+    console.log("Decoded user:", req.user);
     try {
         const userId = req.user.id;
 
         // Fetch user account info
         const [users] = await db.promise().query(
-            "SELECT * FROM users WHERE id = ?",
+            "SELECT * FROM employees WHERE id = ?",
             [userId]
         );
 
