@@ -29,7 +29,7 @@ function Sidebar() {
         { name: "Dashboard", path: "/admin/dashboard", icon: <FaHome /> },
         { name: "Employees", path: "/admin/employees", icon: <FaUsers /> },
         { name: "Departments", path: "/admin/departments", icon: <FaBuilding /> },
-        { name: "Attendance", path: "#", icon: <FaCalendarCheck /> },
+        { name: "Attendance", path: "/admin/attendance", icon: <FaCalendarCheck /> },
         { name: "Leaves", path: "#", icon: <FaClipboardList /> },
         { name: "Tasks", path: "#", icon: <FaTasks /> },
         { name: "Reports", path: "#", icon: <FaChartBar /> },
@@ -39,7 +39,7 @@ function Sidebar() {
     const employeeMenuItems = [
         { name: "Dashboard", path: "/employee/dashboard", icon: <FaHome /> },
         { name: "My Profile", path: "/employee/profile", icon: <FaUserCircle /> },
-        { name: "Attendance", path: "#", icon: <FaCalendarCheck /> },
+        { name: "Attendance", path: "/employee/attendance", icon: <FaCalendarCheck /> },
         { name: "Leave Requests", path: "#", icon: <FaClipboardList /> },
         { name: "My Tasks", path: "#", icon: <FaTasks /> },
         { name: "Reports", path: "#", icon: <FaChartBar /> },

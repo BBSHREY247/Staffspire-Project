@@ -108,12 +108,10 @@ const createEmployee = async (req, res) => {
         const tempPassword = generateTempPassword();
         const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
-        // Insert into employees (storing encrypted password as requested)
         const insertEmpSql = `
             INSERT INTO employees (first_name, last_name, email, department, designation, employee_id, password)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
-        // Insert into users (role_id = 3 is Employee)
         const insertUserSql = `
             INSERT INTO users (name, email, password, role_id, login_id)
             VALUES (?, ?, ?, 3, ?)

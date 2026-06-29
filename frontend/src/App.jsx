@@ -21,6 +21,8 @@ import RegisterAdmin from "./auth/RegisterAdmin";
 import Departments from "./pages/admin/Departments";
 import DepartmentDetails from "./pages/admin/DepartmentDetails";
 import MyProfile from "./pages/employee/MyProfile";
+import Attendance from "./pages/employee/Attendance";
+import AttendanceList from "./pages/admin/AttendanceList";
 
 function App() {
     return (
@@ -43,6 +45,11 @@ function App() {
                 />
 
                 <Route
+                    path="/admin/attendance"
+                    element={<AttendanceList />}
+                />
+
+                <Route
                     path="/manager/dashboard"
                     element={<ManagerDashboard />}
                 />
@@ -54,6 +61,10 @@ function App() {
                 <Route
                     path="/employee/profile"
                     element={<MyProfile />}
+                />
+                <Route
+                    path="/employee/attendance"
+                    element={<Attendance />}
                 />
                 <Route
                     path="/admin/employees/add"

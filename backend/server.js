@@ -50,6 +50,9 @@ app.use(
     departmentRoutes
 );
 
+const attendanceRoutes = require("./routes/attendanceRoutes");
+app.use("/api/attendance", attendanceRoutes);
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

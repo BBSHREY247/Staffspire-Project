@@ -1,7 +1,7 @@
 const db = require("../config/db");
 
 const getEmployeeDashboard = async (req, res) => {
-    console.log("Decoded user:", req.user);
+    
     try {
         const userId = req.user.id;
 

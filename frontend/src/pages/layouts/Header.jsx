@@ -35,6 +35,8 @@ function Header() {
         if (path.includes("/admin/employees")) return "Employee List";
         if (/\d+/.test(path) && path.includes("/admin/departments")) return "Department Profile";
         if (path.includes("/admin/departments")) return "Departments";
+        if (path.includes("/admin/attendance")) return "Attendance Registry";
+        if (path.includes("/employee/attendance")) return "Attendance Dashboard";
         if (path.includes("/settings")) return "Settings";
         if (path.includes("/change-password")) return "Change Password";
         return "Employee Management System";
