@@ -86,9 +86,13 @@ const createEmployee = async (req, res) => {
             });
         }
 
-        const [existingUser] = await db.promise().query("SELECT id FROM users WHERE email = ?", [email]);
-        const [existingEmp] = await db.promise().query("SELECT id FROM employees WHERE email = ?", [email]);
-        if (existingUser.length > 0 || existingEmp.length > 0) {
+
+        const [existingEmp] = await db.promise().query(
+            "SELECT id FROM employees WHERE email = ?",
+            [email]
+        );
+
+        if (existingEmp.length > 0) {
             return res.status(400).json({
                 success: false,
                 message: "Email is already registered"
@@ -97,7 +101,7 @@ const createEmployee = async (req, res) => {
 
         const employeeId = await generateUniqueEmployeeId();
         const tempPassword = generateTempPassword();
-        const hashedPassword = await bcrypt.hash(tempPassword, 10);
+        // const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
         // Insert into employees (storing encrypted password as requested)
         const insertEmpSql = `
@@ -106,13 +110,6 @@ const createEmployee = async (req, res) => {
         `;
         const encryptedPassword = encryptPassword(tempPassword);
         await db.promise().query(insertEmpSql, [first_name, last_name, email, department, designation, employeeId, encryptedPassword]);
-
-        // Insert into users (role_id = 3 is Employee)
-        const insertUserSql = `
-            INSERT INTO users (name, email, password, role_id, login_id)
-            VALUES (?, ?, ?, 3, ?)
-        `;
-        await db.promise().query(insertUserSql, [`${first_name} ${last_name}`, email, hashedPassword, employeeId]);
 
         return res.status(201).json({
             success: true,

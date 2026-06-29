@@ -95,7 +95,6 @@ const loginUser = (req, res) => {
       password,
       user.password
     );
-    console.log("Password Match:", isMatch);
 
     if (!isMatch) {
       return res.status(401).json({
