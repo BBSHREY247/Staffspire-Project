@@ -12,6 +12,7 @@ import {
     FaBirthdayCake, 
     FaKey 
 } from "react-icons/fa";
+import profilePic from "../../assets/Softspire_Logo.jpeg"
 
 function Header() {
     const navigate = useNavigate();
@@ -55,8 +56,7 @@ function Header() {
             {/* Left Brand and Title */}
             <div className="header-left">
                 <div className="logo-brand" onClick={() => navigate(user.role === "Admin" ? "/admin/dashboard" : "/employee/dashboard")} style={{cursor: "pointer"}}>
-                    <span>⚡</span>
-                    <span>SoftSpire</span>
+                    <img className="logo" src={profilePic} alt="" />
                 </div>
                 <div className="header-title-divider"></div>
                 <h2 className="header-page-title">{getPageTitle()}</h2>

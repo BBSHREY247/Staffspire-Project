@@ -454,8 +454,6 @@
     box-shadow: 0 0 0 3px rgba(79, 125, 240, 0.15);
 }
 
-/* Restructured Dashboard Styles (Header, Footer, Dropdowns) */
-
 /* Header Top Navbar Layout */
 .header-left {
     display: flex;
@@ -463,15 +461,12 @@
     gap: 20px;
 }
 
-.logo-brand {
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--primary);
+.logo-brand img {
+    width: 120%;
+    height: 70px;
     display: flex;
-    align-items: center;
-    gap: 8px;
-    letter-spacing: -0.5px;
-    user-select: none;
+    position: relative;
+    left: -15%;
 }
 
 .header-title-divider {
@@ -481,6 +476,8 @@
 }
 
 .header-page-title {
+    position: absolute;
+    left: 17.5%;
     font-size: 15px;
     font-weight: 600;
     color: #4b5563;
@@ -1517,4 +1514,4 @@
     font-size: 12px;
     padding: 4px 10px;
     border-radius: 12px;
-}
+}
