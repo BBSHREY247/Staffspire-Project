@@ -11,6 +11,12 @@ function MyProfile() {
         const fetchProfile = async () => {
             try {
                 const token = localStorage.getItem("token");
+
+                console.log("TOKEN");
+                console.log(token);
+
+                console.log("USER");
+                console.log(JSON.parse(localStorage.getItem("user")));
                 const response = await axios.get(
                     "http://localhost:5000/api/employee/dashboard",
                     {

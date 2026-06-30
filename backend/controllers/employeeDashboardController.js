@@ -7,8 +7,8 @@ const getEmployeeDashboard = async (req, res) => {
 
         // Fetch user account info
         const [users] = await db.promise().query(
-            "SELECT * FROM employees WHERE id = ?",
-            [userId]
+            "SELECT * FROM users WHERE id = ?",
+            [req.user.id]
         );
 
         if (users.length === 0) {
@@ -21,8 +21,8 @@ const getEmployeeDashboard = async (req, res) => {
 
         // Fetch employee personal details
         const [employees] = await db.promise().query(
-            "SELECT * FROM employees WHERE email = ?",
-            [user.email]
+            "SELECT * FROM employees WHERE employee_id = ?",
+            [user.login_id]
         );
         const emp = employees[0] || {};
 

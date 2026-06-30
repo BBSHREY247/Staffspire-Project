@@ -462,7 +462,7 @@
 }
 
 .logo-brand img {
-    width: 120%;
+    width: 129.5%;
     height: 70px;
     display: flex;
     position: relative;
@@ -476,8 +476,7 @@
 }
 
 .header-page-title {
-    position: absolute;
-    left: 17.5%;
+    position: relative;
     font-size: 15px;
     font-weight: 600;
     color: #4b5563;
