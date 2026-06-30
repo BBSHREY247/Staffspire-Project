@@ -94,6 +94,12 @@ function AttendanceList() {
     const lateCount = filteredAttendance.filter(r => r.status === "Late").length;
     const halfDayCount = filteredAttendance.filter(r => r.status === "Half Day").length;
 
+    const getLocationStatusClass = (locStatus) => {
+        if (locStatus === "Inside Office") return "badge-present"; // green
+        if (locStatus === "Outside Office") return "badge-absent"; // red
+        return "badge-neutral";
+    };
+
     return (
         <DashboardLayout>
             <div className="attendance-page-container">
@@ -166,18 +172,21 @@ function AttendanceList() {
                                 <th>Check-Out</th>
                                 <th>Working Hours</th>
                                 <th>Status</th>
+                                <th>Geofence</th>
+                                <th>Distance</th>
+                                <th>Map</th>
                             </tr>
                         </thead>
                         <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan="9" style={{ textAlign: "center", color: "#64748b" }}>
+                                    <td colSpan="12" style={{ textAlign: "center", color: "#64748b" }}>
                                         Loading logs...
                                     </td>
                                 </tr>
                             ) : filteredAttendance.length === 0 ? (
                                 <tr>
-                                    <td colSpan="9" style={{ textAlign: "center", color: "#64748b" }}>
+                                    <td colSpan="12" style={{ textAlign: "center", color: "#64748b" }}>
                                         No attendance logs matching criteria.
                                     </td>
                                 </tr>
@@ -204,6 +213,36 @@ function AttendanceList() {
                                             <span className={`status-badge ${getStatusClass(record.status)}`}>
                                                 {record.status}
                                             </span>
+                                        </td>
+                                        <td>
+                                            <span className={`status-badge ${getLocationStatusClass(record.location_status)}`}>
+                                                {record.location_status || "N/A"}
+                                            </span>
+                                        </td>
+                                        <td style={{ fontWeight: "600", color: "#475569" }}>
+                                            {record.distance_from_office !== null && record.distance_from_office !== undefined 
+                                                ? `${record.distance_from_office}m` 
+                                                : "N/A"}
+                                        </td>
+                                        <td>
+                                            {record.latitude && record.longitude ? (
+                                                <a 
+                                                    href={`https://www.google.com/maps?q=${record.latitude},${record.longitude}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    style={{
+                                                        background: "#4f8cff",
+                                                        color: "white",
+                                                        padding: "4px 10px",
+                                                        borderRadius: "6px",
+                                                        textDecoration: "none",
+                                                        fontSize: "12px",
+                                                        fontWeight: "600"
+                                                    }}
+                                                >
+                                                    View Map
+                                                </a>
+                                            ) : "N/A"}
                                         </td>
                                     </tr>
                                 ))

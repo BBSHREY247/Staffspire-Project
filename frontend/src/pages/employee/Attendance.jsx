@@ -49,22 +49,62 @@ function Attendance() {
         setTimeout(() => setMessage(null), 5000);
     };
 
+    const getCoordinates = () => {
+        return new Promise((resolve, reject) => {
+            if (!navigator.geolocation) {
+                reject(new Error("Geolocation is not supported by your browser."));
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    resolve({
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        accuracy: position.coords.accuracy
+                    });
+                },
+                (error) => {
+                    let errMsg = "Failed to retrieve location.";
+                    if (error.code === error.PERMISSION_DENIED) {
+                        errMsg = "Location permission is required to mark attendance.";
+                    } else if (error.code === error.POSITION_UNAVAILABLE) {
+                        errMsg = "Location information is unavailable.";
+                    } else if (error.code === error.TIMEOUT) {
+                        errMsg = "Request to get location timed out.";
+                    }
+                    reject(new Error(errMsg));
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        });
+    };
+
     const handleCheckIn = async () => {
         try {
             setActionLoading(true);
+            showNotification("neutral", "Retrieving GPS coordinates...");
+            const coords = await getCoordinates();
+
             const token = localStorage.getItem("token");
             const response = await axios.post(
                 "http://localhost:5000/api/attendance/check-in",
-                {},
+                {
+                    latitude: coords.latitude,
+                    longitude: coords.longitude,
+                    accuracy: coords.accuracy
+                },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            showNotification("success", response.data.message || "Checked in successfully!");
+            
+            const locStatus = response.data.locationStatus || "Unknown";
+            const dist = response.data.distance !== undefined ? `${response.data.distance}m` : "N/A";
+            showNotification("success", `Checked in successfully! Status: ${locStatus} (Distance: ${dist})`);
             fetchAttendanceData();
         } catch (error) {
             console.error("Check-in error:", error);
             showNotification(
                 "error",
-                error.response?.data?.message || "Check-in failed. Please try again."
+                error.message || error.response?.data?.message || "Check-in failed. Please try again."
             );
         } finally {
             setActionLoading(false);
@@ -74,19 +114,29 @@ function Attendance() {
     const handleCheckOut = async () => {
         try {
             setActionLoading(true);
+            showNotification("neutral", "Retrieving GPS coordinates...");
+            const coords = await getCoordinates();
+
             const token = localStorage.getItem("token");
             const response = await axios.post(
                 "http://localhost:5000/api/attendance/check-out",
-                {},
+                {
+                    latitude: coords.latitude,
+                    longitude: coords.longitude,
+                    accuracy: coords.accuracy
+                },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            showNotification("success", response.data.message || "Checked out successfully!");
+
+            const locStatus = response.data.locationStatus || "Unknown";
+            const dist = response.data.distance !== undefined ? `${response.data.distance}m` : "N/A";
+            showNotification("success", `Checked out successfully! Status: ${locStatus} (Distance: ${dist})`);
             fetchAttendanceData();
         } catch (error) {
             console.error("Check-out error:", error);
             showNotification(
                 "error",
-                error.response?.data?.message || "Check-out failed. Please try again."
+                error.message || error.response?.data?.message || "Check-out failed. Please try again."
             );
         } finally {
             setActionLoading(false);

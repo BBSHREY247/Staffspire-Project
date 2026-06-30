@@ -1,5 +1,18 @@
 const db = require("../config/db");
 
+// Helper: Haversine distance formula in meters
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const toRad = (value) => (value * Math.PI) / 180;
+    const R = 6371e3; // Earth's radius in meters
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return Math.round(R * c); // Distance in meters
+};
+
 // Helper: Get employee_id for the logged-in user
 const getEmployeeIdFromUser = async (userId) => {
     const [users] = await db.promise().query("SELECT email FROM users WHERE id = ?", [userId]);
@@ -11,6 +24,20 @@ const getEmployeeIdFromUser = async (userId) => {
     return employees[0].employee_id;
 };
 
+// Helper: Retrieve office geofence settings (fallback to default head office if not set)
+const getGeofenceSettings = async () => {
+    const [rows] = await db.promise().query("SELECT * FROM office_settings LIMIT 1");
+    if (rows.length > 0) {
+        return rows[0];
+    }
+    return {
+        office_name: "Head Office",
+        latitude: 18.52040000,
+        longitude: 73.85670000,
+        attendance_radius: 100.0
+    };
+};
+
 // 1. POST /api/attendance/check-in
 const checkIn = async (req, res) => {
     try {
@@ -19,6 +46,14 @@ const checkIn = async (req, res) => {
             return res.status(404).json({
                 success: false,
                 message: "Employee profile not found or user is not an employee."
+            });
+        }
+
+        const { latitude, longitude, accuracy } = req.body;
+        if (latitude === undefined || longitude === undefined) {
+            return res.status(400).json({
+                success: false,
+                message: "Location permissions and coordinates are required to mark attendance."
             });
         }
 
@@ -38,20 +73,43 @@ const checkIn = async (req, res) => {
             });
         }
 
+        // Calculate Geofence
+        const office = await getGeofenceSettings();
+        const distance = calculateDistance(
+            parseFloat(latitude),
+            parseFloat(longitude),
+            parseFloat(office.latitude),
+            parseFloat(office.longitude)
+        );
+
+        const locationStatus = distance <= office.attendance_radius ? "Inside Office" : "Outside Office";
+
         // Determine status (Present or Late, threshold e.g. 09:15:00)
         let status = "Present";
         if (checkInTime > "09:15:00") {
             status = "Late";
         }   
 
+        const locationCapturedAt = new Date().toISOString().slice(0, 19).replace('T', ' '); // YYYY-MM-DD HH:MM:SS
+
         await db.promise().query(
-            "INSERT INTO attendance (employee_id, attendance_date, check_in, status) VALUES (?, ?, ?, ?)",
-            [employeeId, localDate, checkInTime, status]
+            `INSERT INTO attendance (
+                employee_id, attendance_date, check_in, status, 
+                latitude, longitude, accuracy, distance_from_office, 
+                location_status, location_captured_at
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                employeeId, localDate, checkInTime, status,
+                latitude, longitude, accuracy || null, distance,
+                locationStatus, locationCapturedAt
+            ]
         );
 
         return res.status(200).json({
             success: true,
             message: "Checked in successfully.",
+            locationStatus,
+            distance,
             data: {
                 attendance_date: localDate,
                 check_in: checkInTime,
@@ -75,6 +133,14 @@ const checkOut = async (req, res) => {
             return res.status(404).json({
                 success: false,
                 message: "Employee profile not found."
+            });
+        }
+
+        const { latitude, longitude, accuracy } = req.body;
+        if (latitude === undefined || longitude === undefined) {
+            return res.status(400).json({
+                success: false,
+                message: "Location permissions and coordinates are required to mark attendance."
             });
         }
 
@@ -102,6 +168,17 @@ const checkOut = async (req, res) => {
             });
         }
 
+        // Calculate Geofence
+        const office = await getGeofenceSettings();
+        const distance = calculateDistance(
+            parseFloat(latitude),
+            parseFloat(longitude),
+            parseFloat(office.latitude),
+            parseFloat(office.longitude)
+        );
+
+        const locationStatus = distance <= office.attendance_radius ? "Inside Office" : "Outside Office";
+
         // Calculate working hours
         const [inH, inM, inS] = record.check_in.split(":").map(Number);
         const [outH, outM, outS] = checkOutTime.split(":").map(Number);
@@ -127,14 +204,26 @@ const checkOut = async (req, res) => {
             status = "Half Day";
         }
 
+        const locationCapturedAt = new Date().toISOString().slice(0, 19).replace('T', ' '); // YYYY-MM-DD HH:MM:SS
+
         await db.promise().query(
-            "UPDATE attendance SET check_out = ?, working_hours = ?, status = ? WHERE id = ?",
-            [checkOutTime, workingHours, status, record.id]
+            `UPDATE attendance SET 
+                check_out = ?, working_hours = ?, status = ?,
+                latitude = ?, longitude = ?, accuracy = ?, distance_from_office = ?,
+                location_status = ?, location_captured_at = ?
+             WHERE id = ?`,
+            [
+                checkOutTime, workingHours, status,
+                latitude, longitude, accuracy || null, distance,
+                locationStatus, locationCapturedAt, record.id
+            ]
         );
 
         return res.status(200).json({
             success: true,
             message: "Checked out successfully.",
+            locationStatus,
+            distance,
             data: {
                 check_out: checkOutTime,
                 working_hours: workingHours,
