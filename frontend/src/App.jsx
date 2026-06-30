@@ -23,6 +23,9 @@ import DepartmentDetails from "./pages/admin/DepartmentDetails";
 import MyProfile from "./pages/employee/MyProfile";
 import Attendance from "./pages/employee/Attendance";
 import AttendanceList from "./pages/admin/AttendanceList";
+import LeaveDashboard from "./pages/employee/LeaveDashboard";
+import LeaveRequestsList from "./pages/admin/LeaveRequestsList";
+import LeaveRequestDetail from "./pages/admin/LeaveRequestDetail";
 
 function App() {
     return (
@@ -50,6 +53,16 @@ function App() {
                 />
 
                 <Route
+                    path="/admin/leaves"
+                    element={<LeaveRequestsList />}
+                />
+
+                <Route
+                    path="/admin/leaves/:id"
+                    element={<LeaveRequestDetail />}
+                />
+
+                <Route
                     path="/manager/dashboard"
                     element={<ManagerDashboard />}
                 />
@@ -57,6 +70,10 @@ function App() {
                 <Route
                     path="/employee/dashboard"
                     element={<EmployeeDashboard />}
+                />
+                <Route
+                    path="/employee/leaves"
+                    element={<LeaveDashboard />}
                 />
                 <Route
                     path="/employee/profile"

@@ -38,6 +38,9 @@ function Header() {
         if (path.includes("/admin/departments")) return "Departments";
         if (path.includes("/admin/attendance")) return "Attendance Registry";
         if (path.includes("/employee/attendance")) return "Attendance Dashboard";
+        if (/\/admin\/leaves\/\d+/.test(path)) return "Leave Request Details";
+        if (path.includes("/admin/leaves")) return "Leave Requests Registry";
+        if (path.includes("/employee/leaves")) return "My Leave Dashboard";
         if (path.includes("/settings")) return "Settings";
         if (path.includes("/change-password")) return "Change Password";
         return "Employee Management System";

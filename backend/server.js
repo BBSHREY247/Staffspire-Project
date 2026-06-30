@@ -56,6 +56,9 @@ app.use("/api/attendance", attendanceRoutes);
 const officeSettingsRoutes = require("./routes/officeSettingsRoutes");
 app.use("/api/office-settings", officeSettingsRoutes);
 
+const leaveRoutes = require("./routes/leaveRoutes");
+app.use("/api/leaves", leaveRoutes);
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

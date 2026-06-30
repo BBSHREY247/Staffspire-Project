@@ -1514,3 +1514,14 @@
     padding: 4px 10px;
     border-radius: 12px;
 }
+
+/* Leaves Modal/Select Specific Styles */
+.form-card select {
+    background: white;
+    cursor: pointer;
+}
+
+.form-card textarea:focus {
+    border-color: #4f8cff;
+}
+
