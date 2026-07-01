@@ -203,7 +203,7 @@ const checkOut = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: "Checked out successfully.",
-            locationStatus,
+            // locationStatus,
             distance,
             data: {
                 check_out: checkOutTime,
