@@ -172,9 +172,9 @@ function AttendanceList() {
                                 <th>Check-Out</th>
                                 <th>Working Hours</th>
                                 <th>Status</th>
-                                <th>Geofence</th>
+                                {/* <th>Geofence</th>
                                 <th>Distance</th>
-                                <th>Map</th>
+                                <th>Map</th> */}
                             </tr>
                         </thead>
                         <tbody>
@@ -214,7 +214,7 @@ function AttendanceList() {
                                                 {record.status}
                                             </span>
                                         </td>
-                                        <td>
+                                        {/* <td>
                                             <span className={`status-badge ${getLocationStatusClass(record.location_status)}`}>
                                                 {record.location_status || "N/A"}
                                             </span>
@@ -223,8 +223,8 @@ function AttendanceList() {
                                             {record.distance_from_office !== null && record.distance_from_office !== undefined 
                                                 ? `${record.distance_from_office}m` 
                                                 : "N/A"}
-                                        </td>
-                                        <td>
+                                        </td> */}
+                                        {/* <td>
                                             {record.latitude && record.longitude ? (
                                                 <a 
                                                     href={`https://www.google.com/maps?q=${record.latitude},${record.longitude}`}
@@ -243,7 +243,7 @@ function AttendanceList() {
                                                     View Map
                                                 </a>
                                             ) : "N/A"}
-                                        </td>
+                                        </td> */}
                                     </tr>
                                 ))
                             )}

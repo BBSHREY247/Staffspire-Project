@@ -49,13 +49,15 @@ const checkIn = async (req, res) => {
             });
         }
 
-        const { latitude, longitude, accuracy } = req.body;
-        if (latitude === undefined || longitude === undefined) {
-            return res.status(400).json({
-                success: false,
-                message: "Location permissions and coordinates are required to mark attendance."
-            });
-        }
+        // ── LIVE LOCATION TEMPORARILY DISABLED ──────────────────────────────
+        // const { latitude, longitude, accuracy } = req.body;
+        // if (latitude === undefined || longitude === undefined) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: "Location permissions and coordinates are required to mark attendance."
+        //     });
+        // }
+        // ────────────────────────────────────────────────────────────────────
 
         const localDate = new Date().toLocaleDateString('sv');
         const checkInTime = new Date().toTimeString().split(" ")[0]; // HH:MM:SS
@@ -73,43 +75,31 @@ const checkIn = async (req, res) => {
             });
         }
 
-        // Calculate Geofence
-        const office = await getGeofenceSettings();
-        const distance = calculateDistance(
-            parseFloat(latitude),
-            parseFloat(longitude),
-            parseFloat(office.latitude),
-            parseFloat(office.longitude)
-        );
+        // ── GEOFENCE CALCULATION TEMPORARILY DISABLED ───────────────────────
+        // const office = await getGeofenceSettings();
+        // const distance = calculateDistance(
+        //     parseFloat(latitude), parseFloat(longitude),
+        //     parseFloat(office.latitude), parseFloat(office.longitude)
+        // );
+        // const locationStatus = distance <= office.attendance_radius ? "Inside Office" : "Outside Office";
+        // const locationCapturedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        // ────────────────────────────────────────────────────────────────────
 
-        const locationStatus = distance <= office.attendance_radius ? "Inside Office" : "Outside Office";
-
-        // Determine status (Present or Late, threshold e.g. 09:15:00)
+        // Determine status (Present or Late, threshold 09:15:00)
         let status = "Present";
         if (checkInTime > "09:15:00") {
             status = "Late";
-        }   
-
-        const locationCapturedAt = new Date().toISOString().slice(0, 19).replace('T', ' '); // YYYY-MM-DD HH:MM:SS
+        }
 
         await db.promise().query(
-            `INSERT INTO attendance (
-                employee_id, attendance_date, check_in, status, 
-                latitude, longitude, accuracy, distance_from_office, 
-                location_status, location_captured_at
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [
-                employeeId, localDate, checkInTime, status,
-                latitude, longitude, accuracy || null, distance,
-                locationStatus, locationCapturedAt
-            ]
+            `INSERT INTO attendance (employee_id, attendance_date, check_in, status)
+             VALUES (?, ?, ?, ?)`,
+            [employeeId, localDate, checkInTime, status]
         );
 
         return res.status(200).json({
             success: true,
             message: "Checked in successfully.",
-            locationStatus,
-            distance,
             data: {
                 attendance_date: localDate,
                 check_in: checkInTime,
@@ -136,13 +126,15 @@ const checkOut = async (req, res) => {
             });
         }
 
-        const { latitude, longitude, accuracy } = req.body;
-        if (latitude === undefined || longitude === undefined) {
-            return res.status(400).json({
-                success: false,
-                message: "Location permissions and coordinates are required to mark attendance."
-            });
-        }
+        // ── LIVE LOCATION TEMPORARILY DISABLED ──────────────────────────────
+        // const { latitude, longitude, accuracy } = req.body;
+        // if (latitude === undefined || longitude === undefined) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: "Location permissions and coordinates are required to mark attendance."
+        //     });
+        // }
+        // ────────────────────────────────────────────────────────────────────
 
         const localDate = new Date().toLocaleDateString('sv');
         const checkOutTime = new Date().toTimeString().split(" ")[0]; // HH:MM:SS
@@ -168,16 +160,15 @@ const checkOut = async (req, res) => {
             });
         }
 
-        // Calculate Geofence
-        const office = await getGeofenceSettings();
-        const distance = calculateDistance(
-            parseFloat(latitude),
-            parseFloat(longitude),
-            parseFloat(office.latitude),
-            parseFloat(office.longitude)
-        );
-
-        const locationStatus = distance <= office.attendance_radius ? "Inside Office" : "Outside Office";
+        // ── GEOFENCE CALCULATION TEMPORARILY DISABLED ───────────────────────
+        // const office = await getGeofenceSettings();
+        // const distance = calculateDistance(
+        //     parseFloat(latitude), parseFloat(longitude),
+        //     parseFloat(office.latitude), parseFloat(office.longitude)
+        // );
+        // const locationStatus = distance <= office.attendance_radius ? "Inside Office" : "Outside Office";
+        // const locationCapturedAt = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        // ────────────────────────────────────────────────────────────────────
 
         // Calculate working hours
         const [inH, inM, inS] = record.check_in.split(":").map(Number);
@@ -204,19 +195,9 @@ const checkOut = async (req, res) => {
             status = "Half Day";
         }
 
-        const locationCapturedAt = new Date().toISOString().slice(0, 19).replace('T', ' '); // YYYY-MM-DD HH:MM:SS
-
         await db.promise().query(
-            `UPDATE attendance SET 
-                check_out = ?, working_hours = ?, status = ?,
-                latitude = ?, longitude = ?, accuracy = ?, distance_from_office = ?,
-                location_status = ?, location_captured_at = ?
-             WHERE id = ?`,
-            [
-                checkOutTime, workingHours, status,
-                latitude, longitude, accuracy || null, distance,
-                locationStatus, locationCapturedAt, record.id
-            ]
+            `UPDATE attendance SET check_out = ?, working_hours = ?, status = ? WHERE id = ?`,
+            [checkOutTime, workingHours, status, record.id]
         );
 
         return res.status(200).json({
