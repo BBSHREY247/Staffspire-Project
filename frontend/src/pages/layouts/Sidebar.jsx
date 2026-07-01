@@ -31,7 +31,7 @@ function Sidebar() {
         { name: "Departments", path: "/admin/departments", icon: <FaBuilding /> },
         { name: "Attendance", path: "/admin/attendance", icon: <FaCalendarCheck /> },
         { name: "Leaves", path: "/admin/leaves", icon: <FaClipboardList /> },
-        { name: "Tasks", path: "#", icon: <FaTasks /> },
+        { name: "Tasks", path: "/admin/tasks", icon: <FaTasks /> },
         { name: "Reports", path: "#", icon: <FaChartBar /> },
         { name: "Settings", path: "/settings", icon: <FaCog /> },
     ];
@@ -41,12 +41,20 @@ function Sidebar() {
         { name: "My Profile", path: "/employee/profile", icon: <FaUserCircle /> },
         { name: "Attendance", path: "/employee/attendance", icon: <FaCalendarCheck /> },
         { name: "Leave Requests", path: "/employee/leaves", icon: <FaClipboardList /> },
-        { name: "My Tasks", path: "#", icon: <FaTasks /> },
+        { name: "My Tasks", path: "/employee/tasks", icon: <FaTasks /> },
         { name: "Reports", path: "#", icon: <FaChartBar /> },
         { name: "Settings", path: "/settings", icon: <FaCog /> },
     ];
 
-    const menuItems = role === "Admin" ? adminMenuItems : employeeMenuItems;
+    const managerMenuItems = [
+        { name: "Dashboard", path: "/manager/dashboard", icon: <FaHome /> },
+        { name: "Tasks", path: "/admin/tasks", icon: <FaTasks /> },
+        { name: "Leaves", path: "/admin/leaves", icon: <FaClipboardList /> },
+        { name: "Attendance", path: "/admin/attendance", icon: <FaCalendarCheck /> },
+        { name: "Settings", path: "/settings", icon: <FaCog /> },
+    ];
+
+    const menuItems = role === "Admin" ? adminMenuItems : role === "Manager" ? managerMenuItems : employeeMenuItems;
 
     return (
         <aside className="sidebar">

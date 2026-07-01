@@ -26,6 +26,9 @@ import AttendanceList from "./pages/admin/AttendanceList";
 import LeaveDashboard from "./pages/employee/LeaveDashboard";
 import LeaveRequestsList from "./pages/admin/LeaveRequestsList";
 import LeaveRequestDetail from "./pages/admin/LeaveRequestDetail";
+import AdminTaskList from "./pages/admin/AdminTaskList";
+import TaskDetail from "./pages/admin/TaskDetail";
+import MyTasks from "./pages/employee/MyTasks";
 
 function App() {
     return (
@@ -60,6 +63,26 @@ function App() {
                 <Route
                     path="/admin/leaves/:id"
                     element={<LeaveRequestDetail />}
+                />
+
+                <Route
+                    path="/admin/tasks"
+                    element={<AdminTaskList />}
+                />
+
+                <Route
+                    path="/admin/tasks/:id"
+                    element={<TaskDetail />}
+                />
+
+                <Route
+                    path="/employee/tasks"
+                    element={<MyTasks />}
+                />
+
+                <Route
+                    path="/employee/tasks/:id"
+                    element={<TaskDetail />}
                 />
 
                 <Route

@@ -59,6 +59,10 @@ app.use("/api/office-settings", officeSettingsRoutes);
 const leaveRoutes = require("./routes/leaveRoutes");
 app.use("/api/leaves", leaveRoutes);
 
+const taskRoutes = require("./routes/taskRoutes");
+app.use("/api/tasks", taskRoutes);
+
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

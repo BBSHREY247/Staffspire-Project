@@ -227,7 +227,7 @@ function Settings() {
                 </div>
 
                 {/* Admin-only Geofencing Settings */}
-                {isAdmin && (
+                {/* {isAdmin && (
                     <div className="form-card" style={{ 
                         width: "100%", 
                         maxWidth: "600px", 
@@ -320,7 +320,7 @@ function Settings() {
                             </form>
                         )}
                     </div>
-                )}
+                )} */}
             </div>
         </DashboardLayout>
     );
