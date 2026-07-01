@@ -164,7 +164,7 @@ function MyTasks() {
                                     <div style={{ padding: "20px" }}>
                                         {/* Priority + Status row */}
                                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", flexWrap: "wrap", gap: "6px" }}>
-                                            <span style={{ background: priCfg.bg, color: priCfg.color, padding: "3px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "700" }}>
+                                            <span style={{ background: priCfg.bg, color: priCfg.color, padding: "3px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "700", whiteSpace: "nowrap" }}>
                                                 {priCfg.dot} {task.priority}
                                             </span>
                                             <span style={{ background: stsCfg.bg, color: stsCfg.color, border: `1px solid ${stsCfg.border}`, padding: "3px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "700" }}>

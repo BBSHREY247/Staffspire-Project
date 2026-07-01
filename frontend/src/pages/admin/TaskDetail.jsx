@@ -154,7 +154,7 @@ function TaskDetail() {
                                 <span style={{ fontFamily: "monospace", fontSize: "13px", fontWeight: "700", color: "#4f8cff", background: "#eff6ff", padding: "4px 10px", borderRadius: "6px" }}>
                                     {task.task_id || `#${task.id}`}
                                 </span>
-                                <span style={{ background: priCfg.bg, color: priCfg.color, padding: "4px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: "700" }}>
+                                <span style={{ background: priCfg.bg, color: priCfg.color, padding: "4px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: "700", whiteSpace: "nowrap" }}>
                                     {priCfg.dot} {task.priority}
                                 </span>
                             </div>

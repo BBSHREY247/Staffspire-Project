@@ -41,7 +41,8 @@ function PriorityBadge({ priority }) {
     return (
         <span style={{
             background: cfg.bg, color: cfg.color,
-            padding: "3px 9px", borderRadius: "20px", fontSize: "12px", fontWeight: "700"
+            padding: "3px 9px", borderRadius: "20px", fontSize: "12px", fontWeight: "700",
+            whiteSpace: "nowrap"
         }}>
             {cfg.dot} {priority}
         </span>
