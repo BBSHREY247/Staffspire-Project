@@ -62,6 +62,9 @@ app.use("/api/leaves", leaveRoutes);
 const taskRoutes = require("./routes/taskRoutes");
 app.use("/api/tasks", taskRoutes);
 
+const reportRoutes = require("./routes/reportRoutes");
+app.use("/api/reports", reportRoutes);
+
 
 const PORT = process.env.PORT || 5000;
 

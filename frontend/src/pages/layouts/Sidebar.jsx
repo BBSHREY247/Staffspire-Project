@@ -32,7 +32,7 @@ function Sidebar() {
         { name: "Attendance", path: "/admin/attendance", icon: <FaCalendarCheck /> },
         { name: "Leaves", path: "/admin/leaves", icon: <FaClipboardList /> },
         { name: "Tasks", path: "/admin/tasks", icon: <FaTasks /> },
-        { name: "Reports", path: "#", icon: <FaChartBar /> },
+        { name: "Reports", path: "/reports", icon: <FaChartBar /> },
         { name: "Settings", path: "/settings", icon: <FaCog /> },
     ];
 
@@ -42,7 +42,7 @@ function Sidebar() {
         { name: "Attendance", path: "/employee/attendance", icon: <FaCalendarCheck /> },
         { name: "Leave Requests", path: "/employee/leaves", icon: <FaClipboardList /> },
         { name: "My Tasks", path: "/employee/tasks", icon: <FaTasks /> },
-        { name: "Reports", path: "#", icon: <FaChartBar /> },
+        { name: "Reports", path: "/reports", icon: <FaChartBar /> },
         { name: "Settings", path: "/settings", icon: <FaCog /> },
     ];
 
@@ -51,6 +51,7 @@ function Sidebar() {
         { name: "Tasks", path: "/admin/tasks", icon: <FaTasks /> },
         { name: "Leaves", path: "/admin/leaves", icon: <FaClipboardList /> },
         { name: "Attendance", path: "/admin/attendance", icon: <FaCalendarCheck /> },
+        { name: "Reports", path: "/reports", icon: <FaChartBar /> },
         { name: "Settings", path: "/settings", icon: <FaCog /> },
     ];
 

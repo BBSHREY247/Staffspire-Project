@@ -46,6 +46,7 @@ function Header() {
         if (path.includes("/admin/tasks")) return "Task Management";
         if (path.includes("/employee/tasks")) return "My Tasks";
         if (path.includes("/settings")) return "Settings";
+        if (path.includes("/reports")) return "Centralized Reports";
         if (path.includes("/change-password")) return "Change Password";
         return "Employee Management System";
     };

@@ -29,6 +29,7 @@ import LeaveRequestDetail from "./pages/admin/LeaveRequestDetail";
 import AdminTaskList from "./pages/admin/AdminTaskList";
 import TaskDetail from "./pages/admin/TaskDetail";
 import MyTasks from "./pages/employee/MyTasks";
+import ReportsDashboard from "./pages/reports/ReportsDashboard";
 
 function App() {
     return (
@@ -121,6 +122,10 @@ function App() {
                 <Route
                     path="/settings"
                     element={<Settings />}
+                />
+                <Route
+                    path="/reports"
+                    element={<ReportsDashboard />}
                 />
                 <Route
                     path="/forgot-password"
