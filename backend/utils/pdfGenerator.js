@@ -94,8 +94,54 @@ const generatePDF = (res, { reportTitle, generatedBy, filters, headers, keys, ro
 
     // Table Rows
     rows.forEach((row, rowIndex) => {
+        // Pre-format all cell values for this row and calculate max cell height
+        let rowHeight = 20; // default minimum row height
+        const formattedRow = {};
+        
+        doc.font("Helvetica").fontSize(8);
+        keys.forEach((key) => {
+            let val = row[key];
+            if (val === undefined || val === null) {
+                val = "";
+            } else {
+                const dateKeys = ["joining_date", "date", "start_date", "end_date", "due_date"];
+                if (dateKeys.includes(key)) {
+                    const d = new Date(val);
+                    if (!isNaN(d.getTime())) {
+                        const yyyy = d.getFullYear();
+                        const mm = String(d.getMonth() + 1).padStart(2, "0");
+                        const dd = String(d.getDate()).padStart(2, "0");
+                        const hh = String(d.getHours()).padStart(2, "0");
+                        const min = String(d.getMinutes()).padStart(2, "0");
+                        const ss = String(d.getSeconds()).padStart(2, "0");
+                        
+                        if (hh === "00" && min === "00" && ss === "00") {
+                            val = `${yyyy}-${mm}-${dd}`;
+                        } else {
+                            val = `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+                        }
+                    }
+                }
+                
+                if (typeof val === "string" && val.length > 28) {
+                    val = val.substring(0, 25) + "...";
+                }
+            }
+            formattedRow[key] = String(val);
+            
+            // Measure height of this text cell
+            const cellTextHeight = doc.heightOfString(formattedRow[key], {
+                width: colWidth - 4,
+                align: "left"
+            });
+            const cellHeight = cellTextHeight + 12; // 6pt padding top and bottom
+            if (cellHeight > rowHeight) {
+                rowHeight = cellHeight;
+            }
+        });
+
         // Page break safety check
-        if (currentTableY > 740) {
+        if (currentTableY + rowHeight > 760) {
             doc.addPage();
             currentTableY = 90; // Start below the header block area on subsequent pages
             // Draw table header again on new page
@@ -113,28 +159,22 @@ const generatePDF = (res, { reportTitle, generatedBy, filters, headers, keys, ro
 
         // Draw zebra background
         if (rowIndex % 2 === 1) {
-            doc.fillColor("#F8FAFC").rect(40, currentTableY, availableWidth, 20).fill();
+            doc.fillColor("#F8FAFC").rect(40, currentTableY, availableWidth, rowHeight).fill();
         }
 
         // Row border
-        doc.moveTo(40, currentTableY + 20).lineTo(555, currentTableY + 20).strokeColor("#F1F5F9").lineWidth(0.5).stroke();
+        doc.moveTo(40, currentTableY + rowHeight).lineTo(555, currentTableY + rowHeight).strokeColor("#F1F5F9").lineWidth(0.5).stroke();
 
         doc.fillColor("#334155").font("Helvetica").fontSize(8);
         keys.forEach((key, colIndex) => {
-            let val = row[key];
-            if (val === undefined || val === null) {
-                val = "";
-            } else if (typeof val === "string" && val.length > 28) {
-                val = val.substring(0, 25) + "...";
-            }
-            doc.text(String(val), 42 + colIndex * colWidth, currentTableY + 6, {
+            const val = formattedRow[key];
+            doc.text(val, 42 + colIndex * colWidth, currentTableY + 6, {
                 width: colWidth - 4,
-                align: "left",
-                lineBreak: false
+                align: "left"
             });
         });
 
-        currentTableY += 20;
+        currentTableY += rowHeight;
     });
 
     // Finalize page counting and headers
