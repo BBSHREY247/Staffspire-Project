@@ -78,8 +78,8 @@ function Sidebar() {
                         </li>
                     );
                 })}
-                <li onClick={handleLogout} style={{ marginTop: "auto", color: "#fca5a5" }}>
-                    <FaSignOutAlt style={{ color: "#fca5a5" }} />
+                <li onClick={handleLogout} style={{ marginTop: "auto", color: "#ef4444ff" }}>
+                    <FaSignOutAlt style={{ color: "#ef4444ff" }} />
                     <span>Logout</span>
                 </li>
             </ul>

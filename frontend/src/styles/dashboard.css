@@ -6,7 +6,7 @@
 
 :root {
     --primary: #4F7DF0;
-    --sidebar-bg: #1F2937;
+    --sidebar-bg: #ffffff;
     --bg-color: #F4F7FC;
     --card-shadow: 0 6px 18px rgba(0,0,0,0.08);
 }
@@ -46,7 +46,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    color: #9ca3af;
+    color: #000000;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -88,13 +88,13 @@
 }
 
 .active-menu{
-    background: #374151;
-    color: white !important;
+    background: rgba(79, 125, 240, 0.1) !important;
+    color: var(--primary) !important;
     font-weight: 600 !important;
 }
 
 .active-menu svg {
-    color: var(--primary);
+    color: var(--primary) !important;
 }
 
 .employee-header{
