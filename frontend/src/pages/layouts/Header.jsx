@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 import { 
     FaBell, 
     FaCog, 
@@ -20,8 +21,86 @@ function Header() {
     
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const [showNotifMenu, setShowNotifMenu] = useState(false);
+    const [notifications, setNotifications] = useState([]);
 
     const user = JSON.parse(localStorage.getItem("user")) || { name: "Shreyash", role: "Admin" };
+    const token = localStorage.getItem("token");
+
+    const fetchNotifications = async () => {
+        if (!token) return;
+        try {
+            const response = await axios.get("http://localhost:5000/api/notifications", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.data.success) {
+                setNotifications(response.data.notifications);
+            }
+        } catch (error) {
+            console.error("Error fetching notifications:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchNotifications();
+        const interval = setInterval(fetchNotifications, 15000); // Poll every 15s
+        return () => clearInterval(interval);
+    }, [token]);
+
+    const handleClearAll = async () => {
+        if (!token) return;
+        try {
+            await axios.put("http://localhost:5000/api/notifications/read-all", {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setNotifications([]);
+        } catch (error) {
+            console.error("Error clearing notifications:", error);
+        }
+    };
+
+    const handleMarkAsRead = async (id) => {
+        if (!token) return;
+        try {
+            await axios.put(`http://localhost:5000/api/notifications/${id}/read`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: 1 } : n));
+        } catch (error) {
+            console.error("Error marking notification as read:", error);
+        }
+    };
+
+    const formatTime = (dateStr) => {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        if (diffMins < 1) return "Just now";
+        if (diffMins < 60) return `${diffMins}m ago`;
+        const diffHours = Math.floor(diffMins / 60);
+        if (diffHours < 24) return `${diffHours}h ago`;
+        return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    };
+
+    const getNotifDetails = (title) => {
+        const lower = title.toLowerCase();
+        if (lower.includes("task")) {
+            return {
+                icon: <FaCheckCircle style={{ color: "#3b82f6" }} />,
+                bg: "#dbeafe"
+            };
+        }
+        if (lower.includes("leave")) {
+            return {
+                icon: <FaCalendarTimes style={{ color: "#ef4444" }} />,
+                bg: "#fee2e2"
+            };
+        }
+        return {
+            icon: <FaCheckCircle style={{ color: "#22c55e" }} />,
+            bg: "#d1fae5"
+        };
+    };
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -51,14 +130,6 @@ function Header() {
         return "Employee Management System";
     };
 
-    const mockNotifications = [
-        { id: 1, text: "New Employee Added", time: "5 mins ago", icon: <FaCheckCircle style={{color: "#22c55e"}} />, bg: "#d1fae5" },
-        { id: 2, text: "Leave Request Submitted", time: "2 hours ago", icon: <FaCheckCircle style={{color: "#3b82f6"}} />, bg: "#dbeafe" },
-        { id: 3, text: "Attendance Missing: Om Pawar", time: "1 day ago", icon: <FaCalendarTimes style={{color: "#ef4444"}} />, bg: "#fee2e2" },
-        { id: 4, text: "Birthday Today: Om Pawar", time: "Today", icon: <FaBirthdayCake style={{color: "#a855f7"}} />, bg: "#f3e8ff" },
-        { id: 5, text: "Password Changed Successfully", time: "3 days ago", icon: <FaKey style={{color: "#f59e0b"}} />, bg: "#fef3c7" },
-    ];
-
     return (
         <header className="header">
             {/* Left Brand and Title */}
@@ -86,7 +157,7 @@ function Header() {
             <div className="header-right">
                 {/* Notifications Bell */}
                 <div style={{position: "relative"}}>
-                    {/* <button 
+                    <button 
                         className="header-action-btn" 
                         onClick={() => {
                             setShowNotifMenu(!showNotifMenu);
@@ -94,27 +165,43 @@ function Header() {
                         }}
                     >
                         <FaBell />
-                        <span className="badge-count">5</span>
-                    </button> */}
+                        {notifications.filter(n => !n.is_read).length > 0 && (
+                            <span className="badge-count">
+                                {notifications.filter(n => !n.is_read).length}
+                            </span>
+                        )}
+                    </button>
 
                     {showNotifMenu && (
                         <div className="notifications-dropdown">
                             <div className="notif-header">
                                 <h4>Notifications</h4>
-                                <span onClick={() => setShowNotifMenu(false)}>Clear All</span>
+                                <span onClick={handleClearAll} style={{ cursor: "pointer", color: "red"}}>Clear All</span>
                             </div>
                             <div className="notif-list">
-                                {mockNotifications.map((n) => (
-                                    <div key={n.id} className="notif-item">
-                                        <div className="notif-icon-wrapper" style={{background: n.bg}}>
-                                            {n.icon}
-                                        </div>
-                                        <div className="notif-content">
-                                            <span className="notif-text">{n.text}</span>
-                                            <span className="notif-time">{n.time}</span>
-                                        </div>
-                                    </div>
-                                ))}
+                                {notifications.length === 0 ? (
+                                    <div className="notif-empty">No notifications found</div>
+                                ) : (
+                                    notifications.map((n) => {
+                                        const details = getNotifDetails(n.title);
+                                        return (
+                                            <div 
+                                                key={n.id} 
+                                                className={`notif-item ${!n.is_read ? 'unread' : ''}`}
+                                                onClick={() => handleMarkAsRead(n.id)}
+                                            >
+                                                <div className="notif-icon-wrapper" style={{background: details.bg}}>
+                                                    {details.icon}
+                                                </div>
+                                                <div className="notif-content">
+                                                    <strong style={{fontSize: '12.5px', textAlign: 'left', display: 'block', color: '#1e293b'}}>{n.title}</strong>
+                                                    <span className="notif-text">{n.message}</span>
+                                                    <span className="notif-time">{formatTime(n.created_at)}</span>
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                )}
                             </div>
                         </div>
                     )}

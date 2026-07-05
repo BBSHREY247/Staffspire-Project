@@ -78,3 +78,9 @@ body {
         transform: translateY(0);
     }
 }
+
+.alert-warning {
+    background-color: #fef3c7;
+    border: 1px solid #fcd34d;
+    color: #92400e;
+}

@@ -82,7 +82,7 @@ function RegisterAdmin() {
         } catch (err) {
             const errMsg = err.response?.data?.message || "Registration Failed";
             setAlertMsg(errMsg);
-            setAlertType("error");ḍ
+            setAlertType("error");
         }
     };
 

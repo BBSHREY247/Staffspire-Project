@@ -1,17 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import logo from "../assets/Softspire_Logo.jpeg";
 
-
-function Login({switchPage}) {
-
+function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [alertMsg, setAlertMsg] = useState("");
     const [alertType, setAlertType] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+
+    // Load remembered email on mount
+    useEffect(() => {
+        localStorage.removeItem("rememberedEmail");
+        setEmail("");
+        setRememberMe(false);
+    }, []);
+
     const handleLogin = async (e) => {
         if (e) e.preventDefault();
         setAlertMsg("");
@@ -25,13 +34,14 @@ function Login({switchPage}) {
         }
 
         if (!cleanEmail || !password) {
-            setAlertMsg("Email and Password Are Required");
+            setAlertMsg("Email and Password are required");
             setAlertType("error");
             return;
         }
 
-        try {
+        setIsLoading(true);
 
+        try {
             const response = await axios.post(
                 "http://localhost:5000/api/auth/login",
                 {
@@ -40,15 +50,18 @@ function Login({switchPage}) {
                 }
             );
 
-            localStorage.setItem(
-                "token",
-                response.data.token
-            );
+            localStorage.setItem("token", response.data.token);
+            localStorage.setItem("user", JSON.stringify(response.data.user));
 
-            localStorage.setItem(
-                "user",
-                JSON.stringify(response.data.user)
-            );
+            // Handle remember me
+            if (rememberMe) {
+                localStorage.setItem("rememberedEmail", cleanEmail);
+            } else {
+                localStorage.removeItem("rememberedEmail");
+            }
+
+            // Automatically uncheck the remember me checkbox after successful login
+            setRememberMe(false);
 
             if (response.data.user.must_change_password) {
                 localStorage.setItem("forcePasswordChange", "true");
@@ -60,114 +73,140 @@ function Login({switchPage}) {
                 localStorage.removeItem("forcePasswordChange");
             }
 
-            setAlertMsg(
-                `Welcome ${response.data.user.name} (${response.data.user.role})`
-            );
+            setAlertMsg(`Welcome ${response.data.user.name} (${response.data.user.role})`);
             setAlertType("success");
-            const role = response.data.user.role;
-        
-            if(role === "Admin"){
-                navigate("/admin/dashboard");
-            }
-            if(role === "Manager"){
-                navigate("/manager/dashboard");
-            }
 
-            if(role === "Employee"){
+            const role = response.data.user.role;
+            if (role === "Admin") {
+                navigate("/admin/dashboard");
+            } else if (role === "Manager") {
+                navigate("/manager/dashboard");
+            } else if (role === "Employee") {
                 navigate("/employee/dashboard");
             }
-
         } catch (error) {
-
-            setAlertMsg(
-                error.response?.data?.message || "Login Failed"
-            );
-
+            setAlertMsg(error.response?.data?.message || "Login Failed");
             setAlertType("error");
+        } finally {
+            setIsLoading(false);
         }
-        
     };
 
     return (
-        <div className="auth-container">
-            <div className="auth-card">
-                <form className="login" onSubmit={handleLogin} autoComplete="off">
-                    <h1>Login</h1>
-                    
-                    {alertMsg && (
-                        <div className={`alert-box alert-${alertType}`}>
-                            {alertMsg}
+        <div className="login-page">
+            <main className="login-main">
+                <section className="login-card">
+                    <div className="login-card-inner">
+                        {/* Logo */}
+                        <div className="login-logo-wrap">
+                            <img
+                                src={logo}
+                                alt="SoftSpire Solutions"
+                                className="login-logo"
+                            />
                         </div>
-                    )}
 
-                    <label htmlFor="email">
-                        Email or Employee ID
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="Enter Email or Employee ID"
-                        value={ email }
-                        onChange={(e) => setEmail(e.target.value)}
-                        autoComplete="off"
-                        required
-                    />
+                        {/* Heading */}
+                        <div className="login-heading">
+                            <h1>Welcome back</h1>
+                            <p>Log in to your StaffSpire enterprise portal to manage human capital.</p>
+                        </div>
 
-                    <label htmlFor="password">
-                        Enter Password
-                    </label>
-                    <div className="password-field">
+                        {/* Alert */}
+                        {alertMsg && (
+                            <div className={`login-alert login-alert-${alertType}`}>
+                                {alertMsg}
+                            </div>
+                        )}
 
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            id="password"
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            autoComplete="new-password"
-                            required
-                        />
+                        {/* Form */}
+                        <form className="login-form" onSubmit={handleLogin} autoComplete="off">
+                            <div className="login-field">
+                                <label htmlFor="email">Email or Employee ID</label>
+                                <input
+                                    id="email"
+                                    name="email"
+                                    type="text"
+                                    placeholder="Enter Email or Employee ID"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    autoComplete="off"
+                                    required
+                                />
+                            </div>
 
-                        <span
-                            className="eye-icon"
-                            onClick={() => setShowPassword(!showPassword)}
-                        >
-                            {showPassword ? <FaEyeSlash /> : <FaEye />}
-                        </span>
+                            <div className="login-field">
+                                <label htmlFor="password">Password</label>
+                                <div className="login-password-wrap">
+                                    <input
+                                        id="password"
+                                        name="password"
+                                        type={showPassword ? "text" : "password"}
+                                        placeholder="Enter Password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        autoComplete="new-password"
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        className="login-eye-btn"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        aria-label="Toggle password visibility"
+                                        tabIndex={-1}
+                                    >
+                                        {showPassword ? <FaRegEyeSlash size={20} /> : <FaRegEye size={20} />}
+                                    </button>
+                                </div>
+                            </div>
 
+                            <div className="login-options">
+                                <div className="login-remember">
+                                    <input
+                                        id="remember-me"
+                                        name="remember-me"
+                                        type="checkbox"
+                                        checked={rememberMe}
+                                        onChange={(e) => setRememberMe(e.target.checked)}
+                                    />
+                                    <label htmlFor="remember-me">Remember me</label>
+                                </div>
+                                <button
+                                    type="button"
+                                    className="login-forgot-link"
+                                    onClick={() => navigate("/forgot-password")}
+                                >
+                                    Forgot Password?
+                                </button>
+                            </div>
+
+                            <div className="login-submit-wrap">
+                                <button
+                                    type="submit"
+                                    className="login-submit-btn"
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? "Logging in..." : "Login"}
+                                </button>
+                            </div>
+                        </form>
+
+                        {/* Footer */}
+                        <div className="login-footer">
+                            <p>
+                                Need to setup a new deployment?{" "}
+                                <button
+                                    type="button"
+                                    className="login-register-link"
+                                    onClick={() => navigate("/register-admin")}
+                                >
+                                    Register Admin
+                                </button>
+                            </p>
+                        </div>
                     </div>
-
-                    <button type="submit">
-                        Login
-                    </button>
-                    <br />
-                    <br />
-                    <p className="forgot-text">
-                        forgot password? click the link below.
-                    </p>
-                    <p
-                        className="forgot-link"
-                        onClick={() =>
-                            navigate("/forgot-password")
-                        }
-                    >
-                        Forgot Password?
-                    </p>
-                    <br />
-                    <p className="forgot-text">
-                        Register Admin with Below Link
-                    </p>
-                    <p
-                        className="forgot-link"
-                        onClick={() =>
-                            navigate("/register-admin")
-                        }
-                        style={{ marginTop: "10px" }}
-                    >
-                        Register Admin
-                    </p>
-
-                </form>
-            </div>
+                </section>
+            </main>
         </div>
     );
 }

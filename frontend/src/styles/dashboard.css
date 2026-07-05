@@ -79,7 +79,7 @@
 
 .header{
     background:white;
-    height: 70px;
+    height: 80px;
     padding: 0 30px;
     border-bottom: 1px solid #e2e8f0;
     display: flex;
@@ -474,11 +474,10 @@
 }
 
 .logo-brand img {
-    width: 129.5%;
-    height: 70px;
+    height: 74px;
     display: flex;
     position: relative;
-    left: -15%;
+    left: -10%;
 }
 
 .header-title-divider {
@@ -492,6 +491,7 @@
     font-size: 15px;
     font-weight: 600;
     color: #4b5563;
+    left: -5%;
 }
 
 /* Center Search Container */
@@ -743,6 +743,22 @@
 
 .notif-item:hover {
     background: #f8fafc;
+}
+
+.notif-item.unread {
+    background: #f0f4ff;
+}
+
+.notif-item.unread:hover {
+    background: #e5edff;
+}
+
+.notif-empty {
+    padding: 24px;
+    text-align: center;
+    font-size: 13.5px;
+    color: #64748b;
+    font-weight: 500;
 }
 
 .notif-icon-wrapper {
