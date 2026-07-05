@@ -775,25 +775,6 @@
     text-align: left;
 }
 
-.notif-item.notif-unread {
-    background: rgba(79, 125, 240, 0.03);
-}
-
-.notif-item.notif-unread:hover {
-    background: rgba(79, 125, 240, 0.06);
-}
-
-.notif-unread-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--primary);
-    display: inline-block;
-    margin-left: 8px;
-    align-self: center;
-    flex-shrink: 0;
-}
-
 @keyframes dropdownFade {
     from {
         opacity: 0;

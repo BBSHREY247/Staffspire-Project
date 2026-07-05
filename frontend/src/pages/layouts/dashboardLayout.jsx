@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
+import Footer from "./Footer";
 
 function DashboardLayout({ children }) {
     const navigate = useNavigate();
@@ -15,14 +16,17 @@ function DashboardLayout({ children }) {
     }, [location.pathname, navigate]);
 
     return (
-        <div className="text-on-surface font-body-md bg-[#F8FAFC] antialiased min-h-screen flex w-full">
-            <Sidebar />
-            <main className="flex-1 md:ml-64 w-full flex flex-col min-h-screen">
-                <Header />
-                <div className="mt-16 p-6 md:p-10 flex-1 w-full max-w-[1440px] mx-auto">
-                    {children}
+        <div className="layout-container">
+            <Header />
+            <div className="dashboard-container">
+                <Sidebar />
+                <div className="main-content">
+                    <main className="content">
+                        {children}
+                    </main>
+                    <Footer />
                 </div>
-            </main>
+            </div>
         </div>
     );
 }

@@ -13,25 +13,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const db = require("./config/db");
-
-// Initialize notifications table
-db.query(`
-    CREATE TABLE IF NOT EXISTS notifications (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        user_id INT NOT NULL,
-        title VARCHAR(255) NOT NULL,
-        message TEXT NOT NULL,
-        is_read TINYINT(1) DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-`, (err) => {
-    if (err) {
-        console.error("Failed to initialize notifications table:", err);
-    } else {
-        console.log("Notifications table verified/created.");
-    }
-});
+require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
 app.use(
@@ -82,9 +64,6 @@ app.use("/api/tasks", taskRoutes);
 
 const reportRoutes = require("./routes/reportRoutes");
 app.use("/api/reports", reportRoutes);
-
-const notificationRoutes = require("./routes/notificationRoutes");
-app.use("/api/notifications", notificationRoutes);
 
 
 const PORT = process.env.PORT || 5000;

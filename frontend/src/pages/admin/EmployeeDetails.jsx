@@ -153,369 +153,338 @@ function EmployeeDetails() {
 
     return (
         <DashboardLayout>
-            <div className="w-full flex flex-col gap-6 text-slate-800">
-                {/* Header breadcrumb & actions */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-6">
-                    <div className="flex items-center gap-2 text-sm text-slate-500 font-medium">
-                        <span className="cursor-pointer hover:text-blue-600 text-left" onClick={() => navigate("/admin/employees")}>Directory</span>
-                        <span className="material-symbols-outlined text-xs">chevron_right</span>
-                        <span className="text-blue-600 font-semibold">Profile Details</span>
+            <div className="employee-header" style={{ marginBottom: "20px" }}>
+                <h1 className="page-title" style={{ margin: 0 }}>Employee Profile</h1>
+                <button 
+                    className="action-btn-custom action-btn-secondary"
+                    onClick={() => navigate("/admin/employees")}
+                >
+                    Back to List
+                </button>
+            </div>
+
+            <div className="profile-details-grid">
+                {/* Left Card: Summary */}
+                <div className="details-card">
+                    <div className="details-card-avatar">
+                        {getInitials(employee.first_name, employee.last_name)}
                     </div>
-                    
-                    <div className="flex gap-2">
-                        {isAdmin && !editing && (
-                            <button 
-                                onClick={handleDelete}
-                                className="px-4 py-2 border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
-                            >
-                                <span className="material-symbols-outlined text-base">delete</span>
-                                Delete
-                            </button>
-                        )}
-                        {!editing ? (
-                            <button 
-                                onClick={() => setEditing(true)}
-                                className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
-                            >
-                                <span className="material-symbols-outlined text-base">edit</span>
-                                Edit Profile
-                            </button>
-                        ) : (
-                            <div className="flex gap-2">
-                                <button 
-                                    onClick={() => setEditing(false)}
-                                    className="px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
-                                >
-                                    <span className="material-symbols-outlined text-base">close</span>
-                                    Cancel
-                                </button>
-                                <button 
-                                    onClick={handleUpdate}
-                                    className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 shadow-sm"
-                                >
-                                    <span className="material-symbols-outlined text-base">check</span>
-                                    Save Changes
-                                </button>
-                            </div>
-                        )}
+                    <h2 className="details-card-name">
+                        {employee.first_name} {employee.last_name}
+                    </h2>
+                    <span className="details-card-role">{employee.designation}</span>
+
+                    <div className="details-card-divider"></div>
+
+                    <div className="details-card-info-item">
+                        <span className="details-card-info-label">Employee ID</span>
+                        <span className="details-card-info-value">{employee.employee_id || `#${employee.id}`}</span>
+                    </div>
+
+                    <div className="details-card-info-item">
+                        <span className="details-card-info-label">Email Address</span>
+                        <span className="details-card-info-value" style={{ wordBreak: "break-all" }}>{employee.email}</span>
+                    </div>
+
+                    <div className="details-card-info-item">
+                        <span className="details-card-info-label">Department</span>
+                        <span className="details-card-info-value">{employee.department || "N/A"}</span>
                     </div>
                 </div>
 
-                {/* Profile Grid Layout */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Left Column: Hero quick info */}
-                    <div className="flex flex-col gap-6">
-                        <div className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col items-center text-center shadow-sm">
-                            <div className="relative mb-4">
-                                <div className="w-28 h-28 rounded-full flex items-center justify-center font-black text-3xl bg-blue-50 text-blue-600 border-4 border-blue-100 uppercase select-none">
-                                    {getInitials(employee.first_name, employee.last_name)}
-                                </div>
-                                <span className="absolute bottom-1 right-1 w-5 h-5 bg-emerald-500 border-4 border-white rounded-full"></span>
-                            </div>
-                            <h2 className="text-lg font-bold text-slate-800">
-                                {employee.first_name} {employee.last_name}
-                            </h2>
-                            <p className="text-xs text-blue-600 font-semibold mt-1">
-                                {employee.designation || "Staff Member"} • {employee.department || "N/A"}
-                            </p>
+                {/* Right Card: Full Info / Edit Fields */}
+                <div className="info-card">
+                    <h3 className="info-card-title">
+                        {editing ? "Modify Employee Information" : "General Information"}
+                    </h3>
 
-                            <div className="w-full space-y-3 mt-6 border-t border-slate-100 pt-6">
-                                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl text-left">
-                                    <span className="material-symbols-outlined text-blue-600 text-lg">mail</span>
-                                    <div>
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Work Email</p>
-                                        <p className="text-xs font-semibold text-slate-700 break-all">{employee.email}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl text-left">
-                                    <span className="material-symbols-outlined text-blue-600 text-lg">call</span>
-                                    <div>
-                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Phone Number</p>
-                                        <p className="text-xs font-semibold text-slate-700">{employee.mobile || "N/A"}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    {editing ? (
+                        <form className="form-group" style={{ margin: 0 }} onSubmit={(e) => e.preventDefault()}>
+                            <label htmlFor="first_name">First Name</label>
+                            <input
+                                type="text"
+                                id="first_name"
+                                value={employee.first_name || ""}
+                                onChange={(e) => setEmployee({ ...employee, first_name: e.target.value })}
+                                disabled={isManager}
+                                required
+                            />
+                            <br />
 
-                        {/* Expertise / Skills block */}
-                        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-                            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 text-left">Expertise</h3>
-                            <div className="flex flex-wrap gap-1.5">
-                                <span className="px-3 py-1 bg-blue-50 text-blue-600 border border-blue-100 rounded-full text-[10px] font-semibold">HRIS User</span>
-                                <span className="px-3 py-1 bg-slate-100 text-slate-600 border border-slate-200 rounded-full text-[10px] font-semibold">{employee.designation || "Staff"}</span>
-                            </div>
-                        </div>
-                    </div>
+                            <label htmlFor="last_name">Last Name</label>
+                            <input
+                                type="text"
+                                id="last_name"
+                                value={employee.last_name || ""}
+                                onChange={(e) => setEmployee({ ...employee, last_name: e.target.value })}
+                                disabled={isManager}
+                                required
+                            />
+                            <br />
 
-                    {/* Right Column: Detailed info tabs */}
-                    <div className="lg:col-span-2 flex flex-col gap-6">
-                        {/* Display mode layout */}
-                        {!editing ? (
-                            <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm text-left flex flex-col gap-6">
-                                <div>
-                                    <h3 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-3">General Information</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6 mt-4">
-                                        <div>
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-left">Employee ID</p>
-                                            <p className="text-xs font-semibold text-slate-700 mt-1 text-left">{employee.employee_id || "#" + employee.id}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-left">Department</p>
-                                            <p className="text-xs font-semibold text-slate-700 mt-1 text-left">{employee.department || "N/A"}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-left">System Role/Position</p>
-                                            <p className="text-xs font-semibold text-slate-700 mt-1 text-left">{employee.role || "Employee"}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-left">Designation</p>
-                                            <p className="text-xs font-semibold text-slate-700 mt-1 text-left">{employee.designation}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-left">Mobile Number</p>
-                                            <p className="text-xs font-semibold text-slate-700 mt-1 text-left">{employee.mobile || "N/A"}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-left">Gender</p>
-                                            <p className="text-xs font-semibold text-slate-700 mt-1 text-left">{employee.gender || "N/A"}</p>
-                                        </div>
-                                        {isAdmin && (
-                                            <div>
-                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-left">Salary</p>
-                                                <p className="text-xs font-semibold text-slate-700 mt-1 text-left">₹{employee.salary || "0"}</p>
-                                            </div>
-                                        )}
-                                        <div>
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-left">Employment Type</p>
-                                            <p className="text-xs font-semibold text-slate-700 mt-1 text-left">{employee.employment_type || "Full-Time"}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-left">Status</p>
-                                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold mt-1 ${
-                                                employee.status === "Active" ? "bg-emerald-50 text-emerald-700 border border-emerald-100" : "bg-slate-100 text-slate-600 border border-slate-200"
-                                            }`}>
-                                                {employee.status || "Active"}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
+                            <label htmlFor="email">Email Address</label>
+                            <input
+                                type="email"
+                                id="email"
+                                value={employee.email || ""}
+                                onChange={(e) => setEmployee({ ...employee, email: e.target.value })}
+                                disabled={isManager}
+                                required
+                            />
+                            <br />
 
-                                {/* Reversibly Encrypted Password Reveal */}
-                                {isAdmin && (
-                                    <div className="border-t border-slate-100 pt-5 flex items-center justify-between">
-                                        <div className="text-left">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider text-left">Password Secret</p>
-                                            <div className="mt-1 text-left">
-                                                {revealedPassword ? (
-                                                    <span className="font-mono text-xs bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-md font-bold select-all">
-                                                        {revealedPassword}
-                                                    </span>
-                                                ) : (
-                                                    <span className="text-slate-400 font-mono tracking-widest text-left">••••••••</span>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <button
-                                            onClick={handleRevealPasswordClick}
-                                            className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-lg text-xs font-semibold transition-colors"
-                                        >
-                                            {revealedPassword ? "Hide Password" : "Reveal Password"}
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        ) : (
-                            /* Editing fields layout */
-                            <form 
-                                onSubmit={(e) => { e.preventDefault(); handleUpdate(); }}
-                                className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm text-left flex flex-col gap-5"
+                            <label htmlFor="department">Department</label>
+                            <select
+                                id="department"
+                                value={employee.department || ""}
+                                onChange={(e) => setEmployee({ ...employee, department: e.target.value })}
+                                disabled={isManager}
+                                required
                             >
-                                <h3 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-3">
-                                    Modify Information
-                                </h3>
+                                <option value="">Select Department</option>
+                                {departments.map((dept) => (
+                                    <option key={dept.id} value={dept.department_name}>
+                                        {dept.department_name}
+                                    </option>
+                                ))}
+                            </select>
+                            <br />
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="flex flex-col gap-1">
-                                        <label className="text-[10px] font-bold text-slate-505 uppercase tracking-wider">First Name</label>
-                                        <input 
-                                            type="text" 
-                                            value={employee.first_name || ""}
-                                            onChange={(e) => setEmployee({ ...employee, first_name: e.target.value })}
-                                            disabled={isManager}
-                                            required
-                                            className="p-2 border border-slate-200 rounded-lg text-xs font-medium focus:border-blue-600 outline-none w-full bg-slate-50/50 disabled:bg-slate-100"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                        <label className="text-[10px] font-bold text-slate-505 uppercase tracking-wider">Last Name</label>
-                                        <input 
-                                            type="text" 
-                                            value={employee.last_name || ""}
-                                            onChange={(e) => setEmployee({ ...employee, last_name: e.target.value })}
-                                            disabled={isManager}
-                                            required
-                                            className="p-2 border border-slate-200 rounded-lg text-xs font-medium focus:border-blue-600 outline-none w-full bg-slate-50/50 disabled:bg-slate-100"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                        <label className="text-[10px] font-bold text-slate-505 uppercase tracking-wider">Email Address</label>
-                                        <input 
-                                            type="email" 
-                                            value={employee.email || ""}
-                                            onChange={(e) => setEmployee({ ...employee, email: e.target.value })}
-                                            disabled={isManager}
-                                            required
-                                            className="p-2 border border-slate-200 rounded-lg text-xs font-medium focus:border-blue-600 outline-none w-full bg-slate-50/50 disabled:bg-slate-100"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                        <label className="text-[10px] font-bold text-slate-505 uppercase tracking-wider">Department</label>
-                                        <select
-                                            value={employee.department || ""}
-                                            onChange={(e) => setEmployee({ ...employee, department: e.target.value })}
-                                            disabled={isManager}
-                                            required
-                                            className="p-2 border border-slate-200 rounded-lg text-xs font-medium focus:border-blue-600 outline-none w-full bg-slate-50/50"
+                            <label htmlFor="designation">Designation</label>
+                            <input
+                                type="text"
+                                id="designation"
+                                value={employee.designation || ""}
+                                onChange={(e) => setEmployee({ ...employee, designation: e.target.value })}
+                                required
+                            />
+                            <br />
+
+                            <label htmlFor="mobile">Mobile Number</label>
+                            <input
+                                type="text"
+                                id="mobile"
+                                value={employee.mobile || ""}
+                                onChange={(e) => setEmployee({ ...employee, mobile: e.target.value })}
+                                placeholder="Enter mobile number"
+                                required
+                            />
+                            <br />
+
+                            <label htmlFor="status">Status</label>
+                            <select
+                                id="status"
+                                value={employee.status || "Active"}
+                                onChange={(e) => setEmployee({ ...employee, status: e.target.value })}
+                                required
+                            >
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                            <br />
+
+                            {isAdmin && (
+                                <>
+                                    <label htmlFor="role">Role</label>
+                                    <select
+                                        id="role"
+                                        value={employee.role || "Employee"}
+                                        onChange={(e) => setEmployee({ ...employee, role: e.target.value })}
+                                        required
+                                    >
+                                        <option value="Employee">Employee</option>
+                                        <option value="Manager">Manager</option>
+                                    </select>
+                                    <br />
+
+                                    <label htmlFor="salary">Salary</label>
+                                    <input
+                                        type="number"
+                                        id="salary"
+                                        value={employee.salary || ""}
+                                        onChange={(e) => setEmployee({ ...employee, salary: e.target.value })}
+                                    />
+                                    <br />
+                                </>
+                            )}
+
+                            <div className="actions-container">
+                                <button
+                                    type="button"
+                                    className="action-btn-custom action-btn-secondary"
+                                    onClick={() => setEditing(false)}
+                                >
+                                    <FaTimes /> Cancel
+                                </button>
+                                <button
+                                    type="button"
+                                    className="action-btn-custom action-btn-primary"
+                                    onClick={handleUpdate}
+                                >
+                                    <FaCheck /> Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    ) : (
+                        <div>
+                            <div className="details-info-row">
+                                <span className="details-info-label"><FaIdBadge style={{ marginRight: "8px", verticalAlign: "middle" }} /> ID Reference</span>
+                                <span className="details-info-value">#{employee.id}</span>
+                            </div>
+                            <div className="details-info-row">
+                                <span className="details-info-label"><FaUser style={{ marginRight: "8px", verticalAlign: "middle" }} /> First Name</span>
+                                <span className="details-info-value">{employee.first_name}</span>
+                            </div>
+                            <div className="details-info-row">
+                                <span className="details-info-label"><FaUser style={{ marginRight: "8px", verticalAlign: "middle" }} /> Last Name</span>
+                                <span className="details-info-value">{employee.last_name}</span>
+                            </div>
+                            <div className="details-info-row">
+                                <span className="details-info-label"><FaEnvelope style={{ marginRight: "8px", verticalAlign: "middle" }} /> Email Address</span>
+                                <span className="details-info-value">{employee.email}</span>
+                            </div>
+                            <div className="details-info-row">
+                                <span className="details-info-label"><FaBuilding style={{ marginRight: "8px", verticalAlign: "middle" }} /> Department</span>
+                                <span className="details-info-value">{employee.department || "N/A"}</span>
+                            </div>
+                            <div className="details-info-row">
+                                <span className="details-info-label"><FaIdBadge style={{ marginRight: "8px", verticalAlign: "middle" }} /> Designation</span>
+                                <span className="details-info-value">{employee.designation}</span>
+                            </div>
+                            <div className="details-info-row">
+                                <span className="details-info-label"><FaUser style={{ marginRight: "8px", verticalAlign: "middle" }} /> Position / Role</span>
+                                <span className="details-info-value">{employee.role || "Employee"}</span>
+                            </div>
+                            
+                            {/* Reversibly Encrypted Password Reveal Row */}
+                            {isAdmin && (
+                                <div className="details-info-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                    <span className="details-info-label">
+                                        <FaKey style={{ marginRight: "8px", verticalAlign: "middle" }} /> Password
+                                    </span>
+                                    <span className="details-info-value" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                        {revealedPassword ? (
+                                            <span style={{ fontWeight: "700", fontFamily: "monospace", fontSize: "16px", color: "#4f46e5", background: "#eeebff", padding: "4px 8px", borderRadius: "6px" }}>
+                                                {revealedPassword}
+                                            </span>
+                                        ) : (
+                                            <span style={{ color: "#94a3b8", letterSpacing: "3px", fontWeight: "700" }}>••••••••</span>
+                                        )}
+                                        <button
+                                            type="button"
+                                            onClick={handleRevealPasswordClick}
+                                            style={{
+                                                border: "none",
+                                                background: "#e0e7ff",
+                                                color: "#4f46e5",
+                                                padding: "6px 12px",
+                                                borderRadius: "6px",
+                                                fontSize: "12.5px",
+                                                fontWeight: "600",
+                                                cursor: "pointer",
+                                                transition: "background 0.2s"
+                                            }}
+                                            onMouseEnter={(e) => e.currentTarget.style.background = "#c7d2fe"}
+                                            onMouseLeave={(e) => e.currentTarget.style.background = "#e0e7ff"}
                                         >
-                                            <option value="">Select Department</option>
-                                            {departments.map((dept) => (
-                                                <option key={dept.id} value={dept.department_name}>
-                                                    {dept.department_name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                        <label className="text-[10px] font-bold text-slate-505 uppercase tracking-wider">Designation</label>
-                                        <input 
-                                            type="text" 
-                                            value={employee.designation || ""}
-                                            onChange={(e) => setEmployee({ ...employee, designation: e.target.value })}
-                                            required
-                                            className="p-2 border border-slate-200 rounded-lg text-xs font-medium focus:border-blue-600 outline-none w-full bg-slate-50/50"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                        <label className="text-[10px] font-bold text-slate-505 uppercase tracking-wider">Mobile Number</label>
-                                        <input 
-                                            type="text" 
-                                            value={employee.mobile || ""}
-                                            onChange={(e) => setEmployee({ ...employee, mobile: e.target.value })}
-                                            required
-                                            className="p-2 border border-slate-200 rounded-lg text-xs font-medium focus:border-blue-600 outline-none w-full bg-slate-50/50"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                        <label className="text-[10px] font-bold text-slate-505 uppercase tracking-wider">Gender</label>
-                                        <select
-                                            value={employee.gender || ""}
-                                            onChange={(e) => setEmployee({ ...employee, gender: e.target.value })}
-                                            className="p-2 border border-slate-200 rounded-lg text-xs font-medium focus:border-blue-600 outline-none w-full bg-slate-50/50"
-                                        >
-                                            <option value="">Select Gender</option>
-                                            <option value="Male">Male</option>
-                                            <option value="Female">Female</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                        <label className="text-[10px] font-bold text-slate-505 uppercase tracking-wider">Employment Type</label>
-                                        <select
-                                            value={employee.employment_type || "Full-Time"}
-                                            onChange={(e) => setEmployee({ ...employee, employment_type: e.target.value })}
-                                            className="p-2 border border-slate-200 rounded-lg text-xs font-medium focus:border-blue-600 outline-none w-full bg-slate-50/50"
-                                        >
-                                            <option value="Full-Time">Full-Time</option>
-                                            <option value="Part-Time">Part-Time</option>
-                                            <option value="Contract">Contract</option>
-                                            <option value="Internship">Internship</option>
-                                        </select>
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                        <label className="text-[10px] font-bold text-slate-505 uppercase tracking-wider">Status</label>
-                                        <select
-                                            value={employee.status || "Active"}
-                                            onChange={(e) => setEmployee({ ...employee, status: e.target.value })}
-                                            required
-                                            className="p-2 border border-slate-200 rounded-lg text-xs font-medium focus:border-blue-600 outline-none w-full bg-slate-50/50"
-                                        >
-                                            <option value="Active">Active</option>
-                                            <option value="Inactive">Inactive</option>
-                                        </select>
-                                    </div>
-                                    {isAdmin && (
-                                        <>
-                                            <div className="flex flex-col gap-1">
-                                                <label className="text-[10px] font-bold text-slate-505 uppercase tracking-wider">System Role</label>
-                                                <select
-                                                    value={employee.role || "Employee"}
-                                                    onChange={(e) => setEmployee({ ...employee, role: e.target.value })}
-                                                    required
-                                                    className="p-2 border border-slate-200 rounded-lg text-xs font-medium focus:border-blue-600 outline-none w-full bg-slate-50/50"
-                                                >
-                                                    <option value="Employee">Employee</option>
-                                                    <option value="Manager">Manager</option>
-                                                </select>
-                                            </div>
-                                            <div className="flex flex-col gap-1">
-                                                <label className="text-[10px] font-bold text-slate-505 uppercase tracking-wider">Salary</label>
-                                                <input 
-                                                    type="number" 
-                                                    value={employee.salary || ""}
-                                                    onChange={(e) => setEmployee({ ...employee, salary: e.target.value })}
-                                                    className="p-2 border border-slate-200 rounded-lg text-xs font-medium focus:border-blue-600 outline-none w-full bg-slate-50/50"
-                                                />
-                                            </div>
-                                        </>
-                                    )}
+                                            {revealedPassword ? "Hide" : "Show Password"}
+                                        </button>
+                                    </span>
                                 </div>
-                            </form>
-                        )}
-                    </div>
+                            )}
+
+                            <div className="actions-container" style={{ marginTop: "24px" }}>
+                                {isAdmin && (
+                                    <button
+                                        className="action-btn-custom action-btn-danger"
+                                        onClick={handleDelete}
+                                    >
+                                        <FaTrash /> Delete
+                                    </button>
+                                )}
+                                <button
+                                    className="action-btn-custom action-btn-primary"
+                                    onClick={() => setEditing(true)}
+                                >
+                                    <FaEdit /> Edit Profile
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
             {/* Admin Password Prompt Modal */}
             {showPasswordPrompt && (
-                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[1000]">
-                    <div className="bg-white rounded-xl shadow-2xl border border-slate-200 max-w-sm w-full p-6 text-left animate-dropdownFade">
-                        <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-indigo-600">lock</span>
-                            Verify Admin Identity
+                <div style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: "rgba(15, 23, 42, 0.4)",
+                    backdropFilter: "blur(4px)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 1000
+                }}>
+                    <div style={{
+                        width: "100%",
+                        maxWidth: "400px",
+                        padding: "30px",
+                        borderRadius: "12px",
+                        background: "white",
+                        boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)",
+                        border: "1px solid #e2e8f0"
+                    }}>
+                        <h3 style={{ margin: "0 0 12px 0", fontWeight: "700", display: "flex", alignItems: "center", gap: "8px", color: "#1e293b" }}>
+                            <FaLock style={{ color: "#4f46e5" }} /> Verify Admin Identity
                         </h3>
-                        <p className="text-xs text-slate-500 mt-2 leading-relaxed">
-                            To reveal the employee's password, please enter your administrator password below.
+                        <p style={{ margin: "0 0 20px 0", fontSize: "13.5px", color: "#64748b", lineHeight: "1.5" }}>
+                            To show the employee's password, please enter your administrator password below.
                         </p>
 
-                        <div className="my-4">
-                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Admin Password</label>
+                        <div className="form-group-custom" style={{ marginBottom: "20px" }}>
+                            <label className="form-label-custom" style={{ fontSize: "13px", fontWeight: "600", color: "#475569" }}>Admin Password</label>
                             <input
                                 type="password"
                                 placeholder="Enter your admin password"
                                 value={adminPasswordInput}
                                 onChange={(e) => setAdminPasswordInput(e.target.value)}
                                 autoComplete="new-password"
-                                onKeyDown={(e) => e.key === "Enter" && handleVerifyAdminPassword()}
-                                className="p-2 border border-slate-200 rounded-lg text-xs font-medium focus:border-blue-600 outline-none w-full bg-slate-50/50 mt-1.5"
+                                style={{
+                                    padding: "10px",
+                                    width: "100%",
+                                    borderRadius: "6px",
+                                    border: "1px solid #cbd5e1",
+                                    marginTop: "6px",
+                                    fontSize: "14px"
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") handleVerifyAdminPassword();
+                                }}
                                 autoFocus
                             />
                         </div>
 
-                        <div className="flex justify-end gap-2 mt-2">
+                        <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
                             <button
                                 type="button"
+                                className="action-btn-custom action-btn-secondary"
                                 onClick={() => {
                                     setShowPasswordPrompt(false);
                                     setAdminPasswordInput("");
                                 }}
-                                className="px-3.5 py-1.5 border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-lg text-xs font-semibold transition-colors"
+                                style={{ padding: "8px 16px", fontSize: "13px" }}
                             >
                                 Cancel
                             </button>
                             <button
                                 type="button"
+                                className="action-btn-custom action-btn-primary"
                                 onClick={handleVerifyAdminPassword}
-                                className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm"
+                                style={{ padding: "8px 16px", fontSize: "13px" }}
                             >
                                 Verify & Show
                             </button>
