@@ -16,6 +16,10 @@ function EmployeeDetails() {
     const [revealedPassword, setRevealedPassword] = useState("");
     const navigate = useNavigate();
 
+    const loggedInUser = JSON.parse(localStorage.getItem("user")) || {};
+    const isAdmin = loggedInUser.role === "Admin";
+    const isManager = loggedInUser.role === "Manager";
+
     const fetchEmployee = async () => {
         try {
             const token = localStorage.getItem("token");
@@ -200,8 +204,9 @@ function EmployeeDetails() {
                             <input
                                 type="text"
                                 id="first_name"
-                                value={employee.first_name}
+                                value={employee.first_name || ""}
                                 onChange={(e) => setEmployee({ ...employee, first_name: e.target.value })}
+                                disabled={isManager}
                                 required
                             />
                             <br />
@@ -210,8 +215,9 @@ function EmployeeDetails() {
                             <input
                                 type="text"
                                 id="last_name"
-                                value={employee.last_name}
+                                value={employee.last_name || ""}
                                 onChange={(e) => setEmployee({ ...employee, last_name: e.target.value })}
+                                disabled={isManager}
                                 required
                             />
                             <br />
@@ -220,8 +226,9 @@ function EmployeeDetails() {
                             <input
                                 type="email"
                                 id="email"
-                                value={employee.email}
+                                value={employee.email || ""}
                                 onChange={(e) => setEmployee({ ...employee, email: e.target.value })}
+                                disabled={isManager}
                                 required
                             />
                             <br />
@@ -229,8 +236,9 @@ function EmployeeDetails() {
                             <label htmlFor="department">Department</label>
                             <select
                                 id="department"
-                                value={employee.department}
+                                value={employee.department || ""}
                                 onChange={(e) => setEmployee({ ...employee, department: e.target.value })}
+                                disabled={isManager}
                                 required
                             >
                                 <option value="">Select Department</option>
@@ -246,11 +254,59 @@ function EmployeeDetails() {
                             <input
                                 type="text"
                                 id="designation"
-                                value={employee.designation}
+                                value={employee.designation || ""}
                                 onChange={(e) => setEmployee({ ...employee, designation: e.target.value })}
                                 required
                             />
                             <br />
+
+                            <label htmlFor="mobile">Mobile Number</label>
+                            <input
+                                type="text"
+                                id="mobile"
+                                value={employee.mobile || ""}
+                                onChange={(e) => setEmployee({ ...employee, mobile: e.target.value })}
+                                placeholder="Enter mobile number"
+                                required
+                            />
+                            <br />
+
+                            <label htmlFor="status">Status</label>
+                            <select
+                                id="status"
+                                value={employee.status || "Active"}
+                                onChange={(e) => setEmployee({ ...employee, status: e.target.value })}
+                                required
+                            >
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                            <br />
+
+                            {isAdmin && (
+                                <>
+                                    <label htmlFor="role">Role</label>
+                                    <select
+                                        id="role"
+                                        value={employee.role || "Employee"}
+                                        onChange={(e) => setEmployee({ ...employee, role: e.target.value })}
+                                        required
+                                    >
+                                        <option value="Employee">Employee</option>
+                                        <option value="Manager">Manager</option>
+                                    </select>
+                                    <br />
+
+                                    <label htmlFor="salary">Salary</label>
+                                    <input
+                                        type="number"
+                                        id="salary"
+                                        value={employee.salary || ""}
+                                        onChange={(e) => setEmployee({ ...employee, salary: e.target.value })}
+                                    />
+                                    <br />
+                                </>
+                            )}
 
                             <div className="actions-container">
                                 <button
@@ -297,47 +353,51 @@ function EmployeeDetails() {
                             </div>
                             
                             {/* Reversibly Encrypted Password Reveal Row */}
-                            <div className="details-info-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <span className="details-info-label">
-                                    <FaKey style={{ marginRight: "8px", verticalAlign: "middle" }} /> Password
-                                </span>
-                                <span className="details-info-value" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                                    {revealedPassword ? (
-                                        <span style={{ fontWeight: "700", fontFamily: "monospace", fontSize: "16px", color: "#4f46e5", background: "#eeebff", padding: "4px 8px", borderRadius: "6px" }}>
-                                            {revealedPassword}
-                                        </span>
-                                    ) : (
-                                        <span style={{ color: "#94a3b8", letterSpacing: "3px", fontWeight: "700" }}>••••••••</span>
-                                    )}
-                                    <button
-                                        type="button"
-                                        onClick={handleRevealPasswordClick}
-                                        style={{
-                                            border: "none",
-                                            background: "#e0e7ff",
-                                            color: "#4f46e5",
-                                            padding: "6px 12px",
-                                            borderRadius: "6px",
-                                            fontSize: "12.5px",
-                                            fontWeight: "600",
-                                            cursor: "pointer",
-                                            transition: "background 0.2s"
-                                        }}
-                                        onMouseEnter={(e) => e.currentTarget.style.background = "#c7d2fe"}
-                                        onMouseLeave={(e) => e.currentTarget.style.background = "#e0e7ff"}
-                                    >
-                                        {revealedPassword ? "Hide" : "Show Password"}
-                                    </button>
-                                </span>
-                            </div>
+                            {isAdmin && (
+                                <div className="details-info-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                    <span className="details-info-label">
+                                        <FaKey style={{ marginRight: "8px", verticalAlign: "middle" }} /> Password
+                                    </span>
+                                    <span className="details-info-value" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                        {revealedPassword ? (
+                                            <span style={{ fontWeight: "700", fontFamily: "monospace", fontSize: "16px", color: "#4f46e5", background: "#eeebff", padding: "4px 8px", borderRadius: "6px" }}>
+                                                {revealedPassword}
+                                            </span>
+                                        ) : (
+                                            <span style={{ color: "#94a3b8", letterSpacing: "3px", fontWeight: "700" }}>••••••••</span>
+                                        )}
+                                        <button
+                                            type="button"
+                                            onClick={handleRevealPasswordClick}
+                                            style={{
+                                                border: "none",
+                                                background: "#e0e7ff",
+                                                color: "#4f46e5",
+                                                padding: "6px 12px",
+                                                borderRadius: "6px",
+                                                fontSize: "12.5px",
+                                                fontWeight: "600",
+                                                cursor: "pointer",
+                                                transition: "background 0.2s"
+                                            }}
+                                            onMouseEnter={(e) => e.currentTarget.style.background = "#c7d2fe"}
+                                            onMouseLeave={(e) => e.currentTarget.style.background = "#e0e7ff"}
+                                        >
+                                            {revealedPassword ? "Hide" : "Show Password"}
+                                        </button>
+                                    </span>
+                                </div>
+                            )}
 
                             <div className="actions-container" style={{ marginTop: "24px" }}>
-                                <button
-                                    className="action-btn-custom action-btn-danger"
-                                    onClick={handleDelete}
-                                >
-                                    <FaTrash /> Delete
-                                </button>
+                                {isAdmin && (
+                                    <button
+                                        className="action-btn-custom action-btn-danger"
+                                        onClick={handleDelete}
+                                    >
+                                        <FaTrash /> Delete
+                                    </button>
+                                )}
                                 <button
                                     className="action-btn-custom action-btn-primary"
                                     onClick={() => setEditing(true)}

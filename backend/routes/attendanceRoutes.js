@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const protect = require("../middleware/authMiddleware");
-const { adminOnly } = require("../middleware/roleMiddleware");
+const { adminOnly, adminOrManager } = require("../middleware/roleMiddleware");
 const {
     checkIn,
     checkOut,
@@ -17,8 +17,8 @@ router.post("/check-out", protect, checkOut);
 router.get("/today", protect, getTodayStatus);
 router.get("/history", protect, getEmployeeHistory);
 
-// Admin routes (Requires Admin authorization)
-router.get("/", protect, adminOnly, getAllAttendance);
-router.get("/:employeeId", protect, adminOnly, getEmployeeAttendance);
+// Admin/Manager routes
+router.get("/", protect, adminOrManager, getAllAttendance);
+router.get("/:employeeId", protect, adminOrManager, getEmployeeAttendance);
 
 module.exports = router;

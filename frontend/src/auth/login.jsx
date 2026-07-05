@@ -50,22 +50,32 @@ function Login({switchPage}) {
                 JSON.stringify(response.data.user)
             );
 
+            if (response.data.user.must_change_password) {
+                localStorage.setItem("forcePasswordChange", "true");
+                setAlertMsg("First login detected: you must change your temporary password.");
+                setAlertType("warning");
+                setTimeout(() => navigate("/change-password"), 1500);
+                return;
+            } else {
+                localStorage.removeItem("forcePasswordChange");
+            }
+
             setAlertMsg(
                 `Welcome ${response.data.user.name} (${response.data.user.role})`
             );
             setAlertType("success");
             const role = response.data.user.role;
         
-        if(role === "Admin"){
-            navigate("/admin/dashboard");
-        }
-        if(role === "Manager"){
-            navigate("/manager/dashboard");
-        }
+            if(role === "Admin"){
+                navigate("/admin/dashboard");
+            }
+            if(role === "Manager"){
+                navigate("/manager/dashboard");
+            }
 
-        if(role === "Employee"){
-            navigate("/employee/dashboard");
-        }
+            if(role === "Employee"){
+                navigate("/employee/dashboard");
+            }
 
         } catch (error) {
 

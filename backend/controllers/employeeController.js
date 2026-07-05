@@ -2,31 +2,40 @@ const db = require("../config/db");
 const bcrypt = require("bcryptjs");
 const { encryptPassword, decryptPassword } = require("../utils/cryptoHelper");
 
-const getEmployees = (req, res) => {
+const getManagerDepartment = async (userId) => {
+    const [users] = await db.promise().query("SELECT email FROM users WHERE id = ?", [userId]);
+    if (!users.length) return null;
+    const [emps] = await db.promise().query("SELECT department FROM employees WHERE email = ?", [users[0].email]);
+    return emps.length ? emps[0].department : null;
+};
 
-    db.query(
-        "SELECT * FROM employees",
-        (err, results) => {
-
-            if (err) {
-
-                console.log(err);
-
-                return res.status(500).json({
-                    success: false,
-                    message: "Database Error"
-                });
-
+const getEmployees = async (req, res) => {
+    try {
+        const role = req.user.role;
+        let query = "SELECT * FROM employees";
+        const params = [];
+        if (role === "Manager") {
+            const dept = await getManagerDepartment(req.user.id);
+            if (dept) {
+                query = "SELECT * FROM employees WHERE department = ?";
+                params.push(dept);
+            } else {
+                return res.status(200).json({ success: true, employees: [] });
             }
-
-            res.status(200).json({
-                success: true,
-                employees: results
-            });
-
         }
-    );
 
+        const [results] = await db.promise().query(query, params);
+        res.status(200).json({
+            success: true,
+            employees: results
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: "Database Error"
+        });
+    }
 };
 
 
@@ -77,7 +86,8 @@ const createEmployee = async (req, res) => {
             last_name,
             email,
             department,
-            designation
+            designation,
+            role
         } = req.body;
 
         if (!first_name || !last_name || !email || !department || !designation) {
@@ -86,7 +96,6 @@ const createEmployee = async (req, res) => {
                 message: "All fields are required"
             });
         }
-
 
         const [existingUser] = await db.promise().query(
             "SELECT id FROM users WHERE email = ?",
@@ -107,16 +116,17 @@ const createEmployee = async (req, res) => {
         const employeeId = await generateUniqueEmployeeId();
         const tempPassword = generateTempPassword();
         const hashedPassword = await bcrypt.hash(tempPassword, 10);
+        const roleId = role === "Manager" ? 2 : 3;
 
         const insertEmpSql = `
             INSERT INTO employees (first_name, last_name, email, department, designation, employee_id, password)
             VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
         const insertUserSql = `
-            INSERT INTO users (name, email, password, role_id, login_id)
-            VALUES (?, ?, ?, 3, ?)
+            INSERT INTO users (name, email, password, role_id, login_id, must_change_password)
+            VALUES (?, ?, ?, ?, ?, 1)
         `;
-        await db.promise().query(insertUserSql, [`${first_name} ${last_name}`, email, hashedPassword, employeeId]);
+        await db.promise().query(insertUserSql, [`${first_name} ${last_name}`, email, hashedPassword, roleId, employeeId]);
         const encryptedPassword = encryptPassword(tempPassword);
         await db.promise().query(insertEmpSql, [first_name, last_name, email, department, designation, employeeId, encryptedPassword]);
 
@@ -136,87 +146,153 @@ const createEmployee = async (req, res) => {
 };
 
 const getEmployeeById = async (req, res) => {
-
     try {
-
         const id = req.params.id;
-
-        const [rows] =
-        await db.promise().query(
-            "SELECT * FROM employees WHERE id = ?",
+        const [rows] = await db.promise().query(
+            `SELECT e.*, u.role_id, r.role_name AS role 
+             FROM employees e 
+             LEFT JOIN users u ON e.employee_id = u.login_id OR e.email = u.email 
+             LEFT JOIN roles r ON u.role_id = r.id 
+             WHERE e.id = ?`,
             [id]
         );
 
+        if (rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Employee not found"
+            });
+        }
+
+        const employee = rows[0];
+
+        if (req.user.role === "Manager") {
+            const dept = await getManagerDepartment(req.user.id);
+            if (employee.department !== dept) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Forbidden: Employee is not in your department."
+                });
+            }
+        }
+
         res.status(200).json({
             success: true,
-            employee: rows[0]
+            employee
         });
-
-    }
-    catch(error){
-
+    } catch (error) {
         console.log(error);
-
         res.status(500).json({
-            success:false,
-            message:"Server Error"
+            success: false,
+            message: "Server Error"
         });
-
     }
-
 };
 
 const updateEmployee = async (req, res) => {
-
     try {
-
         const id = req.params.id;
+        const [empRows] = await db.promise().query("SELECT * FROM employees WHERE id = ?", [id]);
+        if (empRows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Employee not found"
+            });
+        }
+        const employee = empRows[0];
+        const role = req.user.role;
 
-        const {
-            first_name,
-            last_name,
-            email,
-            department,
-            designation
-        } = req.body;
+        if (role === "Manager") {
+            const dept = await getManagerDepartment(req.user.id);
+            if (employee.department !== dept) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Forbidden: Employee is not in your department."
+                });
+            }
 
-        await db.promise().query(
+            // Manager can only edit mobile, designation, status
+            const { mobile, designation, status } = req.body;
+            await db.promise().query(
+                `UPDATE employees SET mobile = ?, designation = ?, status = ? WHERE id = ?`,
+                [
+                    mobile !== undefined ? mobile : employee.mobile,
+                    designation !== undefined ? designation : employee.designation,
+                    status !== undefined ? status : employee.status,
+                    id
+                ]
+            );
 
-            `UPDATE employees
-             SET
-                first_name=?,
-                last_name=?,
-                email=?,
-                department=?,
-                designation=?
-             WHERE id=?`,
-
-            [
+            if (status !== undefined) {
+                await db.promise().query(
+                    `UPDATE users SET status = ? WHERE email = ?`,
+                    [status, employee.email]
+                );
+            }
+        } else {
+            // Admin can edit everything
+            const {
                 first_name,
                 last_name,
                 email,
                 department,
                 designation,
-                id
-            ]
-        );
+                mobile,
+                gender,
+                salary,
+                employment_type,
+                status,
+                role: userRole
+            } = req.body;
+
+            await db.promise().query(
+                `UPDATE employees
+                 SET first_name = ?, last_name = ?, email = ?, department = ?, designation = ?,
+                     mobile = ?, gender = ?, salary = ?, employment_type = ?, status = ?
+                 WHERE id = ?`,
+                [
+                    first_name !== undefined ? first_name : employee.first_name,
+                    last_name !== undefined ? last_name : employee.last_name,
+                    email !== undefined ? email : employee.email,
+                    department !== undefined ? department : employee.department,
+                    designation !== undefined ? designation : employee.designation,
+                    mobile !== undefined ? mobile : employee.mobile,
+                    gender !== undefined ? gender : employee.gender,
+                    salary !== undefined ? salary : employee.salary,
+                    employment_type !== undefined ? employment_type : employee.employment_type,
+                    status !== undefined ? status : employee.status,
+                    id
+                ]
+            );
+
+            const newEmail = email || employee.email;
+            const newName = `${first_name || employee.first_name} ${last_name || employee.last_name}`;
+            const newStatus = status || employee.status;
+
+            if (userRole) {
+                const newRoleId = userRole === "Manager" ? 2 : 3;
+                await db.promise().query(
+                    `UPDATE users SET name = ?, email = ?, status = ?, role_id = ? WHERE email = ?`,
+                    [newName, newEmail, newStatus, newRoleId, employee.email]
+                );
+            } else {
+                await db.promise().query(
+                    `UPDATE users SET name = ?, email = ?, status = ? WHERE email = ?`,
+                    [newName, newEmail, newStatus, employee.email]
+                );
+            }
+        }
 
         res.status(200).json({
             success: true,
-            message:
-            "Employee Updated Successfully"
+            message: "Employee Updated Successfully"
         });
-
-    }
-    catch(error){
-
+    } catch (error) {
         console.log(error);
-
         res.status(500).json({
-            success:false,
-            message:"Server Error"
+            success: false,
+            message: "Server Error"
         });
-
     }
 
 };

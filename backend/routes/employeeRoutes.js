@@ -6,7 +6,8 @@ const protect =
 require("../middleware/authMiddleware");
 
 const {
-    adminOnly
+    adminOnly,
+    adminOrManager
 } = require("../middleware/roleMiddleware");
 
 const {
@@ -23,7 +24,7 @@ require("../controllers/employeeController");
 router.get(
     "/",
     protect,
-    adminOnly,
+    adminOrManager,
     getEmployees
 );
 
@@ -37,14 +38,14 @@ router.post(
 router.get(
     "/:id",
     protect,
-    adminOnly,
+    adminOrManager,
     getEmployeeById
 );
 
 router.put(
     "/:id",
     protect,
-    adminOnly,
+    adminOrManager,
     updateEmployee
 );
 

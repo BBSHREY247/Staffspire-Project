@@ -7,6 +7,8 @@ import { FaEye, FaPlus } from "react-icons/fa";
 function EmployeeList() {
     const [employees, setEmployees] = useState([]);
     const navigate = useNavigate();
+    const user = JSON.parse(localStorage.getItem("user")) || {};
+    const isAdmin = user.role === "Admin";
 
     const fetchEmployees = async () => {
         try {
@@ -39,14 +41,18 @@ function EmployeeList() {
     return (
         <DashboardLayout>
             <div className="employee-header" style={{ marginBottom: "24px" }}>
-                <h1 className="page-title" style={{ margin: 0 }}>Employee Directory</h1>
-                <button
-                    className="add-btn"
-                    onClick={() => navigate("/admin/employees/add")}
-                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontWeight: "600" }}
-                >
-                    <FaPlus /> Add Employee
-                </button>
+                <h1 className="page-title" style={{ margin: 0 }}>
+                    {user.role === "Manager" ? "View Team" : "Employee Directory"}
+                </h1>
+                {isAdmin && (
+                    <button
+                        className="add-btn"
+                        onClick={() => navigate("/admin/employees/add")}
+                        style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontWeight: "600" }}
+                    >
+                        <FaPlus /> Add Employee
+                    </button>
+                )}
             </div>
 
             <div className="table-container-custom">

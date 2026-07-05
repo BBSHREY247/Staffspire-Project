@@ -48,11 +48,13 @@ function Sidebar() {
 
     const managerMenuItems = [
         { name: "Dashboard", path: "/manager/dashboard", icon: <FaHome /> },
-        { name: "Tasks", path: "/admin/tasks", icon: <FaTasks /> },
-        { name: "Leaves", path: "/admin/leaves", icon: <FaClipboardList /> },
+        { name: "View Team", path: "/admin/employees", icon: <FaUsers /> },
         { name: "Attendance", path: "/admin/attendance", icon: <FaCalendarCheck /> },
+        { name: "Leave Requests", path: "/admin/leaves", icon: <FaClipboardList /> },
+        { name: "Tasks", path: "/admin/tasks", icon: <FaTasks /> },
         { name: "Reports", path: "/reports", icon: <FaChartBar /> },
-        { name: "Settings", path: "/settings", icon: <FaCog /> },
+        { name: "Profile", path: "/employee/profile", icon: <FaUserCircle /> },
+        { name: "Change Password", path: "/change-password", icon: <FaCog /> },
     ];
 
     const menuItems = role === "Admin" ? adminMenuItems : role === "Manager" ? managerMenuItems : employeeMenuItems;

@@ -34,9 +34,16 @@ const createTask = async (req, res) => {
 
         // Get department from assigned employee if not provided
         let dept = department;
-        if (!dept) {
-            const [empRows] = await db.promise().query("SELECT department FROM employees WHERE employee_id = ?", [assigned_to]);
-            dept = empRows.length ? empRows[0].department : null;
+        const [empRows] = await db.promise().query("SELECT department FROM employees WHERE employee_id = ?", [assigned_to]);
+        const assigneeDept = empRows.length ? empRows[0].department : null;
+
+        if (req.user.role === "Manager") {
+            if (!emp || emp.department !== assigneeDept) {
+                return res.status(403).json({ success: false, message: "Forbidden: Assignee must be in your department." });
+            }
+            dept = emp.department;
+        } else if (!dept) {
+            dept = assigneeDept;
         }
 
         const [result] = await db.promise().query(
@@ -239,6 +246,20 @@ const updateTask = async (req, res) => {
         } else {
             // Admin / Manager: full update
             const { task_title, description, assigned_to, priority, status, deadline, department, remarks } = req.body;
+
+            const emp = await getEmployeeFromUser(req.user.id);
+            if (role === "Manager") {
+                if (!emp || task.department !== emp.department) {
+                    return res.status(403).json({ success: false, message: "Forbidden: Task is not in your department." });
+                }
+
+                if (assigned_to && assigned_to !== task.employee_id) {
+                    const [empRows] = await db.promise().query("SELECT department FROM employees WHERE employee_id = ?", [assigned_to]);
+                    if (empRows.length && empRows[0].department !== emp.department) {
+                        return res.status(403).json({ success: false, message: "Forbidden: New assignee is not in your department." });
+                    }
+                }
+            }
 
             let dept = department || task.department;
             if (assigned_to && assigned_to !== task.employee_id && !department) {

@@ -11,6 +11,13 @@ const getEmployeeIdFromUser = async (userId) => {
     return employees[0].employee_id;
 };
 
+const getManagerDepartment = async (userId) => {
+    const [users] = await db.promise().query("SELECT email FROM users WHERE id = ?", [userId]);
+    if (users.length === 0) return null;
+    const [employees] = await db.promise().query("SELECT department FROM employees WHERE email = ?", [users[0].email]);
+    return employees.length ? employees[0].department : null;
+};
+
 // 1. GET /api/leaves/types — fetch all leave types for the apply form dropdown
 const getLeaveTypes = async (req, res) => {
     try {
@@ -114,13 +121,26 @@ const cancelLeaveRequest = async (req, res) => {
 // 5. GET /api/leaves/admin/requests
 const adminGetLeaveRequests = async (req, res) => {
     try {
-        const [rows] = await db.promise().query(
-            `SELECT lr.*, lt.name AS leave_type_name, e.first_name, e.last_name, e.department, e.designation
-             FROM leave_requests lr
-             JOIN leave_types lt ON lr.leave_type_id = lt.id
-             JOIN employees e ON lr.employee_id = e.employee_id
-             ORDER BY lr.created_at DESC`
-        );
+        const role = req.user.role;
+        let query = `
+            SELECT lr.*, lt.name AS leave_type_name, e.first_name, e.last_name, e.department, e.designation
+            FROM leave_requests lr
+            JOIN leave_types lt ON lr.leave_type_id = lt.id
+            JOIN employees e ON lr.employee_id = e.employee_id
+        `;
+        const params = [];
+        if (role === "Manager") {
+            const dept = await getManagerDepartment(req.user.id);
+            if (dept) {
+                query += " WHERE e.department = ?";
+                params.push(dept);
+            } else {
+                return res.status(200).json({ success: true, requests: [] });
+            }
+        }
+        query += " ORDER BY lr.created_at DESC";
+
+        const [rows] = await db.promise().query(query, params);
         return res.status(200).json({ success: true, requests: rows });
     } catch (error) {
         console.error("Admin fetch leave requests error:", error);
@@ -136,9 +156,23 @@ const adminLeaveAction = async (req, res) => {
             return res.status(400).json({ success: false, message: "Invalid action request parameters." });
         }
 
-        const [requests] = await db.promise().query("SELECT * FROM leave_requests WHERE id = ?", [id]);
+        const [requests] = await db.promise().query(
+            `SELECT lr.*, e.department 
+             FROM leave_requests lr 
+             JOIN employees e ON lr.employee_id = e.employee_id 
+             WHERE lr.id = ?`,
+            [id]
+        );
+
         if (requests.length === 0) {
             return res.status(404).json({ success: false, message: "Leave request not found." });
+        }
+
+        if (req.user.role === "Manager") {
+            const dept = await getManagerDepartment(req.user.id);
+            if (requests[0].department !== dept) {
+                return res.status(403).json({ success: false, message: "Forbidden: Employee is not in your department." });
+            }
         }
 
         if (requests[0].status !== "Pending") {
@@ -168,17 +202,44 @@ const adminLeaveAction = async (req, res) => {
 const adminGetLeaveStats = async (req, res) => {
     try {
         const today = new Date().toLocaleDateString('sv');
+        const role = req.user.role;
+        let filter = "";
+        const params = [];
 
-        const [pendingRes] = await db.promise().query("SELECT COUNT(*) AS count FROM leave_requests WHERE status = 'Pending'");
+        if (role === "Manager") {
+            const dept = await getManagerDepartment(req.user.id);
+            if (dept) {
+                filter = " AND lr.employee_id IN (SELECT employee_id FROM employees WHERE department = ?)";
+                params.push(dept);
+            } else {
+                return res.status(200).json({
+                    success: true,
+                    stats: {
+                        pending: 0,
+                        approvedToday: 0,
+                        rejectedToday: 0,
+                        currentlyOnLeave: 0
+                    }
+                });
+            }
+        }
+
+        const [pendingRes] = await db.promise().query(
+            `SELECT COUNT(*) AS count FROM leave_requests lr WHERE lr.status = 'Pending'${filter}`,
+            params
+        );
         const [approvedRes] = await db.promise().query(
-            "SELECT COUNT(*) AS count FROM leave_requests WHERE status = 'Approved' AND DATE(updated_at) = ?", [today]
+            `SELECT COUNT(*) AS count FROM leave_requests lr WHERE lr.status = 'Approved' AND DATE(lr.updated_at) = ?${filter}`,
+            [today, ...params]
         );
         const [rejectedRes] = await db.promise().query(
-            "SELECT COUNT(*) AS count FROM leave_requests WHERE status = 'Rejected' AND DATE(updated_at) = ?", [today]
+            `SELECT COUNT(*) AS count FROM leave_requests lr WHERE lr.status = 'Rejected' AND DATE(lr.updated_at) = ?${filter}`,
+            [today, ...params]
         );
         const [onLeaveRes] = await db.promise().query(
-            `SELECT COUNT(DISTINCT employee_id) AS count FROM leave_requests
-             WHERE status = 'Approved' AND ? BETWEEN start_date AND end_date`, [today]
+            `SELECT COUNT(DISTINCT lr.employee_id) AS count FROM leave_requests lr
+             WHERE lr.status = 'Approved' AND ? BETWEEN lr.start_date AND lr.end_date${filter}`,
+            [today, ...params]
         );
 
         return res.status(200).json({

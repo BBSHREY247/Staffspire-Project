@@ -12,7 +12,8 @@ function AddEmployee() {
         last_name: "",
         email: "",
         department: "",
-        designation: ""
+        designation: "",
+        role: "Employee"
     });
 
     const [departments, setDepartments] = useState([]);
@@ -139,6 +140,19 @@ function AddEmployee() {
                                     {dept.department_name}
                                 </option>
                             ))}
+                        </select>
+                        <br />
+
+                        <label htmlFor="role">Role</label>
+                        <select
+                            name="role"
+                            id="role"
+                            value={formData.role}
+                            onChange={handleChange}
+                            required
+                        >
+                            <option value="Employee">Employee</option>
+                            <option value="Manager">Manager</option>
                         </select>
                         <br />
 

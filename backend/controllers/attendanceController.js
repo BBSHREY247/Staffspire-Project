@@ -279,15 +279,35 @@ const getEmployeeHistory = async (req, res) => {
     }
 };
 
+const getManagerDepartment = async (userId) => {
+    const [users] = await db.promise().query("SELECT email FROM users WHERE id = ?", [userId]);
+    if (users.length === 0) return null;
+    const [employees] = await db.promise().query("SELECT department FROM employees WHERE email = ?", [users[0].email]);
+    return employees.length ? employees[0].department : null;
+};
+
 // 5. GET /api/attendance (Admin view: gets all attendance records)
 const getAllAttendance = async (req, res) => {
     try {
-        const [rows] = await db.promise().query(
-            `SELECT a.*, e.first_name, e.last_name, e.department, e.designation 
-             FROM attendance a
-             JOIN employees e ON a.employee_id = e.employee_id
-             ORDER BY a.attendance_date DESC, a.check_in DESC`
-        );
+        const role = req.user.role;
+        let query = `
+            SELECT a.*, e.first_name, e.last_name, e.department, e.designation 
+            FROM attendance a
+            JOIN employees e ON a.employee_id = e.employee_id
+        `;
+        const params = [];
+        if (role === "Manager") {
+            const dept = await getManagerDepartment(req.user.id);
+            if (dept) {
+                query += " WHERE e.department = ?";
+                params.push(dept);
+            } else {
+                return res.status(200).json({ success: true, attendance: [] });
+            }
+        }
+        query += " ORDER BY a.attendance_date DESC, a.check_in DESC";
+
+        const [rows] = await db.promise().query(query, params);
 
         return res.status(200).json({
             success: true,
@@ -306,6 +326,8 @@ const getAllAttendance = async (req, res) => {
 const getEmployeeAttendance = async (req, res) => {
     try {
         const { employeeId } = req.params;
+        const role = req.user.role;
+
         const [rows] = await db.promise().query(
             `SELECT a.*, e.first_name, e.last_name, e.department, e.designation 
              FROM attendance a
@@ -314,6 +336,16 @@ const getEmployeeAttendance = async (req, res) => {
              ORDER BY a.attendance_date DESC`,
             [employeeId]
         );
+
+        if (rows.length > 0 && role === "Manager") {
+            const dept = await getManagerDepartment(req.user.id);
+            if (rows[0].department !== dept) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Forbidden: Employee is not in your department."
+                });
+            }
+        }
 
         return res.status(200).json({
             success: true,

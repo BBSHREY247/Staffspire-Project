@@ -115,7 +115,8 @@ const loginUser = (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role_name
+        role: user.role_name,
+        must_change_password: user.must_change_password
       }
     });
 
@@ -174,7 +175,7 @@ const changePassword = async (req, res) => {
       await bcrypt.hash(newPassword, 10);
 
     await db.promise().query(
-      "UPDATE users SET password = ? WHERE id = ?",
+      "UPDATE users SET password = ?, must_change_password = 0 WHERE id = ?",
       [hashedPassword, userId]
     );
 

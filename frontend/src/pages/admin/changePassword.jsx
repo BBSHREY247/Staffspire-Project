@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { FaEye, FaEyeSlash, FaLock, FaCheck } from "react-icons/fa";
 
 function ChangePassword() {
+    const navigate = useNavigate();
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -36,9 +38,22 @@ function ChangePassword() {
             );
 
             alert(response.data.message);
+            
+            // Clear forced password change flag
+            localStorage.removeItem("forcePasswordChange");
+            
+            // Update user in localStorage
+            const user = JSON.parse(localStorage.getItem("user")) || {};
+            user.must_change_password = 0;
+            localStorage.setItem("user", JSON.stringify(user));
+
             setCurrentPassword("");
             setNewPassword("");
             setConfirmPassword("");
+
+            if (user.role === "Admin") navigate("/admin/dashboard");
+            else if (user.role === "Manager") navigate("/manager/dashboard");
+            else navigate("/employee/dashboard");
         } catch (error) {
             console.log(error);
             alert(
