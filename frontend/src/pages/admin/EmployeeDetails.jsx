@@ -351,6 +351,10 @@ function EmployeeDetails() {
                                 <span className="details-info-label"><FaIdBadge style={{ marginRight: "8px", verticalAlign: "middle" }} /> Designation</span>
                                 <span className="details-info-value">{employee.designation}</span>
                             </div>
+                            <div className="details-info-row">
+                                <span className="details-info-label"><FaUser style={{ marginRight: "8px", verticalAlign: "middle" }} /> Position / Role</span>
+                                <span className="details-info-value">{employee.role || "Employee"}</span>
+                            </div>
                             
                             {/* Reversibly Encrypted Password Reveal Row */}
                             {isAdmin && (

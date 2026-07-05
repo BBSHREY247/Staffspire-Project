@@ -113,6 +113,21 @@ const createEmployee = async (req, res) => {
                 message: "Email is already registered"
             });
         }
+
+        if (role === "Manager") {
+            const [managers] = await db.promise().query(
+                `SELECT e.id FROM employees e 
+                 JOIN users u ON e.employee_id = u.login_id OR e.email = u.email 
+                 WHERE e.department = ? AND u.role_id = 2`,
+                [department]
+            );
+            if (managers.length > 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: `The department/branch "${department}" already has a manager. Only one manager is allowed per department.`
+                });
+            }
+        }
         const employeeId = await generateUniqueEmployeeId();
         const tempPassword = generateTempPassword();
         const hashedPassword = await bcrypt.hash(tempPassword, 10);
@@ -244,6 +259,30 @@ const updateEmployee = async (req, res) => {
                 status,
                 role: userRole
             } = req.body;
+
+            const [userRows] = await db.promise().query(
+                "SELECT role_id FROM users WHERE email = ?",
+                [employee.email]
+            );
+            const currentUserRoleId = userRows.length > 0 ? userRows[0].role_id : 3;
+            const isNewRoleManager = userRole === "Manager" || (userRole === undefined && currentUserRoleId === 2);
+            const targetDept = department !== undefined ? department : employee.department;
+
+            if (isNewRoleManager) {
+                // Find if another employee is already a manager in the target department
+                const [managers] = await db.promise().query(
+                    `SELECT e.id FROM employees e 
+                     JOIN users u ON e.employee_id = u.login_id OR e.email = u.email 
+                     WHERE e.department = ? AND u.role_id = 2 AND e.id != ?`,
+                    [targetDept, id]
+                );
+                if (managers.length > 0) {
+                    return res.status(400).json({
+                        success: false,
+                        message: `The department/branch "${targetDept}" already has a manager. Only one manager is allowed per department.`
+                    });
+                }
+            }
 
             await db.promise().query(
                 `UPDATE employees
