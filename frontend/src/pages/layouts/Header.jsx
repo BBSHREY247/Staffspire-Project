@@ -127,52 +127,60 @@ function Header() {
     };
 
     return (
-        <header className="header">
-            {/* Left Brand and Title */}
-            <div className="header-left">
-                <div className="logo-brand" onClick={() => navigate(user.role === "Admin" ? "/admin/dashboard" : "/employee/dashboard")} style={{cursor: "pointer"}}>
-                    <img className="logo" src={profilePic} alt="" />
-                </div>
-                <div className="header-title-divider"></div>
-                <h2 className="header-page-title">{getPageTitle()}</h2>
+        <header className="bg-white/80 backdrop-blur-md fixed top-0 w-full z-50 border-b border-slate-200 shadow-sm flex justify-between items-center h-16 px-6 md:px-10 md:w-[calc(100%-16rem)] right-0">
+            {/* Mobile Header Brand (Hidden on Web) */}
+            <div className="flex items-center md:hidden">
+                <span className="text-xl font-bold tracking-tight text-blue-600">StaffSpire</span>
             </div>
 
-            {/* Center Search Bar */}
-            {/* <div className="header-center">
-                <div className="search-container">
-                    <FaSearch />
+            {/* Page Title (Hidden on Mobile) */}
+            <div className="hidden md:flex items-center gap-2 text-sm text-slate-500 font-medium">
+                <span>Home</span>
+                <span className="material-symbols-outlined text-xs">chevron_right</span>
+                <span className="text-blue-600 font-semibold">{getPageTitle()}</span>
+            </div>
+
+            {/* Right Actions */}
+            <div className="flex items-center gap-4 ml-auto">
+                {/* Search Bar (Hidden on Mobile) */}
+                <div className="relative hidden md:block">
+                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
                     <input 
+                        className="h-10 pl-10 pr-4 rounded-full border border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all text-xs outline-none w-64" 
+                        placeholder="Search..." 
                         type="text" 
-                        className="search-bar-input" 
-                        placeholder="Search employees, departments, attendance..." 
                     />
                 </div>
-            </div> */}
 
-            {/* Right Side Actions */}
-            <div className="header-right">
                 {/* Notifications Bell */}
-                <div style={{position: "relative"}}>
+                <div className="relative">
                     <button 
-                        className="header-action-btn" 
                         onClick={() => {
                             setShowNotifMenu(!showNotifMenu);
                             setShowProfileMenu(false);
                         }}
+                        className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors relative flex items-center justify-center"
                     >
-                        <FaBell />
-                        {unreadCount > 0 && <span className="badge-count">{unreadCount}</span>}
+                        <span className="material-symbols-outlined text-[22px]">notifications</span>
+                        {unreadCount > 0 && (
+                            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+                        )}
                     </button>
 
                     {showNotifMenu && (
-                        <div className="notifications-dropdown">
-                            <div className="notif-header">
-                                <h4>Notifications</h4>
-                                <span onClick={handleMarkAllAsRead}>Mark all read</span>
+                        <div className="absolute right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-xl w-80 z-50 py-2 animate-dropdownFade">
+                            <div className="flex justify-between items-center px-4 py-2 border-b border-slate-100">
+                                <h4 className="text-sm font-bold text-slate-800">Notifications</h4>
+                                <span 
+                                    onClick={handleMarkAllAsRead} 
+                                    className="text-xs text-blue-600 font-semibold cursor-pointer hover:underline"
+                                >
+                                    Mark all read
+                                </span>
                             </div>
-                            <div className="notif-list">
+                            <div className="max-h-64 overflow-y-auto">
                                 {notifications.length === 0 ? (
-                                    <div style={{ padding: "24px 16px", textAlign: "center", color: "#94a3b8", fontSize: "13px" }}>
+                                    <div className="py-6 text-center text-slate-400 text-xs">
                                         No notifications yet
                                     </div>
                                 ) : (
@@ -181,20 +189,34 @@ function Header() {
                                         return (
                                             <div 
                                                 key={n.id} 
-                                                className={`notif-item ${!n.is_read ? "notif-unread" : ""}`}
-                                                onClick={() => handleMarkAsRead(n.id)}
+                                                onClick={() => {
+                                                    handleMarkAsRead(n.id);
+                                                    setShowNotifMenu(false);
+                                                }}
+                                                className={`flex items-start gap-3 px-4 py-3 border-b border-slate-50 last:border-b-0 cursor-pointer hover:bg-slate-50 transition-colors ${
+                                                    !n.is_read ? "bg-blue-50/20" : ""
+                                                }`}
                                             >
-                                                <div className="notif-icon-wrapper" style={{background: bg}}>
+                                                <div 
+                                                    className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-sm"
+                                                    style={{ backgroundColor: bg }}
+                                                >
                                                     {icon}
                                                 </div>
-                                                <div className="notif-content" style={{ flex: 1 }}>
-                                                    <span className="notif-text" style={{ fontWeight: !n.is_read ? "700" : "500" }}>{n.title}</span>
-                                                    <p style={{ margin: "2px 0 0 0", fontSize: "12px", color: "#64748b", textAlign: "left", lineHeight: "1.4" }}>
+                                                <div className="flex-1 text-left">
+                                                    <p className={`text-xs text-slate-800 ${!n.is_read ? "font-bold" : "font-semibold"}`}>
+                                                        {n.title}
+                                                    </p>
+                                                    <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-2">
                                                         {n.message}
                                                     </p>
-                                                    <span className="notif-time" style={{ marginTop: "4px" }}>{formatNotifTime(n.created_at)}</span>
+                                                    <p className="text-[10px] text-slate-400 mt-1">
+                                                        {formatNotifTime(n.created_at)}
+                                                    </p>
                                                 </div>
-                                                {!n.is_read && <span className="notif-unread-dot"></span>}
+                                                {!n.is_read && (
+                                                    <span className="w-2 h-2 rounded-full bg-blue-600 align-self-center mt-3 shrink-0"></span>
+                                                )}
                                             </div>
                                         );
                                     })
@@ -204,61 +226,65 @@ function Header() {
                     )}
                 </div>
 
-                {/* Settings Cog */}
-                <button 
-                    className="header-action-btn" 
-                    onClick={() => {
-                        navigate("/settings");
-                        setShowNotifMenu(false);
-                        setShowProfileMenu(false);
-                    }}
-                >
-                    <FaCog />
-                </button>
-
-                {/* Profile Widget Dropdown */}
-                <div style={{position: "relative"}}>
+                {/* Profile Avatar Widget */}
+                <div className="relative">
                     <div 
-                        className="profile-widget"
                         onClick={() => {
                             setShowProfileMenu(!showProfileMenu);
                             setShowNotifMenu(false);
                         }}
+                        className="flex items-center gap-2 cursor-pointer p-1 rounded-lg hover:bg-slate-100/60 transition-colors"
                     >
-                        <FaUserCircle className="profile-avatar" />
-                        <div className="profile-info">
-                            <span className="profile-name">{user.name}</span>
-                            <span className="profile-role">{user.role}</span>
+                        <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-200">
+                            <FaUserCircle className="w-full h-full text-slate-400 text-[32px]" />
                         </div>
-                        <FaChevronDown className="profile-chevron" style={{transform: showProfileMenu ? "rotate(180deg)" : "rotate(0)"}} />
+                        <div className="hidden sm:flex flex-col text-left">
+                            <span className="text-xs font-semibold text-slate-700 leading-none">{user.name}</span>
+                            <span className="text-[10px] text-slate-500 leading-none mt-1">{user.role}</span>
+                        </div>
+                        <span className="material-symbols-outlined text-slate-400 text-sm transition-transform duration-200" style={{ transform: showProfileMenu ? "rotate(180deg)" : "rotate(0)" }}>
+                            expand_more
+                        </span>
                     </div>
 
                     {showProfileMenu && (
-                        <ul className="dropdown-menu">
-                            <div className="dropdown-header-name">{user.name}</div>
-                            <div className="dropdown-header-role">{user.role}</div>
-                            
-                            <li onClick={() => { navigate("/employee/profile"); setShowProfileMenu(false); }}>
-                                <FaUserCircle /> My Profile
-                            </li>
-                            <li onClick={() => { navigate("/settings"); setShowProfileMenu(false); }}>
-                                <FaCog /> Settings
-                            </li>
-                            <li onClick={() => { navigate("/change-password"); setShowProfileMenu(false); }}>
-                                <FaKey /> Change Password
-                            </li>
-                            <div className="dropdown-divider"></div>
-                            <li onClick={handleLogout} style={{color: "#ef4444"}}>
-                                <FaSignOutAlt style={{color: "#ef4444"}} /> Logout
-                            </li>
-                        </ul>
+                        <div className="absolute right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-xl w-48 z-50 py-1.5 animate-dropdownFade">
+                            <div className="px-4 py-2 border-b border-slate-100">
+                                <p className="text-xs font-bold text-slate-800 leading-tight">{user.name}</p>
+                                <p className="text-[10px] text-slate-400 leading-none mt-1">{user.role}</p>
+                            </div>
+                            <button 
+                                onClick={() => { navigate("/employee/profile"); setShowProfileMenu(false); }}
+                                className="w-full flex items-center gap-2 px-4 py-2 text-left text-xs text-slate-600 hover:bg-slate-50"
+                            >
+                                <span className="material-symbols-outlined text-sm">person</span>
+                                My Profile
+                            </button>
+                            <button 
+                                onClick={() => { navigate("/settings"); setShowProfileMenu(false); }}
+                                className="w-full flex items-center gap-2 px-4 py-2 text-left text-xs text-slate-600 hover:bg-slate-50"
+                            >
+                                <span className="material-symbols-outlined text-sm">settings</span>
+                                Settings
+                            </button>
+                            <button 
+                                onClick={() => { navigate("/change-password"); setShowProfileMenu(false); }}
+                                className="w-full flex items-center gap-2 px-4 py-2 text-left text-xs text-slate-600 hover:bg-slate-50"
+                            >
+                                <span className="material-symbols-outlined text-sm">lock</span>
+                                Change Password
+                            </button>
+                            <div className="border-t border-slate-100 my-1"></div>
+                            <button 
+                                onClick={handleLogout}
+                                className="w-full flex items-center gap-2 px-4 py-2 text-left text-xs text-red-600 hover:bg-red-50"
+                            >
+                                <span className="material-symbols-outlined text-sm">logout</span>
+                                Logout
+                            </button>
+                        </div>
                     )}
                 </div>
-
-                {/* Direct Logout Icon */}
-                <button className="header-action-btn" onClick={handleLogout} title="Logout">
-                    <FaSignOutAlt />
-                </button>
             </div>
         </header>
     );

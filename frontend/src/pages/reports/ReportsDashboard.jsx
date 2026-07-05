@@ -130,59 +130,56 @@ function ReportsDashboard() {
     // Stats panel helper
     const renderStatsPanel = () => {
         if (!stats) return null;
-
         let items = [];
+
         if (activeTab === "employees") {
             items = [
-                { label: "Total Employees", value: stats.totalEmployees, color: "#4f8cff", bg: "#eff6ff" },
-                { label: "Active", value: stats.activeEmployees, color: "#22c55e", bg: "#dcfce7" },
-                { label: "Inactive", value: stats.inactiveEmployees, color: "#ef4444", bg: "#fee2e2" }
+                { label: "Total Employees", value: stats.totalEmployees, border: "border-t-blue-500" },
+                { label: "Active", value: stats.activeEmployees, border: "border-t-emerald-500" },
+                { label: "Inactive", value: stats.inactiveEmployees, border: "border-t-red-500" }
             ];
         } else if (activeTab === "attendance") {
             items = [
-                { label: "Present", value: stats.presentDays, color: "#22c55e", bg: "#dcfce7" },
-                { label: "Absent", value: stats.absentDays, color: "#ef4444", bg: "#fee2e2" },
-                { label: "Late", value: stats.lateDays, color: "#f59e0b", bg: "#fef9c3" },
-                { label: "Attendance Rate", value: `${stats.attendancePercentage}%`, color: "#8b5cf6", bg: "#f3e8ff" }
+                { label: "Present", value: stats.presentDays, border: "border-t-emerald-500" },
+                { label: "Absent", value: stats.absentDays, border: "border-t-red-500" },
+                { label: "Late", value: stats.lateDays, border: "border-t-amber-500" },
+                { label: "Attendance Rate", value: `${stats.attendancePercentage}%`, border: "border-t-indigo-500" }
             ];
         } else if (activeTab === "leaves") {
             items = [
-                { label: "Total Requests", value: stats.totalRequests, color: "#4f8cff", bg: "#eff6ff" },
-                { label: "Approved", value: stats.approved, color: "#22c55e", bg: "#dcfce7" },
-                { label: "Pending", value: stats.pending, color: "#f59e0b", bg: "#fef9c3" },
-                { label: "Rejected", value: stats.rejected, color: "#ef4444", bg: "#fee2e2" }
+                { label: "Total Requests", value: stats.totalRequests, border: "border-t-blue-500" },
+                { label: "Approved", value: stats.approved, border: "border-t-emerald-500" },
+                { label: "Pending", value: stats.pending, border: "border-t-amber-500" },
+                { label: "Rejected", value: stats.rejected, border: "border-t-red-500" }
             ];
         } else if (activeTab === "tasks") {
             items = [
-                { label: "Total Tasks", value: stats.totalTasks, color: "#4f8cff", bg: "#eff6ff" },
-                { label: "Pending + In Progress", value: stats.pending + stats.inProgress, color: "#f59e0b", bg: "#fef9c3" },
-                { label: "Completed", value: stats.completed, color: "#22c55e", bg: "#dcfce7" },
-                { label: "Overdue", value: stats.overdue, color: "#ef4444", bg: "#fee2e2" }
+                { label: "Total Tasks", value: stats.totalTasks, border: "border-t-blue-500" },
+                { label: "Pending + In Progress", value: stats.pending + stats.inProgress, border: "border-t-amber-500" },
+                { label: "Completed", value: stats.completed, border: "border-t-emerald-500" },
+                { label: "Overdue", value: stats.overdue, border: "border-t-red-500" }
             ];
         } else if (activeTab === "departments") {
             items = [
-                { label: "Total Employees", value: stats.employeeCount, color: "#4f8cff", bg: "#eff6ff" },
-                { label: "Avg Attendance", value: `${stats.attendancePercentage}%`, color: "#22c55e", bg: "#dcfce7" },
-                { label: "Avg Leave Rate", value: `${stats.leavePercentage}%`, color: "#8b5cf6", bg: "#f3e8ff" }
+                { label: "Total Employees", value: stats.employeeCount, border: "border-t-blue-500" },
+                { label: "Avg Attendance", value: `${stats.attendancePercentage}%`, border: "border-t-emerald-500" },
+                { label: "Avg Leave Rate", value: `${stats.leavePercentage}%`, border: "border-t-indigo-500" }
             ];
         }
 
         return (
-            <div style={{ display: "grid", gridTemplateColumns: `repeat(${items.length}, 1fr)`, gap: "14px", marginBottom: "20px" }}>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
                 {items.map((item, i) => (
-                    <div key={i} style={{
-                        background: "white",
-                        borderRadius: "12px",
-                        padding: "16px 18px",
-                        boxShadow: "0 1px 6px rgba(0,0,0,0.04)",
-                        borderTop: `3px solid ${item.color}`,
-                        transition: "transform 0.2s ease"
-                    }}
-                        onMouseOver={(e) => e.currentTarget.style.transform = "translateY(-2px)"}
-                        onMouseOut={(e) => e.currentTarget.style.transform = "none"}
+                    <div 
+                        key={i} 
+                        className={`bg-white rounded-xl p-4 border border-slate-200 border-t-4 ${item.border} shadow-sm hover:translate-y-[-2px] transition-all duration-200 text-left`}
                     >
-                        <div style={{ fontSize: "12px", color: "#64748b", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px" }}>{item.label}</div>
-                        <div style={{ fontSize: "24px", fontWeight: "800", color: "#1e293b", marginTop: "6px" }}>{item.value}</div>
+                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                            {item.label}
+                        </div>
+                        <div className="text-lg font-bold text-slate-800 mt-1">
+                            {item.value}
+                        </div>
                     </div>
                 ))}
             </div>
@@ -191,15 +188,19 @@ function ReportsDashboard() {
 
     return (
         <DashboardLayout>
-            <div className="attendance-page-container">
+            <div className="w-full flex flex-col gap-6 text-slate-800">
                 {/* Header */}
-                <div className="employee-header" style={{ marginBottom: "24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <h1 className="page-title" style={{ margin: 0 }}>
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: "10px" }}>
-                            <FaChartBar style={{ color: "#4f8cff" }} /> Reports Center
-                        </span>
-                    </h1>
-                    <span style={{ fontSize: "13px", color: "#94a3b8", fontWeight: "500" }}>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-6">
+                    <div>
+                        <h2 className="text-2xl font-bold tracking-tight text-slate-800 flex items-center gap-2">
+                            <span className="material-symbols-outlined text-blue-600 text-2xl">query_stats</span>
+                            Reports Center
+                        </h2>
+                        <p className="text-sm text-slate-500 font-medium mt-1 text-left">
+                            Generate and export reports for employees, attendance, leaves, and tasks.
+                        </p>
+                    </div>
+                    <span className="px-3 py-1.5 bg-slate-100 text-slate-505 rounded-lg text-xs font-semibold border border-slate-200">
                         {loading ? "Loading..." : `${data.length} records found`}
                     </span>
                 </div>
@@ -208,48 +209,19 @@ function ReportsDashboard() {
                 <ReportSummaryCards />
 
                 {/* Tab Navigation */}
-                <div style={{
-                    background: "white",
-                    borderRadius: "14px",
-                    padding: "6px",
-                    boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
-                    marginBottom: "20px",
-                    display: "flex",
-                    gap: "4px",
-                    overflowX: "auto"
-                }}>
+                <div className="bg-white border border-slate-200 rounded-xl p-1.5 flex gap-1 overflow-x-auto shadow-sm">
                     {tabs.map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            style={{
-                                flex: 1,
-                                background: activeTab === tab.id ? "linear-gradient(135deg, #4f8cff, #6366f1)" : "transparent",
-                                border: "none",
-                                borderRadius: "10px",
-                                padding: "12px 18px",
-                                color: activeTab === tab.id ? "white" : "#64748b",
-                                fontWeight: "700",
-                                cursor: "pointer",
-                                fontSize: "13.5px",
-                                transition: "all 0.25s ease",
-                                whiteSpace: "nowrap",
-                                boxShadow: activeTab === tab.id ? "0 4px 14px rgba(79,140,255,0.3)" : "none"
-                            }}
-                            onMouseOver={(e) => {
-                                if (activeTab !== tab.id) {
-                                    e.target.style.background = "#f1f5f9";
-                                    e.target.style.color = "#1e293b";
-                                }
-                            }}
-                            onMouseOut={(e) => {
-                                if (activeTab !== tab.id) {
-                                    e.target.style.background = "transparent";
-                                    e.target.style.color = "#64748b";
-                                }
-                            }}
+                            className={`flex-1 py-3 px-6 rounded-lg text-xs font-bold transition-all whitespace-nowrap cursor-pointer flex items-center justify-center gap-2 ${
+                                activeTab === tab.id
+                                    ? "bg-blue-600 text-white shadow-sm"
+                                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+                            }`}
                         >
-                            {tab.icon} {tab.name}
+                            <span>{tab.icon}</span>
+                            <span>{tab.name}</span>
                         </button>
                     ))}
                 </div>
@@ -263,16 +235,10 @@ function ReportsDashboard() {
                 />
 
                 {/* Export Buttons Row */}
-                <div style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "16px",
-                    flexWrap: "wrap",
-                    gap: "12px"
-                }}>
-                    <div style={{ fontSize: "14px", color: "#475569", fontWeight: "600" }}>
-                        📊 {tabs.find(t => t.id === activeTab)?.name || "Report"}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-slate-100 pt-5">
+                    <div className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-blue-600 text-base">analytics</span>
+                        {tabs.find(t => t.id === activeTab)?.name || "Report"} Details
                     </div>
                     <ExportButtons
                         reportType={activeTab}
@@ -285,11 +251,13 @@ function ReportsDashboard() {
                 {renderStatsPanel()}
 
                 {/* Data Table */}
-                <ReportTable
-                    columns={config.columns}
-                    keys={config.keys}
-                    data={data}
-                />
+                <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                    <ReportTable
+                        columns={config.columns}
+                        keys={config.keys}
+                        data={data}
+                    />
+                </div>
 
                 {/* Hidden Print Layout */}
                 <PrintReport
