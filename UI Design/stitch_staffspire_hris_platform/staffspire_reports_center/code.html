@@ -1,0 +1,415 @@
+<!DOCTYPE html><html class="light" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Reports Center - StaffSpire</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed-dim": "#89ceff",
+                      "on-secondary": "#ffffff",
+                      "background": "#faf8ff",
+                      "primary-fixed": "#dbe1ff",
+                      "on-tertiary-fixed-variant": "#004c6e",
+                      "tertiary-container": "#0074a6",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-fixed": "#151c27",
+                      "surface-tint": "#0053db",
+                      "surface-bright": "#faf8ff",
+                      "on-tertiary-container": "#e4f2ff",
+                      "on-primary-fixed": "#00174b",
+                      "error-container": "#ffdad6",
+                      "on-surface": "#191b23",
+                      "surface-container-lowest": "#ffffff",
+                      "primary": "#004ac6",
+                      "error": "#ba1a1a",
+                      "secondary-fixed": "#dce2f3",
+                      "outline-variant": "#c3c6d7",
+                      "outline": "#737686",
+                      "tertiary": "#005a82",
+                      "on-tertiary-fixed": "#001e2f",
+                      "surface-dim": "#d9d9e5",
+                      "surface-container-highest": "#e1e2ed",
+                      "secondary-fixed-dim": "#c0c7d6",
+                      "surface": "#faf8ff",
+                      "secondary": "#585f6c",
+                      "on-surface-variant": "#434655",
+                      "on-error-container": "#93000a",
+                      "primary-container": "#2563eb",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "on-primary-container": "#eeefff",
+                      "surface-variant": "#e1e2ed",
+                      "on-secondary-fixed-variant": "#404754",
+                      "surface-container": "#ededf9",
+                      "surface-container-high": "#e7e7f3",
+                      "on-error": "#ffffff",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "on-primary": "#ffffff",
+                      "on-background": "#191b23",
+                      "inverse-primary": "#b4c5ff",
+                      "inverse-surface": "#2e3039",
+                      "inverse-on-surface": "#f0f0fb",
+                      "secondary-container": "#dce2f3",
+                      "tertiary-fixed": "#c9e6ff",
+                      "on-secondary-container": "#5e6572",
+                      "surface-container-low": "#f3f3fe"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "16px",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "lg": "24px",
+                      "base": "8px",
+                      "md": "16px",
+                      "xxl": "48px",
+                      "sm": "8px",
+                      "margin-mobile": "16px",
+                      "margin-desktop": "40px",
+                      "gutter": "24px",
+                      "xs": "4px",
+                      "xl": "32px"
+              },
+              "fontFamily": {
+                      "label-md": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "body-md": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "headline-lg-mobile": ["Inter"]
+              },
+              "fontSize": {
+                      "label-md": ["14px", {"lineHeight": "1", "fontWeight": "500"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "headline-sm": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "1.55", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "600"}]
+              }
+            }
+          }
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer utilities {
+            .glass {
+                @apply bg-white/80 backdrop-blur-md border border-outline-variant/30;
+            }
+            .material-symbols-outlined {
+                font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased flex">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 z-40 border-r border-outline-variant/30 bg-surface py-lg gap-sm">
+<div class="px-margin-desktop mb-8"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxNvAh-AXlr9CgZ3Krjb6N4-8FtggyaiylFhrTVHrqEN4TbK0TmktsWUZIhztCRUM-z116tO47ZLUqpFgsqTjlGIlmDuspUbQSaxGW0KoqhJbdASfL0uhkvK4Ln3LWaJAjNbnf4Suz8aK0-LKcU3quDCzHxhVW4hMdVqtToI9foCaAqz6xAtNeXTt7dRAYyBC2FSSmZQVlRoylePL7cpZCb7VPSGNHTHyUKvZAAhVCnp7ezmPMoMiE9H5xCt2sFefnQsUOgv51Dg" alt="Softspire Logo" class="h-10 w-auto object-contain">
+<p class="text-label-sm font-label-sm text-secondary mt-1">Enterprise HRIS</p></div>
+<nav class="flex-1 flex flex-col gap-2 px-2">
+<a class="text-secondary hover:text-primary px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest/50 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-label-md font-label-md">Dashboard</span>
+</a>
+<a class="text-secondary hover:text-primary px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest/50 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="text-label-md font-label-md">Directory</span>
+</a>
+<a class="text-secondary hover:text-primary px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest/50 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-label-md font-label-md">Payroll</span>
+</a>
+<a class="text-secondary hover:text-primary px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest/50 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="text-label-md font-label-md">Performance</span>
+</a>
+<a class="text-secondary hover:text-primary px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest/50 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">person_search</span>
+<span class="text-label-md font-label-md">Recruitment</span>
+</a>
+<!-- Reports is conceptually similar to Performance/Dashboard, highlighting it as an active state for this example context if we assume it's a sub-section or distinct tab -->
+<a class="bg-primary-container/10 text-primary font-semibold rounded-lg px-4 py-3 flex items-center gap-3 border-l-4 border-primary scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: &quot;FILL&quot; 1;">analytics</span>
+<span class="text-label-md font-label-md">Reports</span>
+</a>
+<a class="text-secondary hover:text-primary px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest/50 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</nav>
+<div class="px-4 mt-auto">
+<button class="w-full text-left text-secondary hover:text-primary px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest/50 transition-all duration-200 rounded-lg">
+<span class="material-symbols-outlined">help</span>
+<span class="text-label-md font-label-md">Help Center</span>
+</button>
+<a class="text-secondary hover:text-primary px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest/50 transition-all duration-200 rounded-lg mt-2" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="text-label-md font-label-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 md:ml-64 min-h-screen pb-xxl">
+<!-- TopNavBar (Simplified for inside dashboard) -->
+<header class="sticky top-0 z-30 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 shadow-sm h-16 flex items-center justify-between px-margin-desktop w-full">
+<div class="flex items-center gap-4">
+<h2 class="text-headline-sm font-headline-sm text-on-surface">Reports Center</h2>
+<span class="bg-surface-container-high text-secondary px-3 py-1 rounded-full text-label-sm font-label-sm">5 records found</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden lg:block w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full h-10 pl-10 pr-4 bg-surface-container-lowest border border-outline-variant rounded-lg text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder="Global Search" type="text">
+</div>
+<button class="text-secondary hover:bg-surface-container-low p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-secondary hover:bg-surface-container-low p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined">apps</span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-outline-variant/30">
+<div class="text-right hidden sm:block">
+<div class="text-label-md font-label-md text-on-surface">Admin User</div>
+<div class="text-label-sm font-label-sm text-secondary">Administrator</div>
+</div>
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-lg">
+                        AU
+                    </div>
+</div>
+</div>
+</header>
+<div class="px-margin-desktop mt-lg max-w-[1440px] mx-auto space-y-6">
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+<div class="bg-surface-container-lowest rounded-lg p-6 border-t-4 border-primary shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<span class="text-label-md font-label-md text-secondary">Total Employees</span>
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-sm">groups</span>
+</div>
+</div>
+<div class="text-headline-lg font-headline-lg text-on-surface">5</div>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-6 border-t-4 border-emerald-500 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<span class="text-label-md font-label-md text-secondary">Present Today</span>
+<div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+<span class="material-symbols-outlined text-sm">how_to_reg</span>
+</div>
+</div>
+<div class="text-headline-lg font-headline-lg text-on-surface">0</div>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-6 border-t-4 border-amber-500 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<span class="text-label-md font-label-md text-secondary">Pending Leaves</span>
+<div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+<span class="material-symbols-outlined text-sm">pending_actions</span>
+</div>
+</div>
+<div class="text-headline-lg font-headline-lg text-on-surface">0</div>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-6 border-t-4 border-purple-500 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<span class="text-label-md font-label-md text-secondary">Active Tasks</span>
+<div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+<span class="material-symbols-outlined text-sm">task</span>
+</div>
+</div>
+<div class="text-headline-lg font-headline-lg text-on-surface">2</div>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-6 border-t-4 border-rose-500 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<span class="text-label-md font-label-md text-secondary">Departments</span>
+<div class="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600">
+<span class="material-symbols-outlined text-sm">corporate_fare</span>
+</div>
+</div>
+<div class="text-headline-lg font-headline-lg text-on-surface">4</div>
+</div>
+</div>
+<!-- Report Tabs -->
+<div class="bg-surface-container-lowest rounded-lg p-2 border border-outline-variant/30 flex overflow-x-auto gap-2">
+<button class="bg-primary-container text-on-primary-container px-6 py-2.5 rounded-md text-label-md font-label-md flex items-center gap-2 whitespace-nowrap" style="background-color: rgb(37, 99, 235); color: rgb(255, 255, 255);">
+<span class="material-symbols-outlined text-sm">badge</span> Employee Report
+                </button>
+<button class="text-secondary hover:bg-surface-container px-6 py-2.5 rounded-md text-label-md font-label-md flex items-center gap-2 whitespace-nowrap transition-colors">
+<span class="material-symbols-outlined text-sm">calendar_month</span> Attendance Report
+                </button>
+<button class="text-secondary hover:bg-surface-container px-6 py-2.5 rounded-md text-label-md font-label-md flex items-center gap-2 whitespace-nowrap transition-colors">
+<span class="material-symbols-outlined text-sm">time_to_leave</span> Leave Report
+                </button>
+<button class="text-secondary hover:bg-surface-container px-6 py-2.5 rounded-md text-label-md font-label-md flex items-center gap-2 whitespace-nowrap transition-colors">
+<span class="material-symbols-outlined text-sm">checklist</span> Task Report
+                </button>
+<button class="text-secondary hover:bg-surface-container px-6 py-2.5 rounded-md text-label-md font-label-md flex items-center gap-2 whitespace-nowrap transition-colors">
+<span class="material-symbols-outlined text-sm">domain</span> Department Report
+                </button>
+</div>
+<!-- Advanced Filters -->
+<div class="bg-surface-container-lowest rounded-lg p-6 border border-outline-variant/30 shadow-sm space-y-4"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="space-y-1.5">
+<label class="text-label-sm font-label-sm text-secondary uppercase tracking-wider">Search</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
+<input class="w-full h-10 pl-9 pr-3 bg-surface border border-outline-variant rounded-md text-body-sm focus:ring-2 focus:ring-primary outline-none" placeholder="Name, ID, Title..." type="text">
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="text-label-sm font-label-sm text-secondary uppercase tracking-wider">Department</label>
+<select class="w-full h-10 px-3 bg-surface border border-outline-variant rounded-md text-body-sm focus:ring-2 focus:ring-primary outline-none appearance-none">
+<option>All Departments</option>
+<option>IT</option>
+<option>HR</option>
+</select>
+</div>
+<div class="space-y-1.5">
+<label class="text-label-sm font-label-sm text-secondary uppercase tracking-wider">Status</label>
+<select class="w-full h-10 px-3 bg-surface border border-outline-variant rounded-md text-body-sm focus:ring-2 focus:ring-primary outline-none appearance-none">
+<option>All Statuses</option>
+<option>Active</option>
+<option>Inactive</option>
+</select>
+</div>
+<div class="space-y-1.5">
+<label class="text-label-sm font-label-sm text-secondary uppercase tracking-wider">Type</label>
+<select class="w-full h-10 px-3 bg-surface border border-outline-variant rounded-md text-body-sm focus:ring-2 focus:ring-primary outline-none appearance-none">
+<option>All Types</option>
+<option>Full-Time</option>
+<option>Contract</option>
+</select>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+<div class="space-y-1.5">
+<label class="text-label-sm font-label-sm text-secondary uppercase tracking-wider">From Date</label>
+<input class="w-full h-10 px-3 bg-surface border border-outline-variant rounded-md text-body-sm focus:ring-2 focus:ring-primary outline-none text-secondary" type="date">
+</div>
+<div class="space-y-1.5">
+<label class="text-label-sm font-label-sm text-secondary uppercase tracking-wider">To Date</label>
+<input class="w-full h-10 px-3 bg-surface border border-outline-variant rounded-md text-body-sm focus:ring-2 focus:ring-primary outline-none text-secondary" type="date">
+</div>
+<div class="space-y-1.5">
+<label class="text-label-sm font-label-sm text-secondary uppercase tracking-wider">Sort Order</label>
+<select class="w-full h-10 px-3 bg-surface border border-outline-variant rounded-md text-body-sm focus:ring-2 focus:ring-primary outline-none appearance-none">
+<option>Latest First</option>
+<option>Oldest First</option>
+<option>Name A-Z</option>
+</select>
+</div>
+<div class="flex justify-end">
+<button class="bg-primary text-white hover:bg-primary-container px-6 h-10 rounded-md text-label-md font-label-md flex items-center gap-2 transition-colors w-full justify-center">
+<span class="material-symbols-outlined text-sm">restart_alt</span> Reset Filters
+</button>
+</div>
+</div></div>
+<!-- Data Table Section -->
+<div class="bg-surface-container-lowest rounded-lg border border-outline-variant/30 shadow-sm overflow-hidden">
+<!-- Table Header Actions -->
+<div class="p-4 border-b border-outline-variant/30 flex flex-wrap justify-between items-center gap-4 bg-surface/50">
+<h3 class="text-headline-sm font-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">analytics</span>
+                        Employee Report Results
+                    </h3>
+<div class="flex gap-2">
+<button class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-md text-label-sm font-label-sm flex items-center gap-2 transition-colors" style="background-color: rgb(37, 99, 235); color: rgb(255, 255, 255);">
+<span class="material-symbols-outlined text-sm">picture_as_pdf</span> PDF
+                        </button>
+<button class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md text-label-sm font-label-sm flex items-center gap-2 transition-colors" style="background-color: rgb(37, 99, 235); color: rgb(255, 255, 255);">
+<span class="material-symbols-outlined text-sm">table_view</span> Excel
+                        </button>
+<button class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-md text-label-sm font-label-sm flex items-center gap-2 transition-colors" style="background-color: rgb(37, 99, 235); color: rgb(255, 255, 255);">
+<span class="material-symbols-outlined text-sm">csv</span> CSV
+                        </button>
+<button class="bg-primary hover:bg-primary-container text-white px-4 py-2 rounded-md text-label-sm font-label-sm flex items-center gap-2 transition-colors" style="background-color: rgb(37, 99, 235); color: rgb(255, 255, 255);">
+<span class="material-symbols-outlined text-sm">print</span> Print
+                        </button>
+</div>
+</div>
+<!-- Table Summary Mini-Cards -->
+<div class="grid grid-cols-3 gap-4 p-4 border-b border-outline-variant/30 bg-surface/30">
+<div class="bg-surface-container-lowest rounded border border-primary/20 p-3">
+<div class="text-label-sm font-label-sm text-secondary uppercase tracking-wider mb-1">Total Employees</div>
+<div class="text-headline-sm font-headline-sm text-on-surface">5</div>
+</div>
+<div class="bg-surface-container-lowest rounded border border-emerald-500/20 p-3">
+<div class="text-label-sm font-label-sm text-secondary uppercase tracking-wider mb-1">Active</div>
+<div class="text-headline-sm font-headline-sm text-emerald-700">5</div>
+</div>
+<div class="bg-surface-container-lowest rounded border border-rose-500/20 p-3">
+<div class="text-label-sm font-label-sm text-secondary uppercase tracking-wider mb-1">Inactive</div>
+<div class="text-headline-sm font-headline-sm text-rose-700">0</div>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container text-secondary text-label-sm font-label-sm uppercase tracking-wider">
+<th class="p-4 font-semibold whitespace-nowrap">Employee ID</th>
+<th class="p-4 font-semibold whitespace-nowrap">Name</th>
+<th class="p-4 font-semibold whitespace-nowrap">Department</th>
+<th class="p-4 font-semibold whitespace-nowrap">Designation</th>
+<th class="p-4 font-semibold whitespace-nowrap">Email</th>
+<th class="p-4 font-semibold whitespace-nowrap">Mobile</th>
+<th class="p-4 font-semibold whitespace-nowrap">Joining Date</th>
+<th class="p-4 font-semibold whitespace-nowrap">Status</th>
+</tr>
+</thead>
+<tbody class="text-body-sm font-body-sm text-on-surface divide-y divide-outline-variant/20">
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="p-4 font-medium">EM1000SS</td>
+<td class="p-4">Shreyash Anawane</td>
+<td class="p-4">IT</td>
+<td class="p-4 text-secondary">Sr. Developer</td>
+<td class="p-4 text-secondary">shreyashanawane@gmail.com</td>
+<td class="p-4 text-secondary">9172617718</td>
+<td class="p-4 text-secondary">--</td>
+<td class="p-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-label-sm font-label-sm bg-emerald-100 text-emerald-700">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
+                                    </span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="p-4 font-medium">EM2000SS</td>
+<td class="p-4">Om Pawar</td>
+<td class="p-4">HR</td>
+<td class="p-4 text-secondary">HR Associate</td>
+<td class="p-4 text-secondary">ompawar01@gmail.com</td>
+<td class="p-4 text-secondary">--</td>
+<td class="p-4 text-secondary">--</td>
+<td class="p-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-label-sm font-label-sm bg-emerald-100 text-emerald-700">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
+                                    </span>
+</td>
+</tr>
+<!-- Add empty rows for structure if needed or just end table -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+
+
+
+
+
+
+</body></html>

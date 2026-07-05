@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 import { 
     FaBell, 
     FaCog, 
@@ -9,10 +10,11 @@ import {
     FaChevronDown, 
     FaCheckCircle, 
     FaCalendarTimes, 
-    FaBirthdayCake, 
+    FaClipboardList,
+    FaTasks,
     FaKey 
 } from "react-icons/fa";
-import profilePic from "../../assets/Softspire_Logo.jpeg"
+import profilePic from "../../assets/Softspire_Logo.jpeg";
 
 function Header() {
     const navigate = useNavigate();
@@ -20,8 +22,9 @@ function Header() {
     
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const [showNotifMenu, setShowNotifMenu] = useState(false);
+    const [notifications, setNotifications] = useState([]);
 
-    const user = JSON.parse(localStorage.getItem("user")) || { name: "Shreyash", role: "Admin" };
+    const user = JSON.parse(localStorage.getItem("user")) || { name: "Employee", role: "Employee" };
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -51,13 +54,77 @@ function Header() {
         return "Employee Management System";
     };
 
-    const mockNotifications = [
-        { id: 1, text: "New Employee Added", time: "5 mins ago", icon: <FaCheckCircle style={{color: "#22c55e"}} />, bg: "#d1fae5" },
-        { id: 2, text: "Leave Request Submitted", time: "2 hours ago", icon: <FaCheckCircle style={{color: "#3b82f6"}} />, bg: "#dbeafe" },
-        { id: 3, text: "Attendance Missing: Om Pawar", time: "1 day ago", icon: <FaCalendarTimes style={{color: "#ef4444"}} />, bg: "#fee2e2" },
-        { id: 4, text: "Birthday Today: Om Pawar", time: "Today", icon: <FaBirthdayCake style={{color: "#a855f7"}} />, bg: "#f3e8ff" },
-        { id: 5, text: "Password Changed Successfully", time: "3 days ago", icon: <FaKey style={{color: "#f59e0b"}} />, bg: "#fef3c7" },
-    ];
+    const fetchNotifications = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+            const res = await axios.get("http://localhost:5000/api/notifications", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setNotifications(res.data.notifications || []);
+        } catch (error) {
+            console.error("Failed to fetch notifications:", error);
+        }
+    };
+
+    const handleMarkAsRead = async (id) => {
+        try {
+            const token = localStorage.getItem("token");
+            await axios.put(`http://localhost:5000/api/notifications/${id}/read`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: 1 } : n));
+        } catch (error) {
+            console.error("Failed to mark notification as read:", error);
+        }
+    };
+
+    const handleMarkAllAsRead = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            await axios.put("http://localhost:5000/api/notifications/read-all", {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setNotifications(prev => prev.map(n => ({ ...n, is_read: 1 })));
+        } catch (error) {
+            console.error("Failed to mark all as read:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchNotifications();
+        // Poll notifications every 30 seconds for real-time feel
+        const interval = setInterval(fetchNotifications, 30000);
+        return () => clearInterval(interval);
+    }, []);
+
+    // Refresh when user toggles dropdown to show latest immediately
+    useEffect(() => {
+        if (showNotifMenu) {
+            fetchNotifications();
+        }
+    }, [showNotifMenu]);
+
+    const unreadCount = notifications.filter(n => !n.is_read).length;
+
+    const formatNotifTime = (timestamp) => {
+        if (!timestamp) return "";
+        const diffMs = new Date() - new Date(timestamp);
+        const diffMins = Math.floor(diffMs / 60000);
+        if (diffMins < 1) return "Just now";
+        if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? "s" : ""} ago`;
+        const diffHours = Math.floor(diffMins / 60);
+        if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+        const diffDays = Math.floor(diffHours / 24);
+        return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+    };
+
+    const getNotifIcon = (title) => {
+        const t = (title || "").toLowerCase();
+        if (t.includes("task")) return { icon: <FaTasks style={{color: "#3b82f6"}} />, bg: "#dbeafe" };
+        if (t.includes("leave")) return { icon: <FaCalendarTimes style={{color: "#ef4444"}} />, bg: "#fee2e2" };
+        return { icon: <FaBell style={{color: "#f59e0b"}} />, bg: "#fef3c7" };
+    };
 
     return (
         <header className="header">
@@ -86,7 +153,7 @@ function Header() {
             <div className="header-right">
                 {/* Notifications Bell */}
                 <div style={{position: "relative"}}>
-                    {/* <button 
+                    <button 
                         className="header-action-btn" 
                         onClick={() => {
                             setShowNotifMenu(!showNotifMenu);
@@ -94,27 +161,44 @@ function Header() {
                         }}
                     >
                         <FaBell />
-                        <span className="badge-count">5</span>
-                    </button> */}
+                        {unreadCount > 0 && <span className="badge-count">{unreadCount}</span>}
+                    </button>
 
                     {showNotifMenu && (
                         <div className="notifications-dropdown">
                             <div className="notif-header">
                                 <h4>Notifications</h4>
-                                <span onClick={() => setShowNotifMenu(false)}>Clear All</span>
+                                <span onClick={handleMarkAllAsRead}>Mark all read</span>
                             </div>
                             <div className="notif-list">
-                                {mockNotifications.map((n) => (
-                                    <div key={n.id} className="notif-item">
-                                        <div className="notif-icon-wrapper" style={{background: n.bg}}>
-                                            {n.icon}
-                                        </div>
-                                        <div className="notif-content">
-                                            <span className="notif-text">{n.text}</span>
-                                            <span className="notif-time">{n.time}</span>
-                                        </div>
+                                {notifications.length === 0 ? (
+                                    <div style={{ padding: "24px 16px", textAlign: "center", color: "#94a3b8", fontSize: "13px" }}>
+                                        No notifications yet
                                     </div>
-                                ))}
+                                ) : (
+                                    notifications.map((n) => {
+                                        const { icon, bg } = getNotifIcon(n.title);
+                                        return (
+                                            <div 
+                                                key={n.id} 
+                                                className={`notif-item ${!n.is_read ? "notif-unread" : ""}`}
+                                                onClick={() => handleMarkAsRead(n.id)}
+                                            >
+                                                <div className="notif-icon-wrapper" style={{background: bg}}>
+                                                    {icon}
+                                                </div>
+                                                <div className="notif-content" style={{ flex: 1 }}>
+                                                    <span className="notif-text" style={{ fontWeight: !n.is_read ? "700" : "500" }}>{n.title}</span>
+                                                    <p style={{ margin: "2px 0 0 0", fontSize: "12px", color: "#64748b", textAlign: "left", lineHeight: "1.4" }}>
+                                                        {n.message}
+                                                    </p>
+                                                    <span className="notif-time" style={{ marginTop: "4px" }}>{formatNotifTime(n.created_at)}</span>
+                                                </div>
+                                                {!n.is_read && <span className="notif-unread-dot"></span>}
+                                            </div>
+                                        );
+                                    })
+                                )}
                             </div>
                         </div>
                     )}
