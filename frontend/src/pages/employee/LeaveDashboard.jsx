@@ -106,8 +106,12 @@ function LeaveDashboard() {
         }
     };
 
-    const handleCancelRequest = async (requestId) => {
-        if (!window.confirm("Are you sure you want to cancel this pending leave request?")) return;
+    const handleCancelRequest = async (requestId, currentStatus) => {
+        const confirmMsg = currentStatus === "Approved"
+            ? "Are you sure you want to request cancellation for this approved leave?"
+            : "Are you sure you want to cancel this pending leave request?";
+            
+        if (!window.confirm(confirmMsg)) return;
 
         try {
             setActionLoading(true);
@@ -115,7 +119,10 @@ function LeaveDashboard() {
             await axios.delete(`http://localhost:5000/api/leaves/cancel/${requestId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            showNotification("success", "Leave request cancelled successfully.");
+            const successMsg = currentStatus === "Approved"
+                ? "Cancellation request submitted successfully."
+                : "Leave request cancelled successfully.";
+            showNotification("success", successMsg);
             fetchData();
         } catch (error) {
             console.error("Cancel leave request error:", error);
@@ -147,6 +154,8 @@ function LeaveDashboard() {
         switch (status) {
             case "Approved": return "badge-present"; // green
             case "Pending": return "badge-late"; // orange
+            case "Pending Cancellation": return "badge-late"; // orange
+            case "Cancelled": return "badge-absent"; // red
             case "Rejected": return "badge-absent"; // red
             default: return "badge-neutral";
         }
@@ -225,12 +234,25 @@ function LeaveDashboard() {
                                                 {record.status === "Pending" ? (
                                                     <button
                                                         className="clear-date-btn"
-                                                        onClick={() => handleCancelRequest(record.id)}
+                                                        onClick={() => handleCancelRequest(record.id, "Pending")}
                                                         style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "#ef4444" }}
                                                         disabled={actionLoading}
                                                     >
                                                         <FaTimes /> Cancel
                                                     </button>
+                                                ) : record.status === "Approved" ? (
+                                                    <button
+                                                        className="clear-date-btn"
+                                                        onClick={() => handleCancelRequest(record.id, "Approved")}
+                                                        style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "#f59e0b", background: "none", border: "none", cursor: "pointer", fontWeight: "600" }}
+                                                        disabled={actionLoading}
+                                                    >
+                                                        <FaTimes /> Request Cancel
+                                                    </button>
+                                                ) : record.status === "Pending Cancellation" ? (
+                                                    <span style={{ fontStyle: "italic", color: "#f59e0b", fontSize: "13px", fontWeight: "600" }}>
+                                                        Cancellation Pending
+                                                    </span>
                                                 ) : "--"}
                                             </td>
                                         </tr>

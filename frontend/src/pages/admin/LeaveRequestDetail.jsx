@@ -78,6 +78,8 @@ function LeaveRequestDetail() {
         Approved: { bg: "#dcfce7", color: "#16a34a", border: "#bbf7d0" },
         Pending:  { bg: "#fef9c3", color: "#ca8a04", border: "#fde68a" },
         Rejected: { bg: "#fee2e2", color: "#dc2626", border: "#fecaca" },
+        "Pending Cancellation": { bg: "#fee2e2", color: "#ca8a04", border: "#fecaca" },
+        Cancelled: { bg: "#f1f5f9", color: "#475569", border: "#cbd5e1" }
     };
 
     return (
@@ -195,8 +197,8 @@ function LeaveRequestDetail() {
                             </div>
                         )}
 
-                        {/* Action buttons — only for Pending */}
-                        {request.status === "Pending" && (
+                        {/* Action buttons — for Pending or Pending Cancellation */}
+                        {(request.status === "Pending" || request.status === "Pending Cancellation") && (
                             <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
                                 <button
                                     onClick={() => handleAction("Approved")}
@@ -209,7 +211,7 @@ function LeaveRequestDetail() {
                                         opacity: actionLoading ? 0.6 : 1
                                     }}
                                 >
-                                    <FaCheck /> Approve Leave
+                                    <FaCheck /> {request.status === "Pending Cancellation" ? "Approve Cancellation" : "Approve Leave"}
                                 </button>
                                 <button
                                     onClick={() => setShowRejectModal(true)}
@@ -222,7 +224,7 @@ function LeaveRequestDetail() {
                                         opacity: actionLoading ? 0.6 : 1
                                     }}
                                 >
-                                    <FaTimes /> Reject Leave
+                                    <FaTimes /> {request.status === "Pending Cancellation" ? "Reject Cancellation" : "Reject Leave"}
                                 </button>
                             </div>
                         )}
@@ -245,9 +247,13 @@ function LeaveRequestDetail() {
                             <FaTimes />
                         </button>
 
-                        <h2 style={{ marginBottom: "6px", fontWeight: "700", fontSize: "20px", color: "#ef4444" }}>Reject Leave Request</h2>
+                        <h2 style={{ marginBottom: "6px", fontWeight: "700", fontSize: "20px", color: "#ef4444" }}>
+                            {request.status === "Pending Cancellation" ? "Reject Leave Cancellation" : "Reject Leave Request"}
+                        </h2>
                         <p style={{ margin: "0 0 20px", fontSize: "14px", color: "#64748b" }}>
-                            Provide a reason so the employee understands the decision.
+                            {request.status === "Pending Cancellation"
+                                ? "Provide a reason so the employee knows why their cancellation request was denied."
+                                : "Provide a reason so the employee understands the decision."}
                         </p>
 
                         <div className="form-group" style={{ margin: "0 0 16px" }}>

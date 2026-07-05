@@ -38,9 +38,64 @@ const getGeofenceSettings = async () => {
     };
 };
 
+// Helper: Automatically check out expired records
+const autoCheckOutExpiredRecords = async () => {
+    try {
+        const localDate = new Date().toLocaleDateString('sv');
+        const currentTime = new Date().toTimeString().split(" ")[0]; // HH:MM:SS
+        
+        // Find all records that are checked in but have no check-out, and are either:
+        // 1. For a past date
+        // 2. For today, but current time is past 10:30 PM (22:30:00)
+        const [records] = await db.promise().query(
+            `SELECT * FROM attendance 
+             WHERE check_out IS NULL 
+               AND (attendance_date < ? OR (attendance_date = ? AND ? >= '22:30:00'))`,
+            [localDate, localDate, currentTime]
+        );
+        
+        for (const record of records) {
+            const autoOutTime = "22:30:00";
+            const limitTime = "18:00:00"; // Working hours cap at 6:00 PM
+            
+            const [inH, inM, inS] = record.check_in.split(":").map(Number);
+            const [limitH, limitM, limitS] = limitTime.split(":").map(Number);
+            
+            let inSeconds = inH * 3600 + inM * 60 + inS;
+            let limitSeconds = limitH * 3600 + limitM * 60 + limitS;
+            
+            let diffSeconds = limitSeconds - inSeconds;
+            if (diffSeconds < 0) diffSeconds = 0;
+            
+            const diffH = Math.floor(diffSeconds / 3600);
+            const diffM = Math.floor((diffSeconds % 3600) / 60);
+            const diffS = diffSeconds % 60;
+            
+            const workingHours = [
+                String(diffH).padStart(2, '0'),
+                String(diffM).padStart(2, '0'),
+                String(diffS).padStart(2, '0')
+            ].join(":");
+            
+            let status = record.status;
+            if (diffSeconds < 4 * 3600) {
+                status = "Half Day";
+            }
+            
+            await db.promise().query(
+                `UPDATE attendance SET check_out = ?, working_hours = ?, status = ? WHERE id = ?`,
+                [autoOutTime, workingHours, status, record.id]
+            );
+        }
+    } catch (err) {
+        console.error("Error in autoCheckOutExpiredRecords helper:", err);
+    }
+};
+
 // 1. POST /api/attendance/check-in
 const checkIn = async (req, res) => {
     try {
+        await autoCheckOutExpiredRecords();
         const employeeId = await getEmployeeIdFromUser(req.user.id);
         if (!employeeId) {
             return res.status(404).json({
@@ -61,6 +116,39 @@ const checkIn = async (req, res) => {
 
         const localDate = new Date().toLocaleDateString('sv');
         const checkInTime = new Date().toTimeString().split(" ")[0]; // HH:MM:SS
+
+        // Enforce Holiday: Saturday & Sunday are blocked
+        const now = new Date();
+        const dayOfWeek = now.getDay(); // 0 is Sunday, 6 is Saturday
+        if (dayOfWeek === 0 || dayOfWeek === 6) {
+            return res.status(400).json({
+                success: false,
+                message: "Check-in is not allowed on Saturdays and Sundays (Holidays)."
+            });
+        }
+
+        // Enforce Check-in time window: 8:45 AM to 2:00 PM
+        if (checkInTime < "08:45:00" || checkInTime > "14:00:00") {
+            return res.status(400).json({
+                success: false,
+                message: "Check-in is only allowed between 8:45 AM and 2:00 PM."
+            });
+        }
+
+        // Enforce Leave check: Check if employee has an Approved or Pending Cancellation leave request today
+        const [leaveRecords] = await db.promise().query(
+            `SELECT id FROM leave_requests 
+             WHERE employee_id = ? 
+               AND status IN ('Approved', 'Pending Cancellation') 
+               AND ? BETWEEN start_date AND end_date`,
+            [employeeId, localDate]
+        );
+        if (leaveRecords.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Check-in is blocked because you are on approved leave today."
+            });
+        }
 
         // Check if already checked in today
         const [existing] = await db.promise().query(
@@ -138,6 +226,14 @@ const checkOut = async (req, res) => {
 
         const localDate = new Date().toLocaleDateString('sv');
         const checkOutTime = new Date().toTimeString().split(" ")[0]; // HH:MM:SS
+
+        // Enforce check-out window: 8:45 AM to 10:30 PM
+        if (checkOutTime < "08:45:00" || checkOutTime > "22:30:00") {
+            return res.status(400).json({
+                success: false,
+                message: "Check-out is only allowed between 8:45 AM and 10:30 PM."
+            });
+        }
 
         // Get today's attendance record
         const [rows] = await db.promise().query(
@@ -223,6 +319,7 @@ const checkOut = async (req, res) => {
 // 3. GET /api/attendance/today
 const getTodayStatus = async (req, res) => {
     try {
+        await autoCheckOutExpiredRecords();
         const employeeId = await getEmployeeIdFromUser(req.user.id);
         if (!employeeId) {
             return res.status(404).json({
@@ -236,10 +333,85 @@ const getTodayStatus = async (req, res) => {
             "SELECT * FROM attendance WHERE employee_id = ? AND attendance_date = ?",
             [employeeId, localDate]
         );
+        const attendanceRecord = rows[0] || null;
+
+        // Determine if check-in is allowed
+        let isCheckInAllowed = true;
+        let checkInBlockReason = "";
+
+        const checkInTime = new Date().toTimeString().split(" ")[0]; // HH:MM:SS
+        const now = new Date();
+        const dayOfWeek = now.getDay(); // 0 is Sunday, 6 is Saturday
+
+        if (attendanceRecord) {
+            isCheckInAllowed = false;
+            checkInBlockReason = "You have already checked in today.";
+        } else if (dayOfWeek === 0 || dayOfWeek === 6) {
+            isCheckInAllowed = false;
+            checkInBlockReason = "Check-in is disabled on weekends (Saturday & Sunday).";
+        } else if (checkInTime < "08:45:00" || checkInTime > "14:00:00") {
+            isCheckInAllowed = false;
+            checkInBlockReason = "Check-in is only open from 8:45 AM to 2:00 PM.";
+        } else {
+            // Check approved leaves
+            const [leaveRecords] = await db.promise().query(
+                `SELECT id FROM leave_requests 
+                 WHERE employee_id = ? 
+                   AND status IN ('Approved', 'Pending Cancellation') 
+                   AND ? BETWEEN start_date AND end_date`,
+                [employeeId, localDate]
+            );
+            if (leaveRecords.length > 0) {
+                isCheckInAllowed = false;
+                checkInBlockReason = "Check-in is blocked because you are on approved leave today.";
+            }
+        }
+
+        // Determine if check-out is allowed
+        let isCheckOutAllowed = false;
+        let checkOutBlockReason = "";
+
+        const checkOutTime = new Date().toTimeString().split(" ")[0]; // HH:MM:SS
+
+        if (!attendanceRecord) {
+            isCheckOutAllowed = false;
+            checkOutBlockReason = "Please check in first.";
+        } else if (attendanceRecord.check_out) {
+            isCheckOutAllowed = false;
+            checkOutBlockReason = "You have already checked out today.";
+        } else if (checkOutTime < "08:45:00" || checkOutTime > "22:30:00") {
+            isCheckOutAllowed = false;
+            checkOutBlockReason = "Check-out is only allowed between 8:45 AM and 10:30 PM.";
+        } else {
+            isCheckOutAllowed = true;
+        }
+
+        let todayStatusLabel = "Absent";
+        if (attendanceRecord) {
+            todayStatusLabel = attendanceRecord.status;
+        } else if (dayOfWeek === 0 || dayOfWeek === 6) {
+            todayStatusLabel = "Weekly Off";
+        } else {
+            const [leaveRecords] = await db.promise().query(
+                `SELECT id FROM leave_requests 
+                 WHERE employee_id = ? 
+                   AND status IN ('Approved', 'Pending Cancellation') 
+                   AND ? BETWEEN start_date AND end_date`,
+                [employeeId, localDate]
+            );
+            if (leaveRecords.length > 0) {
+                todayStatusLabel = "On Leave";
+            }
+        }
 
         return res.status(200).json({
             success: true,
-            attendance: rows[0] || null
+            attendance: attendanceRecord,
+            isCheckInAllowed,
+            checkInBlockReason,
+            isCheckOutAllowed,
+            checkOutBlockReason,
+            todayStatusLabel
         });
     } catch (error) {
         console.error("Get today status error:", error);
@@ -253,6 +425,7 @@ const getTodayStatus = async (req, res) => {
 // 4. GET /api/attendance/history (for current employee)
 const getEmployeeHistory = async (req, res) => {
     try {
+        await autoCheckOutExpiredRecords();
         const employeeId = await getEmployeeIdFromUser(req.user.id);
         if (!employeeId) {
             return res.status(404).json({
@@ -289,6 +462,7 @@ const getManagerDepartment = async (userId) => {
 // 5. GET /api/attendance (Admin view: gets all attendance records)
 const getAllAttendance = async (req, res) => {
     try {
+        await autoCheckOutExpiredRecords();
         const role = req.user.role;
         let query = `
             SELECT a.*, e.first_name, e.last_name, e.department, e.designation 
@@ -325,6 +499,7 @@ const getAllAttendance = async (req, res) => {
 // 6. GET /api/attendance/:employeeId (Admin view: history for specific employee)
 const getEmployeeAttendance = async (req, res) => {
     try {
+        await autoCheckOutExpiredRecords();
         const { employeeId } = req.params;
         const role = req.user.role;
 
@@ -360,11 +535,99 @@ const getEmployeeAttendance = async (req, res) => {
     }
 };
 
+// 7. POST /api/attendance/admin/check-out
+const adminCheckOut = async (req, res) => {
+    try {
+        const { employeeId, attendanceDate } = req.body;
+        if (!employeeId) {
+            return res.status(400).json({
+                success: false,
+                message: "Employee ID is required."
+            });
+        }
+
+        const targetDate = attendanceDate || new Date().toLocaleDateString('sv');
+
+        // Get the attendance record
+        const [rows] = await db.promise().query(
+            "SELECT * FROM attendance WHERE employee_id = ? AND attendance_date = ?",
+            [employeeId, targetDate]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: `No check-in record found for employee on ${targetDate}.`
+            });
+        }
+
+        const record = rows[0];
+        if (record.check_out) {
+            return res.status(400).json({
+                success: false,
+                message: "Employee is already checked out."
+            });
+        }
+
+        const localDate = new Date().toLocaleDateString('sv');
+        let checkOutTime = new Date().toTimeString().split(" ")[0]; // HH:MM:SS
+        if (targetDate < localDate) {
+            checkOutTime = "22:30:00";
+        }
+
+        // Calculate working hours
+        const [inH, inM, inS] = record.check_in.split(":").map(Number);
+        const [outH, outM, outS] = checkOutTime.split(":").map(Number);
+
+        let inSeconds = inH * 3600 + inM * 60 + inS;
+        let outSeconds = outH * 3600 + outM * 60 + outS;
+        let diffSeconds = outSeconds - inSeconds;
+        if (diffSeconds < 0) diffSeconds = 0;
+
+        const diffH = Math.floor(diffSeconds / 3600);
+        const diffM = Math.floor((diffSeconds % 3600) / 60);
+        const diffS = diffSeconds % 60;
+
+        const workingHours = [
+            String(diffH).padStart(2, '0'),
+            String(diffM).padStart(2, '0'),
+            String(diffS).padStart(2, '0')
+        ].join(":");
+
+        let status = record.status;
+        if (diffSeconds < 4 * 3600) {
+            status = "Half Day";
+        }
+
+        await db.promise().query(
+            `UPDATE attendance SET check_out = ?, working_hours = ?, status = ? WHERE id = ?`,
+            [checkOutTime, workingHours, status, record.id]
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Employee checked out successfully by Admin.",
+            data: {
+                check_out: checkOutTime,
+                working_hours: workingHours,
+                status
+            }
+        });
+    } catch (error) {
+        console.error("Admin check-out error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Server error during admin check-out."
+        });
+    }
+};
+
 module.exports = {
     checkIn,
     checkOut,
     getTodayStatus,
     getEmployeeHistory,
     getAllAttendance,
-    getEmployeeAttendance
+    getEmployeeAttendance,
+    adminCheckOut
 };

@@ -8,7 +8,8 @@ const {
     getTodayStatus,
     getEmployeeHistory,
     getAllAttendance,
-    getEmployeeAttendance
+    getEmployeeAttendance,
+    adminCheckOut
 } = require("../controllers/attendanceController");
 
 // Employee routes (Requires general JWT authentication)
@@ -19,6 +20,7 @@ router.get("/history", protect, getEmployeeHistory);
 
 // Admin/Manager routes
 router.get("/", protect, adminOrManager, getAllAttendance);
+router.post("/admin/check-out", protect, adminOrManager, adminCheckOut);
 router.get("/:employeeId", protect, adminOrManager, getEmployeeAttendance);
 
 module.exports = router;

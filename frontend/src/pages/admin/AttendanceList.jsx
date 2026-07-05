@@ -28,6 +28,24 @@ function AttendanceList() {
         fetchAttendance();
     }, []);
 
+    const handleForceCheckOut = async (employeeId, attendanceDate) => {
+        if (!window.confirm("Are you sure you want to force check-out this employee?")) return;
+        try {
+            const token = localStorage.getItem("token");
+            const recordDateStr = new Date(attendanceDate).toLocaleDateString("sv"); // Sweden format YYYY-MM-DD
+            await axios.post(
+                "http://localhost:5000/api/attendance/admin/check-out",
+                { employeeId, attendanceDate: recordDateStr },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            alert("Employee checked out successfully.");
+            fetchAttendance();
+        } catch (error) {
+            console.error("Force check-out error:", error);
+            alert(error.response?.data?.message || "Failed to force check-out.");
+        }
+    };
+
     const getInitials = (firstName, lastName) => {
         const f = firstName ? firstName.charAt(0).toUpperCase() : "";
         const l = lastName ? lastName.charAt(0).toUpperCase() : "";
@@ -172,9 +190,7 @@ function AttendanceList() {
                                 <th>Check-Out</th>
                                 <th>Working Hours</th>
                                 <th>Status</th>
-                                {/* <th>Geofence</th>
-                                <th>Distance</th>
-                                <th>Map</th> */}
+                                <th style={{ textAlign: "center" }}>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -214,36 +230,30 @@ function AttendanceList() {
                                                 {record.status}
                                             </span>
                                         </td>
-                                        {/* <td>
-                                            <span className={`status-badge ${getLocationStatusClass(record.location_status)}`}>
-                                                {record.location_status || "N/A"}
-                                            </span>
-                                        </td>
-                                        <td style={{ fontWeight: "600", color: "#475569" }}>
-                                            {record.distance_from_office !== null && record.distance_from_office !== undefined 
-                                                ? `${record.distance_from_office}m` 
-                                                : "N/A"}
-                                        </td> */}
-                                        {/* <td>
-                                            {record.latitude && record.longitude ? (
-                                                <a 
-                                                    href={`https://www.google.com/maps?q=${record.latitude},${record.longitude}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
+                                        <td style={{ textAlign: "center" }}>
+                                            {!record.check_out ? (
+                                                <button
+                                                    onClick={() => handleForceCheckOut(record.employee_id, record.attendance_date)}
                                                     style={{
-                                                        background: "#4f8cff",
-                                                        color: "white",
-                                                        padding: "4px 10px",
+                                                        background: "#fee2e2",
+                                                        color: "#ef4444",
+                                                        border: "1px solid #fecaca",
+                                                        padding: "6px 12px",
                                                         borderRadius: "6px",
-                                                        textDecoration: "none",
                                                         fontSize: "12px",
-                                                        fontWeight: "600"
+                                                        fontWeight: "600",
+                                                        cursor: "pointer",
+                                                        transition: "all 0.15s ease"
                                                     }}
+                                                    onMouseEnter={e => { e.currentTarget.style.background="#ef4444"; e.currentTarget.style.color="white"; }}
+                                                    onMouseLeave={e => { e.currentTarget.style.background="#fee2e2"; e.currentTarget.style.color="#ef4444"; }}
                                                 >
-                                                    View Map
-                                                </a>
-                                            ) : "N/A"}
-                                        </td> */}
+                                                    Force Check-out
+                                                </button>
+                                            ) : (
+                                                <span style={{ color: "#94a3b8", fontSize: "13px", fontWeight: "600" }}>Checked Out</span>
+                                            )}
+                                        </td>
                                     </tr>
                                 ))
                             )}

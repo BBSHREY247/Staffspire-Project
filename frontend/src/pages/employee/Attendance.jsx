@@ -9,6 +9,10 @@ function Attendance() {
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
     const [message, setMessage] = useState(null);
+    const [isCheckInAllowed, setIsCheckInAllowed] = useState(true);
+    const [isCheckOutAllowed, setIsCheckOutAllowed] = useState(false);
+    const [checkInBlockReason, setCheckInBlockReason] = useState("");
+    const [todayStatusLabel, setTodayStatusLabel] = useState("Absent");
     const [currentTime, setCurrentTime] = useState(new Date());
 
     // Live clock update
@@ -28,6 +32,10 @@ function Attendance() {
             // Fetch today's status
             const todayRes = await axios.get("http://localhost:5000/api/attendance/today", { headers });
             setTodayRecord(todayRes.data.attendance);
+            setIsCheckInAllowed(todayRes.data.isCheckInAllowed !== false);
+            setIsCheckOutAllowed(!!todayRes.data.isCheckOutAllowed);
+            setCheckInBlockReason(todayRes.data.checkInBlockReason || "");
+            setTodayStatusLabel(todayRes.data.todayStatusLabel || "Absent");
 
             // Fetch history
             const historyRes = await axios.get("http://localhost:5000/api/attendance/history", { headers });
@@ -171,6 +179,10 @@ function Attendance() {
             case "Late": return "badge-late";
             case "Half Day": return "badge-halfday";
             case "Absent": return "badge-absent";
+            case "Weekly Off":
+            case "Holiday":
+            case "On Leave":
+                return "badge-neutral";
             default: return "badge-neutral";
         }
     };
@@ -207,26 +219,30 @@ function Attendance() {
                             </div>
                         </div>
 
-                        <div className="action-buttons">
-                            <button
-                                className="check-btn check-in-btn"
-                                onClick={handleCheckIn}
-                                disabled={loading || actionLoading || !!todayRecord}
-                            >
-                                <FaSignInAlt /> Check In
-                            </button>
-                            <button
-                                className="check-btn check-out-btn"
-                                onClick={handleCheckOut}
-                                disabled={
-                                    loading ||
-                                    actionLoading ||
-                                    !todayRecord ||
-                                    !!todayRecord?.check_out
-                                }
-                            >
-                                <FaSignOutAlt /> Check Out
-                            </button>
+                        <div className="action-buttons" style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%" }}>
+                            <div style={{ display: "flex", gap: "16px", width: "100%" }}>
+                                <button
+                                    className="check-btn check-in-btn"
+                                    onClick={handleCheckIn}
+                                    disabled={loading || actionLoading || !isCheckInAllowed}
+                                    style={{ flex: 1 }}
+                                >
+                                    <FaSignInAlt /> Check In
+                                </button>
+                                <button
+                                    className="check-btn check-out-btn"
+                                    onClick={handleCheckOut}
+                                    disabled={loading || actionLoading || !isCheckOutAllowed}
+                                    style={{ flex: 1 }}
+                                >
+                                    <FaSignOutAlt /> Check Out
+                                </button>
+                            </div>
+                            {!todayRecord && checkInBlockReason && (
+                                <p style={{ color: "#ef4444", fontSize: "13.5px", fontWeight: "600", textAlign: "center", margin: "4px 0 0 0" }}>
+                                    ⚠️ {checkInBlockReason}
+                                </p>
+                            )}
                         </div>
                     </div>
 
@@ -239,8 +255,8 @@ function Attendance() {
                                     <FaCalendarDay className="card-metric-icon" />
                                 </div>
                                 <div className="card-val">
-                                    <span className={`status-badge ${getStatusClass(todayRecord?.status || "Absent")}`}>
-                                        {todayRecord ? todayRecord.status : "Absent"}
+                                    <span className={`status-badge ${getStatusClass(todayRecord ? todayRecord.status : todayStatusLabel)}`}>
+                                        {todayRecord ? todayRecord.status : todayStatusLabel}
                                     </span>
                                 </div>
                             </div>

@@ -106,12 +106,17 @@ const cancelLeaveRequest = async (req, res) => {
             return res.status(403).json({ success: false, message: "Unauthorized request cancellation." });
         }
 
-        if (request.status !== "Pending") {
-            return res.status(400).json({ success: false, message: "Only pending leave requests can be cancelled." });
+        if (request.status === "Pending") {
+            await db.promise().query("DELETE FROM leave_requests WHERE id = ?", [id]);
+            return res.status(200).json({ success: true, message: "Leave request cancelled successfully." });
+        } else if (request.status === "Approved") {
+            await db.promise().query("UPDATE leave_requests SET status = 'Pending Cancellation' WHERE id = ?", [id]);
+            return res.status(200).json({ success: true, message: "Cancellation request submitted. Waiting for admin approval." });
+        } else if (request.status === "Pending Cancellation") {
+            return res.status(400).json({ success: false, message: "Cancellation request is already pending approval." });
+        } else {
+            return res.status(400).json({ success: false, message: "Only pending or approved leave requests can be cancelled." });
         }
-
-        await db.promise().query("DELETE FROM leave_requests WHERE id = ?", [id]);
-        return res.status(200).json({ success: true, message: "Leave request cancelled successfully." });
     } catch (error) {
         console.error("Cancel leave request error:", error);
         return res.status(500).json({ success: false, message: "Failed to cancel request." });
@@ -175,22 +180,31 @@ const adminLeaveAction = async (req, res) => {
             }
         }
 
-        if (requests[0].status !== "Pending") {
-            return res.status(400).json({ success: false, message: "Request has already been processed." });
+        const request = requests[0];
+
+        if (request.status !== "Pending" && request.status !== "Pending Cancellation") {
+            return res.status(400).json({ success: false, message: "Request has already been processed or is not in a processable state." });
         }
 
-        if (action === "Approved") {
-            await db.promise().query("UPDATE leave_requests SET status = 'Approved' WHERE id = ?", [id]);
+        let targetStatus = "";
+        if (request.status === "Pending Cancellation") {
+            targetStatus = action === "Approved" ? "Cancelled" : "Approved";
         } else {
+            targetStatus = action === "Approved" ? "Approved" : "Rejected";
+        }
+
+        if (action === "Rejected") {
             await db.promise().query(
-                "UPDATE leave_requests SET status = 'Rejected', rejection_remarks = ? WHERE id = ?",
-                [rejection_remarks || null, id]
+                "UPDATE leave_requests SET status = ?, rejection_remarks = ? WHERE id = ?",
+                [targetStatus, rejection_remarks || null, id]
             );
+        } else {
+            await db.promise().query("UPDATE leave_requests SET status = ? WHERE id = ?", [targetStatus, id]);
         }
 
         return res.status(200).json({
             success: true,
-            message: `Leave request has been successfully ${action.toLowerCase()}.`
+            message: `Leave request has been successfully processed.`
         });
     } catch (error) {
         console.error("Admin leave action error:", error);

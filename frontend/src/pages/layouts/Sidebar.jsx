@@ -48,12 +48,14 @@ function Sidebar() {
 
     const managerMenuItems = [
         { name: "Dashboard", path: "/manager/dashboard", icon: <FaHome /> },
+        { name: "My Profile", path: "/employee/profile", icon: <FaUserCircle /> },
+        { name: "My Attendance", path: "/employee/attendance", icon: <FaCalendarCheck /> },
+        { name: "My Leaves", path: "/employee/leaves", icon: <FaClipboardList /> },
         { name: "View Team", path: "/admin/employees", icon: <FaUsers /> },
-        { name: "Attendance", path: "/admin/attendance", icon: <FaCalendarCheck /> },
-        { name: "Leave Requests", path: "/admin/leaves", icon: <FaClipboardList /> },
+        { name: "Team Attendance", path: "/admin/attendance", icon: <FaCalendarCheck /> },
+        { name: "Team Leaves", path: "/admin/leaves", icon: <FaClipboardList /> },
         { name: "Tasks", path: "/admin/tasks", icon: <FaTasks /> },
         { name: "Reports", path: "/reports", icon: <FaChartBar /> },
-        { name: "Profile", path: "/employee/profile", icon: <FaUserCircle /> },
         { name: "Change Password", path: "/change-password", icon: <FaCog /> },
     ];
 
