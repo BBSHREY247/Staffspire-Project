@@ -68,7 +68,6 @@ app.use("/api/reports", reportRoutes);
 const notificationRoutes = require("./routes/notificationRoutes");
 app.use("/api/notifications", notificationRoutes);
 
-
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
