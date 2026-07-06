@@ -1,4 +1,5 @@
 /* Entry point for frontend styles */
 @import "./global.css";
 @import "./login.css";
-@import "./dashboard.css"
+@import "./dashboard.css";
+@import "./adminDashboard.css";

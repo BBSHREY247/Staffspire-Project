@@ -3,6 +3,7 @@ const router = express.Router();
 const protect = require("../middleware/authMiddleware");
 const { adminOnly, adminOrManager } = require("../middleware/roleMiddleware");
 const { getManagerDashboardInfo } = require("../controllers/managerDashboardController");
+const { getAdminDashboardStats } = require("../controllers/adminDashboardController");
 
 router.get(
     "/dashboard",
@@ -14,6 +15,13 @@ router.get(
             message:"Welcome Admin Dashboard"
         });
     }
+);
+
+router.get(
+    "/dashboard-stats",
+    protect,
+    adminOnly,
+    getAdminDashboardStats
 );
 
 router.get(
