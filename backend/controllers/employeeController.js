@@ -226,6 +226,16 @@ const updateEmployee = async (req, res) => {
                 });
             }
 
+            // Block managers from modifying their own employee record
+            const [users] = await db.promise().query("SELECT email FROM users WHERE id = ?", [req.user.id]);
+            const managerEmail = users.length ? users[0].email : null;
+            if (managerEmail && employee.email && managerEmail.toLowerCase() === employee.email.toLowerCase()) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Forbidden: You cannot modify your own profile. Please contact an Administrator."
+                });
+            }
+
             // Manager can only edit mobile, designation, status
             const { mobile, designation, status } = req.body;
             await db.promise().query(

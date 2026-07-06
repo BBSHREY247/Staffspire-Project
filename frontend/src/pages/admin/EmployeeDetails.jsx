@@ -402,12 +402,14 @@ function EmployeeDetails() {
                                         <FaTrash /> Delete
                                     </button>
                                 )}
-                                <button
-                                    className="action-btn-custom action-btn-primary"
-                                    onClick={() => setEditing(true)}
-                                >
-                                    <FaEdit /> Edit Profile
-                                </button>
+                                {!(isManager && employee.email === loggedInUser.email) && (
+                                    <button
+                                        className="action-btn-custom action-btn-primary"
+                                        onClick={() => setEditing(true)}
+                                    >
+                                        <FaEdit /> Edit Profile
+                                    </button>
+                                )}
                             </div>
                         </div>
                     )}

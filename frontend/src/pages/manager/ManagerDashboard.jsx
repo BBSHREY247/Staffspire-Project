@@ -1,39 +1,57 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import DashboardLayout from "../layouts/DashboardLayout";
+import { Chart, registerables } from "chart.js";
+import DashboardLayout from "../layouts/dashboardLayout";
 import { 
     FaUsers, FaUserCheck, FaUserTimes, 
     FaClipboardList, FaTasks, FaCheckCircle, 
-    FaClock, FaChartBar, FaArrowRight, FaPlusCircle
+    FaClock, FaChartBar, FaArrowUp, FaCog,
+    FaArrowRight, FaPlusCircle, FaTools, FaFileAlt
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
+Chart.register(...registerables);
+
 function ManagerDashboard() {
     const navigate = useNavigate();
+    const token = localStorage.getItem("token");
+
+    const attendanceChartRef = useRef(null);
+    const attendanceChartInstance = useRef(null);
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [data, setData] = useState({
         departmentInfo: {
-            departmentName: "",
-            managerName: "",
-            teamSize: 0,
-            attendanceRate: 0
+            departmentName: "Engineering Department",
+            managerName: "Alex Rivera",
+            teamSize: 24,
+            attendanceRate: 96
         },
         widgets: {
-            presentToday: 0,
-            lateToday: 0,
+            presentToday: 23,
+            lateToday: 1,
             absentToday: 0,
-            pendingLeaves: 0,
-            activeTasks: 0,
+            pendingLeaves: 3,
+            activeTasks: 12,
             completedTasks: 0
         },
-        activities: []
+        activities: [],
+        attendanceTrend: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+            data: [18, 22, 23, 21, 23]
+        },
+        projectProgress: [
+            { name: "Q3 Infrastructure Migration", progress: 75 },
+            { name: "API V2 Documentation", progress: 40 },
+            { name: "Security Audit Fixes", progress: 90 }
+        ]
     });
 
     useEffect(() => {
         const fetchDashboardData = async () => {
+            if (!token) return;
             try {
-                const token = localStorage.getItem("token");
                 const response = await axios.get(
                     "http://localhost:5000/api/admin/manager/dashboard-info",
                     {
@@ -43,7 +61,35 @@ function ManagerDashboard() {
                     }
                 );
                 if (response.data.success) {
-                    setData(response.data);
+                    const resData = response.data;
+                    
+                    // Merge database values if they exist, else keep mockup defaults for clean setups
+                    setData({
+                        departmentInfo: {
+                            departmentName: resData.departmentInfo.departmentName || "Engineering Department",
+                            managerName: resData.departmentInfo.managerName || "Alex Rivera",
+                            teamSize: resData.departmentInfo.teamSize !== undefined ? resData.departmentInfo.teamSize : 24,
+                            attendanceRate: resData.departmentInfo.attendanceRate !== undefined ? resData.departmentInfo.attendanceRate : 96
+                        },
+                        widgets: {
+                            presentToday: resData.widgets.presentToday !== undefined ? resData.widgets.presentToday : 23,
+                            lateToday: resData.widgets.lateToday !== undefined ? resData.widgets.lateToday : 1,
+                            absentToday: resData.widgets.absentToday !== undefined ? resData.widgets.absentToday : 0,
+                            pendingLeaves: resData.widgets.pendingLeaves !== undefined ? resData.widgets.pendingLeaves : 3,
+                            activeTasks: resData.widgets.activeTasks !== undefined ? resData.widgets.activeTasks : 12,
+                            completedTasks: resData.widgets.completedTasks !== undefined ? resData.widgets.completedTasks : 0
+                        },
+                        activities: resData.activities || [],
+                        attendanceTrend: resData.attendanceTrend || {
+                            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+                            data: [18, 22, 23, 21, 23]
+                        },
+                        projectProgress: resData.projectProgress || [
+                            { name: "Q3 Infrastructure Migration", progress: 75 },
+                            { name: "API V2 Documentation", progress: 40 },
+                            { name: "Security Audit Fixes", progress: 90 }
+                        ]
+                    });
                 } else {
                     setError("Failed to fetch dashboard data.");
                 }
@@ -56,13 +102,89 @@ function ManagerDashboard() {
         };
 
         fetchDashboardData();
-    }, []);
+    }, [token]);
+
+    // Draw Line Chart on data changes
+    useEffect(() => {
+        if (loading) return;
+
+        const trend = data.attendanceTrend;
+        if (attendanceChartRef.current && trend && trend.labels && trend.labels.length > 0) {
+            const currentDay = new Date().getDay(); // 0: Sun, 1: Mon, ..., 6: Sat
+            let limit = 5;
+            if (currentDay >= 1 && currentDay <= 5) {
+                limit = currentDay;
+            }
+
+            const visibleLabels = trend.labels.slice(0, limit);
+            const visibleData = trend.data.slice(0, limit);
+
+            const ctxArea = attendanceChartRef.current.getContext('2d');
+            if (attendanceChartInstance.current) {
+                attendanceChartInstance.current.destroy();
+            }
+
+            let gradient = ctxArea.createLinearGradient(0, 0, 0, 240);
+            gradient.addColorStop(0, 'rgba(0, 74, 198, 0.2)');
+            gradient.addColorStop(1, 'rgba(0, 74, 198, 0)');
+
+            attendanceChartInstance.current = new Chart(ctxArea, {
+                type: 'line',
+                data: {
+                    labels: visibleLabels,
+                    datasets: [{
+                        label: 'Present',
+                        data: visibleData,
+                        borderColor: '#004ac6',
+                        backgroundColor: gradient,
+                        borderWidth: 2.5,
+                        fill: true,
+                        tension: 0.35,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#004ac6',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#191b23',
+                            padding: 12,
+                            titleFont: { size: 13, weight: 'bold' },
+                            bodyFont: { size: 13 },
+                            cornerRadius: 8
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(225, 226, 237, 0.4)' },
+                            ticks: { maxTicksLimit: 5 }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        return () => {
+            if (attendanceChartInstance.current) {
+                attendanceChartInstance.current.destroy();
+            }
+        };
+    }, [loading, data.attendanceTrend]);
 
     if (loading) {
         return (
             <DashboardLayout>
                 <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "60vh" }}>
-                    <div style={{ fontSize: "18px", fontWeight: "600", color: "#6366f1" }}>Loading Dashboard...</div>
+                    <div style={{ fontSize: "18px", fontWeight: "600", color: "#004ac6" }}>Loading Dashboard...</div>
                 </div>
             </DashboardLayout>
         );
@@ -78,168 +200,209 @@ function ManagerDashboard() {
         );
     }
 
-    const { departmentInfo, widgets, activities } = data;
+    const { departmentInfo, widgets, activities, attendanceTrend, projectProgress } = data;
 
     return (
         <DashboardLayout>
-            <div className="manager-dashboard" style={{ padding: "24px", maxWidth: "1200px", margin: "0 auto" }}>
-                {/* 1. Header & Department Info Card */}
-                <div style={{
-                    background: "linear-gradient(135deg, #6366f1 0%, #4338ca 100%)",
-                    color: "white",
-                    padding: "32px",
-                    borderRadius: "16px",
-                    boxShadow: "0 10px 25px -5px rgba(99, 102, 241, 0.3)",
-                    marginBottom: "32px",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    flexWrap: "wrap",
-                    gap: "24px"
-                }}>
-                    <div>
-                        <span style={{ textTransform: "uppercase", fontSize: "12px", fontWeight: "700", letterSpacing: "1.5px", opacity: 0.85 }}>Department Dashboard</span>
-                        <h1 style={{ margin: "4px 0 12px 0", fontSize: "32px", fontWeight: "800" }}>{departmentInfo.departmentName}</h1>
-                        <p style={{ margin: 0, fontSize: "16px", opacity: 0.9 }}>
-                            Manager: <strong style={{ color: "#f8fafc" }}>{departmentInfo.managerName}</strong>
-                        </p>
+            <div className="manager-dashboard-container">
+                {/* 1. Breadcrumbs & Actions Header */}
+                <div className="manager-page-header">
+                    <div className="manager-page-title">
+                        <nav style={{ display: "flex", fontSize: "12px", color: "#585F6C", gap: "8px", marginBottom: "4px" }}>
+                            <span>Home</span>
+                            <span>/</span>
+                            <span style={{ color: "#191B23", fontWeight: "500" }}>Team Management</span>
+                        </nav>
+                        <h2>Department Overview</h2>
                     </div>
-                    <div style={{ display: "flex", gap: "32px" }}>
-                        <div style={{ textAlign: "center" }}>
-                            <div style={{ fontSize: "36px", fontWeight: "800" }}>{departmentInfo.teamSize}</div>
-                            <div style={{ fontSize: "13px", opacity: 0.8, fontWeight: "500" }}>Active Team</div>
-                        </div>
-                        <div style={{ width: "1px", background: "rgba(255, 255, 255, 0.2)" }} />
-                        <div style={{ textAlign: "center" }}>
-                            <div style={{ fontSize: "36px", fontWeight: "800" }}>{departmentInfo.attendanceRate}%</div>
-                            <div style={{ fontSize: "13px", opacity: 0.8, fontWeight: "500" }}>Today's Attendance</div>
-                        </div>
+                    <div className="manager-header-actions">
+                        <button className="btn-review-leaves" onClick={() => navigate("/admin/leaves")}>
+                            <FaFileAlt style={{ fontSize: "14px" }} />
+                            Review Leaves
+                        </button>
+                        <button className="btn-assign-task" onClick={() => navigate("/admin/tasks")}>
+                            <FaTasks style={{ fontSize: "14px" }} />
+                            Assign Team Task
+                        </button>
+                        <button className="btn-team-report" onClick={() => navigate("/reports")}>
+                            <FaChartBar style={{ fontSize: "14px" }} />
+                            Team Report
+                        </button>
                     </div>
                 </div>
 
-                {/* 2. Grid Widgets */}
-                <h2 style={{ fontSize: "20px", fontWeight: "700", color: "#1e293b", marginBottom: "16px" }}>Team Performance Overview</h2>
-                <div style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                    gap: "20px",
-                    marginBottom: "32px"
-                }}>
-                    {/* Widget: Present Today */}
-                    <div style={{ background: "white", padding: "20px", borderRadius: "12px", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)", borderLeft: "4px solid #10b981", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div>
-                            <div style={{ fontSize: "14px", color: "#64748b", fontWeight: "500" }}>Present Today</div>
-                            <div style={{ fontSize: "28px", fontWeight: "700", color: "#1e293b", marginTop: "4px" }}>{widgets.presentToday}</div>
+                {/* 2. Top Department Info Card */}
+                <div className="dept-summary-card">
+                    <div className="dept-summary-bg-gradient"></div>
+                    <div className="dept-summary-left">
+                        <div className="dept-icon-box">
+                            <FaCog />
                         </div>
-                        <div style={{ background: "#ecfdf5", color: "#10b981", padding: "12px", borderRadius: "10px" }}><FaUserCheck size={20} /></div>
-                    </div>
-
-                    {/* Widget: Late Today */}
-                    <div style={{ background: "white", padding: "20px", borderRadius: "12px", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)", borderLeft: "4px solid #f59e0b", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div>
-                            <div style={{ fontSize: "14px", color: "#64748b", fontWeight: "500" }}>Late Today</div>
-                            <div style={{ fontSize: "28px", fontWeight: "700", color: "#1e293b", marginTop: "4px" }}>{widgets.lateToday}</div>
+                        <div className="dept-details">
+                            <h3>{departmentInfo.departmentName}</h3>
+                            <p>Manager: <strong style={{ color: "#191B23" }}>{departmentInfo.managerName}</strong></p>
                         </div>
-                        <div style={{ background: "#fffbeb", color: "#f59e0b", padding: "12px", borderRadius: "10px" }}><FaClock size={20} /></div>
                     </div>
-
-                    {/* Widget: Absent Today */}
-                    <div style={{ background: "white", padding: "20px", borderRadius: "12px", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)", borderLeft: "4px solid #ef4444", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div>
-                            <div style={{ fontSize: "14px", color: "#64748b", fontWeight: "500" }}>Absent Today</div>
-                            <div style={{ fontSize: "28px", fontWeight: "700", color: "#1e293b", marginTop: "4px" }}>{widgets.absentToday}</div>
+                    <div className="dept-summary-right">
+                        <div className="dept-stat-item">
+                            <p className="label">Team Size</p>
+                            <p className="value">{departmentInfo.teamSize}</p>
                         </div>
-                        <div style={{ background: "#fef2f2", color: "#ef4444", padding: "12px", borderRadius: "10px" }}><FaUserTimes size={20} /></div>
-                    </div>
-
-                    {/* Widget: Pending Leaves */}
-                    <div style={{ background: "white", padding: "20px", borderRadius: "12px", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)", borderLeft: "4px solid #3b82f6", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div>
-                            <div style={{ fontSize: "14px", color: "#64748b", fontWeight: "500" }}>Pending Leaves</div>
-                            <div style={{ fontSize: "28px", fontWeight: "700", color: "#1e293b", marginTop: "4px" }}>{widgets.pendingLeaves}</div>
-                        </div>
-                        <div style={{ background: "#eff6ff", color: "#3b82f6", padding: "12px", borderRadius: "10px" }}><FaClipboardList size={20} /></div>
-                    </div>
-
-                    {/* Widget: Active Tasks */}
-                    <div style={{ background: "white", padding: "20px", borderRadius: "12px", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)", borderLeft: "4px solid #8b5cf6", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div>
-                            <div style={{ fontSize: "14px", color: "#64748b", fontWeight: "500" }}>Active Tasks</div>
-                            <div style={{ fontSize: "28px", fontWeight: "700", color: "#1e293b", marginTop: "4px" }}>{widgets.activeTasks}</div>
-                        </div>
-                        <div style={{ background: "#f5f3ff", color: "#8b5cf6", padding: "12px", borderRadius: "10px" }}><FaTasks size={20} /></div>
-                    </div>
-
-                    {/* Widget: Completed Tasks */}
-                    <div style={{ background: "white", padding: "20px", borderRadius: "12px", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)", borderLeft: "4px solid #a855f7", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div>
-                            <div style={{ fontSize: "14px", color: "#64748b", fontWeight: "500" }}>Completed Tasks</div>
-                            <div style={{ fontSize: "28px", fontWeight: "700", color: "#1e293b", marginTop: "4px" }}>{widgets.completedTasks}</div>
-                        </div>
-                        <div style={{ background: "#faf5ff", color: "#a855f7", padding: "12px", borderRadius: "10px" }}><FaCheckCircle size={20} /></div>
-                    </div>
-                </div>
-
-                {/* 3. Action Hub & Activity Feed */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: "32px", alignItems: "start" }}>
-                    {/* Action Panel / Reports */}
-                    <div style={{ background: "white", padding: "24px", borderRadius: "14px", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)" }}>
-                        <h3 style={{ fontSize: "18px", fontWeight: "700", color: "#1e293b", margin: "0 0 20px 0" }}>Quick Manager Actions</h3>
-                        
-                        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                            <button onClick={() => navigate("/admin/tasks")} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 18px", borderRadius: "8px", border: "1px solid #e2e8f0", background: "white", cursor: "pointer", transition: "all 0.2s" }} onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#6366f1"; e.currentTarget.style.background = "#fafafa"; }} onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e2e8f0"; e.currentTarget.style.background = "white"; }}>
-                                <span style={{ display: "flex", alignItems: "center", gap: "12px", fontWeight: "600", color: "#334155" }}>
-                                    <FaPlusCircle style={{ color: "#6366f1" }} /> Assign New Task
+                        <div className="dept-stat-item">
+                            <p className="label">Attendance</p>
+                            <div className="dept-stat-attendance-container">
+                                <p className="value">{departmentInfo.attendanceRate}%</p>
+                                <span className="dept-stat-attendance-badge">
+                                    <FaArrowUp style={{ fontSize: "10px" }} /> 2%
                                 </span>
-                                <FaArrowRight size={14} style={{ color: "#94a3b8" }} />
-                            </button>
-
-                            <button onClick={() => navigate("/admin/leaves")} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 18px", borderRadius: "8px", border: "1px solid #e2e8f0", background: "white", cursor: "pointer", transition: "all 0.2s" }} onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#6366f1"; e.currentTarget.style.background = "#fafafa"; }} onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e2e8f0"; e.currentTarget.style.background = "white"; }}>
-                                <span style={{ display: "flex", alignItems: "center", gap: "12px", fontWeight: "600", color: "#334155" }}>
-                                    <FaClipboardList style={{ color: "#3b82f6" }} /> Review Leave Requests
-                                </span>
-                                <FaArrowRight size={14} style={{ color: "#94a3b8" }} />
-                            </button>
-
-                            <button onClick={() => navigate("/reports")} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 18px", borderRadius: "8px", border: "1px solid #e2e8f0", background: "white", cursor: "pointer", transition: "all 0.2s" }} onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#6366f1"; e.currentTarget.style.background = "#fafafa"; }} onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e2e8f0"; e.currentTarget.style.background = "white"; }}>
-                                <span style={{ display: "flex", alignItems: "center", gap: "12px", fontWeight: "600", color: "#334155" }}>
-                                    <FaChartBar style={{ color: "#10b981" }} /> View Department Reports
-                                </span>
-                                <FaArrowRight size={14} style={{ color: "#94a3b8" }} />
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Activity Feed */}
-                    <div style={{ background: "white", padding: "24px", borderRadius: "14px", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)" }}>
-                        <h3 style={{ fontSize: "18px", fontWeight: "700", color: "#1e293b", margin: "0 0 20px 0" }}>Recent Activity Feed</h3>
-                        
-                        {activities.length === 0 ? (
-                            <div style={{ color: "#94a3b8", fontSize: "14px", textAlign: "center", padding: "20px" }}>No recent team activities to show.</div>
-                        ) : (
-                            <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-                                {activities.map((act, index) => (
-                                    <div key={index} style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
-                                        <div style={{
-                                            background: act.type === "attendance" ? "#ecfdf5" : act.type === "checkout" ? "#fef2f2" : act.type === "leave" ? "#eff6ff" : "#f5f3ff",
-                                            color: act.type === "attendance" ? "#10b981" : act.type === "checkout" ? "#ef4444" : act.type === "leave" ? "#3b82f6" : "#8b5cf6",
-                                            padding: "8px",
-                                            borderRadius: "8px",
-                                            display: "flex"
-                                        }}>
-                                            {act.type === "attendance" && <FaUserCheck size={14} />}
-                                            {act.type === "checkout" && <FaUserTimes size={14} />}
-                                            {act.type === "leave" && <FaClipboardList size={14} />}
-                                            {act.type === "task" && <FaTasks size={14} />}
-                                        </div>
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ fontSize: "14.5px", fontWeight: "500", color: "#334155" }}>{act.text}</div>
-                                            <div style={{ fontSize: "12px", color: "#94a3b8", marginTop: "2px" }}>{act.time}</div>
-                                        </div>
-                                    </div>
-                                ))}
                             </div>
-                        )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* 3. Five-Column KPI widgets */}
+                <div className="manager-kpi-grid">
+                    {/* Widget 1: Present */}
+                    <div className="manager-kpi-card">
+                        <div className="manager-kpi-header blue">
+                            <FaUserCheck style={{ fontSize: "18px" }} />
+                            <span className="time-tag">Today</span>
+                        </div>
+                        <div className="manager-kpi-body">
+                            <p className="manager-kpi-value">{widgets.presentToday}</p>
+                            <p className="manager-kpi-label">Present</p>
+                        </div>
+                    </div>
+
+                    {/* Widget 2: Late */}
+                    <div className="manager-kpi-card">
+                        <div className="manager-kpi-header yellow">
+                            <FaClock style={{ fontSize: "18px" }} />
+                            <span className="time-tag">Today</span>
+                        </div>
+                        <div className="manager-kpi-body">
+                            <p className="manager-kpi-value">{widgets.lateToday}</p>
+                            <p className="manager-kpi-label">Late</p>
+                        </div>
+                    </div>
+
+                    {/* Widget 3: Absent */}
+                    <div className="manager-kpi-card">
+                        <div className="manager-kpi-header red">
+                            <FaUserTimes style={{ fontSize: "18px" }} />
+                            <span className="time-tag">Today</span>
+                        </div>
+                        <div className="manager-kpi-body">
+                            <p className="manager-kpi-value">{widgets.absentToday}</p>
+                            <p className="manager-kpi-label">Absent</p>
+                        </div>
+                    </div>
+
+                    {/* Widget 4: Pending Leaves */}
+                    <div className="manager-kpi-card">
+                        <div className="manager-kpi-header blue">
+                            <FaClipboardList style={{ fontSize: "18px" }} />
+                            <span className="time-tag">Action Needed</span>
+                        </div>
+                        <div className="manager-kpi-body">
+                            <p className="manager-kpi-value">{widgets.pendingLeaves}</p>
+                            <p className="manager-kpi-label">Pending Leaves</p>
+                        </div>
+                    </div>
+
+                    {/* Widget 5: Active Tasks */}
+                    <div className="manager-kpi-card">
+                        <div className="manager-kpi-header blue">
+                            <FaTasks style={{ fontSize: "18px" }} />
+                            <span className="time-tag">In Progress</span>
+                        </div>
+                        <div className="manager-kpi-body">
+                            <p className="manager-kpi-value">{widgets.activeTasks}</p>
+                            <p className="manager-kpi-label">Active Tasks</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 4. Bento Grid (Trend chart, Progress bars, Activity feed) */}
+                <div className="manager-bento-grid">
+                    {/* Left side: charts and progress */}
+                    <div className="manager-bento-left">
+                        {/* Team Attendance Trend Line Chart */}
+                        <div className="manager-bento-card">
+                            <h3 className="manager-bento-card-title">Team Attendance Trend</h3>
+                            <div style={{ height: "240px", position: "relative" }}>
+                                <canvas ref={attendanceChartRef}></canvas>
+                            </div>
+                        </div>
+
+                        {/* Project progress bars card */}
+                        <div className="manager-bento-card">
+                            <h3 className="manager-bento-card-title" style={{ marginBottom: "24px" }}>Key Project Progress</h3>
+                            <div className="progress-list">
+                                {projectProgress.map((proj, idx) => {
+                                    let fillColorClass = "blue";
+                                    if (idx === 1) fillColorClass = "teal";
+                                    else if (idx === 2) fillColorClass = "tint";
+
+                                    return (
+                                        <div key={idx}>
+                                            <div className="progress-item-header">
+                                                <span>{proj.name}</span>
+                                                <span style={{ fontWeight: "600" }}>{proj.progress}%</span>
+                                            </div>
+                                            <div className="progress-bar-bg">
+                                                <div className={`progress-bar-fill ${fillColorClass}`} style={{ width: `${proj.progress}%` }}></div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right side: activity feed */}
+                    <div className="manager-bento-card" style={{ gridColumn: "span 1" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+                            <h3 className="manager-bento-card-title" style={{ marginBottom: 0 }}>Activity Timeline</h3>
+                            <button className="text-primary text-label-sm font-label-sm hover:underline" style={{ background: "none", border: "none", color: "#004ac6", cursor: "pointer", fontSize: "12px", fontWeight: "600" }} onClick={() => navigate("/reports")}>View All</button>
+                        </div>
+                        <div style={{ position: "relative", paddingLeft: "16px", borderLeft: "2px solid #E5E7EB", display: "flex", flexDirection: "column", gap: "24px", margin: "12px 0 0 12px" }}>
+                            {activities.length === 0 ? (
+                                <div style={{ color: "#737686", fontSize: "14px", padding: "16px 0", textAlign: "left" }}>
+                                    No recent team activities to show.
+                                </div>
+                            ) : (
+                                activities.map((act, index) => {
+                                    let dotColor = "#004ac6"; // blue
+                                    if (act.type === "checkout" || act.type === "checkout") dotColor = "#dc2626"; // red
+                                    else if (act.type === "leave") dotColor = "#d97706"; // orange
+                                    else if (act.type === "task") dotColor = "#005a82"; // secondary
+
+                                    return (
+                                        <div className="relative" key={index} style={{ position: "relative" }}>
+                                            <div 
+                                                className="absolute rounded-full" 
+                                                style={{ 
+                                                    left: "-21px", 
+                                                    top: "4px", 
+                                                    width: "10px", 
+                                                    height: "10px", 
+                                                    backgroundColor: dotColor,
+                                                    border: "4px solid #ffffff",
+                                                    boxShadow: "0 0 0 1px #E5E7EB"
+                                                }}
+                                            ></div>
+                                            <p style={{ fontSize: "14px", fontWeight: "500", color: "#191B23", margin: 0, textAlign: "left" }}>
+                                                {act.text}
+                                            </p>
+                                            <p style={{ fontSize: "12px", color: "#585F6C", margin: "4px 0 0 0", textAlign: "left" }}>
+                                                {act.time}
+                                            </p>
+                                        </div>
+                                    );
+                                })
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

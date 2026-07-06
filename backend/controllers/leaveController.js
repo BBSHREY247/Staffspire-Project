@@ -209,7 +209,7 @@ const adminGetLeaveRequests = async (req, res) => {
     try {
         const role = req.user.role;
         let query = `
-            SELECT lr.*, lt.name AS leave_type_name, e.first_name, e.last_name, e.department, e.designation
+            SELECT lr.*, lt.name AS leave_type_name, e.first_name, e.last_name, e.email, e.department, e.designation
             FROM leave_requests lr
             JOIN leave_types lt ON lr.leave_type_id = lt.id
             JOIN employees e ON lr.employee_id = e.employee_id
@@ -258,6 +258,15 @@ const adminLeaveAction = async (req, res) => {
             const dept = await getManagerDepartment(req.user.id);
             if (requests[0].department !== dept) {
                 return res.status(403).json({ success: false, message: "Forbidden: Employee is not in your department." });
+            }
+
+            // Block managers from approving/rejecting their own leave requests
+            const [users] = await db.promise().query("SELECT email FROM users WHERE id = ?", [req.user.id]);
+            const managerEmail = users.length ? users[0].email : null;
+            const [emps] = await db.promise().query("SELECT email FROM employees WHERE employee_id = ?", [requests[0].employee_id]);
+            const empEmail = emps.length ? emps[0].email : null;
+            if (managerEmail && empEmail && managerEmail.toLowerCase() === empEmail.toLowerCase()) {
+                return res.status(403).json({ success: false, message: "Forbidden: You cannot approve or reject your own leave request." });
             }
         }
 

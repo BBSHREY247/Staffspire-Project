@@ -10,6 +10,7 @@ import {
 function LeaveRequestDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const loggedInUser = JSON.parse(localStorage.getItem("user")) || {};
 
     const [request, setRequest] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -199,34 +200,40 @@ function LeaveRequestDetail() {
 
                         {/* Action buttons — for Pending or Pending Cancellation */}
                         {(request.status === "Pending" || request.status === "Pending Cancellation") && (
-                            <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                                <button
-                                    onClick={() => handleAction("Approved")}
-                                    disabled={actionLoading}
-                                    style={{
-                                        display: "inline-flex", alignItems: "center", gap: "10px",
-                                        background: "#22c55e", color: "white", border: "none",
-                                        padding: "14px 32px", borderRadius: "10px", cursor: "pointer",
-                                        fontWeight: "700", fontSize: "15px", transition: "opacity 0.2s",
-                                        opacity: actionLoading ? 0.6 : 1
-                                    }}
-                                >
-                                    <FaCheck /> {request.status === "Pending Cancellation" ? "Approve Cancellation" : "Approve Leave"}
-                                </button>
-                                <button
-                                    onClick={() => setShowRejectModal(true)}
-                                    disabled={actionLoading}
-                                    style={{
-                                        display: "inline-flex", alignItems: "center", gap: "10px",
-                                        background: "#ef4444", color: "white", border: "none",
-                                        padding: "14px 32px", borderRadius: "10px", cursor: "pointer",
-                                        fontWeight: "700", fontSize: "15px", transition: "opacity 0.2s",
-                                        opacity: actionLoading ? 0.6 : 1
-                                    }}
-                                >
-                                    <FaTimes /> {request.status === "Pending Cancellation" ? "Reject Cancellation" : "Reject Leave"}
-                                </button>
-                            </div>
+                            request.email === loggedInUser.email ? (
+                                <div style={{ background: "#eff6ff", color: "#4f8cff", padding: "16px", borderRadius: "10px", fontWeight: "600", fontSize: "14px", border: "1.5px solid #bfdbfe", textAlign: "left" }}>
+                                    This leave request was submitted by you. Self-approval is not allowed.
+                                </div>
+                            ) : (
+                                <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+                                    <button
+                                        onClick={() => handleAction("Approved")}
+                                        disabled={actionLoading}
+                                        style={{
+                                            display: "inline-flex", alignItems: "center", gap: "10px",
+                                            background: "#22c55e", color: "white", border: "none",
+                                            padding: "14px 32px", borderRadius: "10px", cursor: "pointer",
+                                            fontWeight: "700", fontSize: "15px", transition: "opacity 0.2s",
+                                            opacity: actionLoading ? 0.6 : 1
+                                        }}
+                                    >
+                                        <FaCheck /> {request.status === "Pending Cancellation" ? "Approve Cancellation" : "Approve Leave"}
+                                    </button>
+                                    <button
+                                        onClick={() => setShowRejectModal(true)}
+                                        disabled={actionLoading}
+                                        style={{
+                                            display: "inline-flex", alignItems: "center", gap: "10px",
+                                            background: "#ef4444", color: "white", border: "none",
+                                            padding: "14px 32px", borderRadius: "10px", cursor: "pointer",
+                                            fontWeight: "700", fontSize: "15px", transition: "opacity 0.2s",
+                                            opacity: actionLoading ? 0.6 : 1
+                                        }}
+                                    >
+                                        <FaTimes /> {request.status === "Pending Cancellation" ? "Reject Cancellation" : "Reject Leave"}
+                                    </button>
+                                </div>
+                            )
                         )}
                     </>
                 )}

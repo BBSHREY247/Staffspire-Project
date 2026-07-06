@@ -129,6 +129,15 @@ function AdminDashboard() {
 
         // 1. Line Chart: Attendance Trend
         if (attendanceChartRef.current && attendanceTrend.labels && attendanceTrend.labels.length > 0) {
+            const currentDay = new Date().getDay(); // 0: Sun, 1: Mon, ..., 6: Sat
+            let limit = 5;
+            if (currentDay >= 1 && currentDay <= 5) {
+                limit = currentDay;
+            }
+
+            const visibleLabels = attendanceTrend.labels.slice(0, limit);
+            const visibleData = attendanceTrend.data.slice(0, limit);
+
             const ctxArea = attendanceChartRef.current.getContext('2d');
             if (attendanceChartInstance.current) {
                 attendanceChartInstance.current.destroy();
@@ -141,10 +150,10 @@ function AdminDashboard() {
             attendanceChartInstance.current = new Chart(ctxArea, {
                 type: 'line',
                 data: {
-                    labels: attendanceTrend.labels,
+                    labels: visibleLabels,
                     datasets: [{
                         label: 'Present',
-                        data: attendanceTrend.data,
+                        data: visibleData,
                         borderColor: '#004ac6',
                         backgroundColor: gradient,
                         borderWidth: 2.5,

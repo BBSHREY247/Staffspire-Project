@@ -465,7 +465,7 @@ const getAllAttendance = async (req, res) => {
         await autoCheckOutExpiredRecords();
         const role = req.user.role;
         let query = `
-            SELECT a.*, e.first_name, e.last_name, e.department, e.designation 
+            SELECT a.*, e.first_name, e.last_name, e.email, e.department, e.designation 
             FROM attendance a
             JOIN employees e ON a.employee_id = e.employee_id
         `;

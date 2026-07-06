@@ -141,6 +141,49 @@ const getManagerDashboardInfo = async (req, res) => {
         activities.sort((a, b) => b.timestamp - a.timestamp);
         const finalActivities = activities.slice(0, 10); // Keep top 10
 
+        // 6. Attendance Trend for this department (Mon to Fri of the current week)
+        const trendLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+        const trendData = [];
+        const currentMonday = new Date();
+        const dayOfWeek = currentMonday.getDay();
+        const diffDays = currentMonday.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+        const mondayDate = new Date(currentMonday.setDate(diffDays));
+
+        for (let i = 0; i < 5; i++) {
+            const d = new Date(mondayDate);
+            d.setDate(mondayDate.getDate() + i);
+            const dateStr = d.toLocaleDateString('sv');
+            
+            const [[{ count }]] = await db.promise().query(
+                `SELECT COUNT(*) AS count 
+                 FROM attendance a
+                 JOIN employees e ON a.employee_id = e.employee_id
+                 WHERE e.department = ? AND a.attendance_date = ? AND a.status IN ('Present', 'Late', 'Half Day')`,
+                [deptName, dateStr]
+            );
+            trendData.push(count || 0);
+        }
+
+        // 7. Project Progress (Key Project Progress)
+        const [deptTasks] = await db.promise().query(
+            "SELECT task_title, status FROM tasks WHERE department = ? ORDER BY created_at DESC LIMIT 3",
+            [deptName]
+        );
+
+        let projectProgress = [];
+        if (deptTasks.length > 0) {
+            projectProgress = deptTasks.map(t => ({
+                name: t.task_title,
+                progress: t.status === "Completed" ? 100 : t.status === "In Progress" ? 60 : 20
+            }));
+        } else {
+            projectProgress = [
+                { name: "Q3 Infrastructure Migration", progress: 75 },
+                { name: "API V2 Documentation", progress: 40 },
+                { name: "Security Audit Fixes", progress: 90 }
+            ];
+        }
+
         return res.status(200).json({
             success: true,
             departmentInfo: {
@@ -157,7 +200,12 @@ const getManagerDashboardInfo = async (req, res) => {
                 activeTasks: activeTasks,
                 completedTasks: completedTasks
             },
-            activities: finalActivities
+            activities: finalActivities,
+            attendanceTrend: {
+                labels: trendLabels,
+                data: trendData
+            },
+            projectProgress: projectProgress
         });
 
     } catch (error) {

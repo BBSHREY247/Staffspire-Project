@@ -4,6 +4,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import { FaSearch, FaCalendarAlt, FaHistory, FaCheckCircle, FaUserClock } from "react-icons/fa";
 
 function AttendanceList() {
+    const loggedInUser = JSON.parse(localStorage.getItem("user")) || {};
     const [attendance, setAttendance] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
@@ -231,7 +232,9 @@ function AttendanceList() {
                                             </span>
                                         </td>
                                         <td style={{ textAlign: "center" }}>
-                                            {!record.check_out ? (
+                                            {record.email === loggedInUser.email ? (
+                                                <span style={{ color: "#94a3b8", fontSize: "13px", fontWeight: "500" }}>Self</span>
+                                            ) : !record.check_out ? (
                                                 <button
                                                     onClick={() => handleForceCheckOut(record.employee_id, record.attendance_date)}
                                                     style={{
