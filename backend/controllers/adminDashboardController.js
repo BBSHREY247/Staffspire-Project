@@ -119,15 +119,38 @@ const getAdminDashboardStats = async (req, res) => {
         activities.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         const recentActivities = activities.slice(0, 6);
 
-        // 12. Attendance Trend (Last 7 Days)
+        // 12. Attendance Trend (Rolling last 5 working days ending today)
         const trendLabels = [];
         const trendData = [];
-        for (let i = 6; i >= 0; i--) {
-            const d = new Date();
-            d.setDate(d.getDate() - i);
-            const dateStr = d.toLocaleDateString('sv');
-            const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
-            trendLabels.push(dayName);
+        
+        // Helper function to get last 5 working days
+        const getWorkingDays = () => {
+            const days = [];
+            const labels = [];
+            let current = new Date();
+            // If today is weekend, go back to Friday
+            while (current.getDay() === 0 || current.getDay() === 6) {
+                current.setDate(current.getDate() - 1);
+            }
+            while (days.length < 5) {
+                const dayOfWeek = current.getDay();
+                if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                    days.push(new Date(current));
+                    labels.push(current.toLocaleDateString('en-US', { weekday: 'short' }));
+                }
+                current.setDate(current.getDate() - 1);
+            }
+            return {
+                dates: days.reverse().map(d => d.toLocaleDateString('sv')),
+                labels: labels.reverse()
+            };
+        };
+
+        const { dates, labels } = getWorkingDays();
+
+        for (let i = 0; i < dates.length; i++) {
+            const dateStr = dates[i];
+            trendLabels.push(labels[i]);
 
             const [[{ count }]] = await db.promise().query(
                 "SELECT COUNT(*) AS count FROM attendance WHERE attendance_date = ? AND status IN ('Present', 'Late', 'Half Day')",

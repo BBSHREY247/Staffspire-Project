@@ -141,18 +141,38 @@ const getManagerDashboardInfo = async (req, res) => {
         activities.sort((a, b) => b.timestamp - a.timestamp);
         const finalActivities = activities.slice(0, 10); // Keep top 10
 
-        // 6. Attendance Trend for this department (Mon to Fri of the current week)
-        const trendLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+        // 6. Attendance Trend for this department (Rolling last 5 working days ending today)
+        const trendLabels = [];
         const trendData = [];
-        const currentMonday = new Date();
-        const dayOfWeek = currentMonday.getDay();
-        const diffDays = currentMonday.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
-        const mondayDate = new Date(currentMonday.setDate(diffDays));
+        
+        // Helper function to get last 5 working days
+        const getWorkingDays = () => {
+            const days = [];
+            const labels = [];
+            let current = new Date();
+            // If today is weekend, go back to Friday
+            while (current.getDay() === 0 || current.getDay() === 6) {
+                current.setDate(current.getDate() - 1);
+            }
+            while (days.length < 5) {
+                const dayOfWeek = current.getDay();
+                if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                    days.push(new Date(current));
+                    labels.push(current.toLocaleDateString('en-US', { weekday: 'short' }));
+                }
+                current.setDate(current.getDate() - 1);
+            }
+            return {
+                dates: days.reverse().map(d => d.toLocaleDateString('sv')),
+                labels: labels.reverse()
+            };
+        };
 
-        for (let i = 0; i < 5; i++) {
-            const d = new Date(mondayDate);
-            d.setDate(mondayDate.getDate() + i);
-            const dateStr = d.toLocaleDateString('sv');
+        const { dates, labels } = getWorkingDays();
+
+        for (let i = 0; i < dates.length; i++) {
+            const dateStr = dates[i];
+            trendLabels.push(labels[i]);
             
             const [[{ count }]] = await db.promise().query(
                 `SELECT COUNT(*) AS count 
@@ -177,11 +197,7 @@ const getManagerDashboardInfo = async (req, res) => {
                 progress: t.status === "Completed" ? 100 : t.status === "In Progress" ? 60 : 20
             }));
         } else {
-            projectProgress = [
-                { name: "Q3 Infrastructure Migration", progress: 75 },
-                { name: "API V2 Documentation", progress: 40 },
-                { name: "Security Audit Fixes", progress: 90 }
-            ];
+            projectProgress = [];
         }
 
         return res.status(200).json({

@@ -129,14 +129,8 @@ function AdminDashboard() {
 
         // 1. Line Chart: Attendance Trend
         if (attendanceChartRef.current && attendanceTrend.labels && attendanceTrend.labels.length > 0) {
-            const currentDay = new Date().getDay(); // 0: Sun, 1: Mon, ..., 6: Sat
-            let limit = 5;
-            if (currentDay >= 1 && currentDay <= 5) {
-                limit = currentDay;
-            }
-
-            const visibleLabels = attendanceTrend.labels.slice(0, limit);
-            const visibleData = attendanceTrend.data.slice(0, limit);
+            const visibleLabels = attendanceTrend.labels;
+            const visibleData = attendanceTrend.data;
 
             const ctxArea = attendanceChartRef.current.getContext('2d');
             if (attendanceChartInstance.current) {
@@ -209,11 +203,12 @@ function AdminDashboard() {
                     datasets: [{
                         data: chartData,
                         backgroundColor: [
-                            '#004ac6',
-                            '#0074a6',
-                            '#2563eb',
-                            '#89ceff',
-                            '#c3c6d7'
+                            '#2563eb', // Blue
+                            '#10b981', // Emerald Green
+                            '#f59e0b', // Amber/Orange
+                            '#8b5cf6', // Violet/Purple
+                            '#f43f5e', // Rose/Red
+                            '#06b6d4'  // Cyan/Teal
                         ],
                         borderWidth: 0,
                         hoverOffset: 4

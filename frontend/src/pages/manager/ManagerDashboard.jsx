@@ -23,29 +23,25 @@ function ManagerDashboard() {
     const [error, setError] = useState("");
     const [data, setData] = useState({
         departmentInfo: {
-            departmentName: "Engineering Department",
-            managerName: "Alex Rivera",
-            teamSize: 24,
-            attendanceRate: 96
+            departmentName: "",
+            managerName: "",
+            teamSize: 0,
+            attendanceRate: 0
         },
         widgets: {
-            presentToday: 23,
-            lateToday: 1,
+            presentToday: 0,
+            lateToday: 0,
             absentToday: 0,
-            pendingLeaves: 3,
-            activeTasks: 12,
+            pendingLeaves: 0,
+            activeTasks: 0,
             completedTasks: 0
         },
         activities: [],
         attendanceTrend: {
-            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-            data: [18, 22, 23, 21, 23]
+            labels: [],
+            data: []
         },
-        projectProgress: [
-            { name: "Q3 Infrastructure Migration", progress: 75 },
-            { name: "API V2 Documentation", progress: 40 },
-            { name: "Security Audit Fixes", progress: 90 }
-        ]
+        projectProgress: []
     });
 
     useEffect(() => {
@@ -63,36 +59,32 @@ function ManagerDashboard() {
                 if (response.data.success) {
                     const resData = response.data;
                     
-                    // Merge database values if they exist, else keep mockup defaults for clean setups
                     setData({
                         departmentInfo: {
-                            departmentName: resData.departmentInfo.departmentName || "Engineering Department",
-                            managerName: resData.departmentInfo.managerName || "Alex Rivera",
-                            teamSize: resData.departmentInfo.teamSize !== undefined ? resData.departmentInfo.teamSize : 24,
-                            attendanceRate: resData.departmentInfo.attendanceRate !== undefined ? resData.departmentInfo.attendanceRate : 96
+                            departmentName: resData.departmentInfo.departmentName || "",
+                            managerName: resData.departmentInfo.managerName || "",
+                            teamSize: resData.departmentInfo.teamSize !== undefined ? resData.departmentInfo.teamSize : 0,
+                            attendanceRate: resData.departmentInfo.attendanceRate !== undefined ? resData.departmentInfo.attendanceRate : 0
                         },
                         widgets: {
-                            presentToday: resData.widgets.presentToday !== undefined ? resData.widgets.presentToday : 23,
-                            lateToday: resData.widgets.lateToday !== undefined ? resData.widgets.lateToday : 1,
+                            presentToday: resData.widgets.presentToday !== undefined ? resData.widgets.presentToday : 0,
+                            lateToday: resData.widgets.lateToday !== undefined ? resData.widgets.lateToday : 0,
                             absentToday: resData.widgets.absentToday !== undefined ? resData.widgets.absentToday : 0,
-                            pendingLeaves: resData.widgets.pendingLeaves !== undefined ? resData.widgets.pendingLeaves : 3,
-                            activeTasks: resData.widgets.activeTasks !== undefined ? resData.widgets.activeTasks : 12,
+                            pendingLeaves: resData.widgets.pendingLeaves !== undefined ? resData.widgets.pendingLeaves : 0,
+                            activeTasks: resData.widgets.activeTasks !== undefined ? resData.widgets.activeTasks : 0,
                             completedTasks: resData.widgets.completedTasks !== undefined ? resData.widgets.completedTasks : 0
                         },
                         activities: resData.activities || [],
                         attendanceTrend: resData.attendanceTrend || {
-                            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-                            data: [18, 22, 23, 21, 23]
+                            labels: [],
+                            data: []
                         },
-                        projectProgress: resData.projectProgress || [
-                            { name: "Q3 Infrastructure Migration", progress: 75 },
-                            { name: "API V2 Documentation", progress: 40 },
-                            { name: "Security Audit Fixes", progress: 90 }
-                        ]
+                        projectProgress: resData.projectProgress || []
                     });
                 } else {
                     setError("Failed to fetch dashboard data.");
                 }
+
             } catch (err) {
                 console.error(err);
                 setError("An error occurred while fetching dashboard statistics.");
@@ -110,14 +102,8 @@ function ManagerDashboard() {
 
         const trend = data.attendanceTrend;
         if (attendanceChartRef.current && trend && trend.labels && trend.labels.length > 0) {
-            const currentDay = new Date().getDay(); // 0: Sun, 1: Mon, ..., 6: Sat
-            let limit = 5;
-            if (currentDay >= 1 && currentDay <= 5) {
-                limit = currentDay;
-            }
-
-            const visibleLabels = trend.labels.slice(0, limit);
-            const visibleData = trend.data.slice(0, limit);
+            const visibleLabels = trend.labels;
+            const visibleData = trend.data;
 
             const ctxArea = attendanceChartRef.current.getContext('2d');
             if (attendanceChartInstance.current) {
@@ -339,23 +325,29 @@ function ManagerDashboard() {
                         <div className="manager-bento-card">
                             <h3 className="manager-bento-card-title" style={{ marginBottom: "24px" }}>Key Project Progress</h3>
                             <div className="progress-list">
-                                {projectProgress.map((proj, idx) => {
-                                    let fillColorClass = "blue";
-                                    if (idx === 1) fillColorClass = "teal";
-                                    else if (idx === 2) fillColorClass = "tint";
+                                {projectProgress.length === 0 ? (
+                                    <div style={{ color: "#737686", fontSize: "14px", padding: "16px 0", textAlign: "center" }}>
+                                        No active tasks or project progress to show.
+                                    </div>
+                                ) : (
+                                    projectProgress.map((proj, idx) => {
+                                        let fillColorClass = "blue";
+                                        if (idx === 1) fillColorClass = "teal";
+                                        else if (idx === 2) fillColorClass = "tint";
 
-                                    return (
-                                        <div key={idx}>
-                                            <div className="progress-item-header">
-                                                <span>{proj.name}</span>
-                                                <span style={{ fontWeight: "600" }}>{proj.progress}%</span>
+                                        return (
+                                            <div key={idx}>
+                                                <div className="progress-item-header">
+                                                    <span>{proj.name}</span>
+                                                    <span style={{ fontWeight: "600" }}>{proj.progress}%</span>
+                                                </div>
+                                                <div className="progress-bar-bg">
+                                                    <div className={`progress-bar-fill ${fillColorClass}`} style={{ width: `${proj.progress}%` }}></div>
+                                                </div>
                                             </div>
-                                            <div className="progress-bar-bg">
-                                                <div className={`progress-bar-fill ${fillColorClass}`} style={{ width: `${proj.progress}%` }}></div>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
+                                        );
+                                    })
+                                )}
                             </div>
                         </div>
                     </div>
