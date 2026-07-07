@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Chart, registerables } from "chart.js";
-import DashboardLayout from "../layouts/dashboardLayout";
+import DashboardLayout from "../layouts/DashboardLayout";
 import { 
     FaUsers, FaUserCheck, FaUserTimes, 
     FaClipboardList, FaTasks, FaCheckCircle, 

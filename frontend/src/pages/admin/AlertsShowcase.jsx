@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import DashboardLayout from "../layouts/dashboardLayout";
+import DashboardLayout from "../layouts/DashboardLayout";
 
 function AlertsShowcase() {
     const [secondsLeft, setSecondsLeft] = useState(45 * 60 + 12);

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Add Employee | StaffSpire</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e1e2ed",
+                        "primary": "#004ac6",
+                        "surface-container": "#ededf9",
+                        "on-tertiary-fixed-variant": "#004c6e",
+                        "inverse-surface": "#2e3039",
+                        "tertiary-container": "#0074a6",
+                        "inverse-on-surface": "#f0f0fb",
+                        "surface-bright": "#faf8ff",
+                        "on-primary-container": "#eeefff",
+                        "surface-container-highest": "#e1e2ed",
+                        "on-surface-variant": "#434655",
+                        "on-secondary-container": "#5e6572",
+                        "surface-tint": "#0053db",
+                        "on-secondary-fixed": "#151c27",
+                        "on-tertiary-fixed": "#001e2f",
+                        "inverse-primary": "#b4c5ff",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#d9d9e5",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#c0c7d6",
+                        "tertiary-fixed-dim": "#89ceff",
+                        "surface-container-low": "#f3f3fe",
+                        "on-surface": "#191b23",
+                        "tertiary": "#005a82",
+                        "error": "#ba1a1a",
+                        "outline-variant": "#c3c6d7",
+                        "on-secondary-fixed-variant": "#404754",
+                        "on-primary-fixed": "#00174b",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#585f6c",
+                        "surface-container-lowest": "#ffffff",
+                        "outline": "#737686",
+                        "on-tertiary-container": "#e4f2ff",
+                        "secondary-fixed": "#dce2f3",
+                        "surface": "#faf8ff",
+                        "primary-container": "#2563eb",
+                        "surface-container-high": "#e7e7f3",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed": "#c9e6ff",
+                        "primary-fixed": "#dbe1ff",
+                        "background": "#faf8ff",
+                        "secondary-container": "#dce2f3",
+                        "on-background": "#191b23"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "xxl": "48px",
+                        "md": "16px",
+                        "margin-mobile": "16px",
+                        "lg": "24px",
+                        "xl": "32px",
+                        "base": "8px",
+                        "sm": "8px",
+                        "margin-desktop": "40px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.55", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "1", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-sm": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.02em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md text-body-md antialiased min-h-screen flex selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar (Suppressed intentionally as per rules, this is a transactional flow "Add Employee" with Close/Back actions) -->
+<!-- Although the prompt asks for a sidebar, the strict System Instructions state:
+         "Automatic Suppression: You MUST exclude the navigation shell if the page intent is: Linear/Transactional: Login, Sign-up, Onboarding, Checkout, or "Success/Confirmation" splash screens. Task-Focused: Any sub-page featuring a "Close" or "Back" action that implies a temporary departure from the main navigation flow."
+         Adding an employee is a focused task/transactional flow. Therefore, I MUST prioritize the Canvas and hide the global nav shell. I will instead provide a focused header with a "Back" action. -->
+<main class="flex-1 flex flex-col h-screen overflow-hidden bg-background">
+<!-- Focused TopAppBar for Transactional Flow -->
+<header class="bg-surface/80 dark:bg-surface/80 backdrop-blur-md fixed top-0 w-full z-50 border-b border-outline-variant/30 shadow-sm flex justify-between items-center h-16 px-margin-desktop mx-auto">
+<div class="flex items-center gap-4">
+<button aria-label="Go back to Directory" class="p-2 -ml-2 rounded-full hover:bg-surface-container-low transition-colors duration-200 text-secondary" type="button">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="flex flex-col">
+<h1 class="text-headline-sm font-headline-sm text-primary tracking-tight">Add New Employee</h1>
+<span class="text-label-sm font-label-sm text-secondary">Directory &gt; Recruitment</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<img alt="Softspire Solutions Logo" class="h-8 w-auto object-contain hidden md:block opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDP1ai0YVOKz7hN7EOCnfkv-NV4T7drwRm593XFyIkg_QTBlsLSRd2MhoaNSe4W1CIV49DgKvy-f8J9BKjtizDwhhR143L5vjsC4sw9A2YvRLiGg57t7YjYytqggJGY1ASzzUSm2H5qkqyy4-4vluFzTZ6WksHtuFulgyQDfgMXDnMFzNDFxALnJ_hAw_znQSdYWOEVA88ZGm_-kI2CUtP8f-HUV-jg9NgrGFzPqoaW_JLqFiyW2IRjRf6P0uGot_H2JcyL_2fuXA"/>
+</div>
+</header>
+<!-- Main Content Area -->
+<div class="flex-1 overflow-y-auto pt-24 pb-12 px-margin-mobile md:px-margin-desktop">
+<div class="max-w-[800px] mx-auto w-full">
+<!-- Progress Indicator -->
+<div class="mb-8 hidden md:block">
+<div class="flex items-center justify-between relative">
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-0.5 bg-surface-container-high -z-10"></div>
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-1/3 h-0.5 bg-primary -z-10 transition-all duration-500"></div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-label-md font-label-md shadow-sm ring-4 ring-surface">1</div>
+<span class="text-label-sm font-label-sm text-primary">Personal Info</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center text-label-md font-label-md shadow-sm ring-4 ring-surface">2</div>
+<span class="text-label-sm font-label-sm text-secondary">Employment</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center text-label-md font-label-md shadow-sm ring-4 ring-surface">3</div>
+<span class="text-label-sm font-label-sm text-secondary">Role &amp; Access</span>
+</div>
+</div>
+</div>
+<form class="space-y-8">
+<!-- Section: Personal Information -->
+<section class="bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-lg shadow-sm">
+<div class="mb-6 border-b border-outline-variant/20 pb-4">
+<h2 class="text-headline-sm font-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">person</span>
+                                Personal Information
+                            </h2>
+<p class="text-body-sm font-body-sm text-secondary mt-1">Basic details and contact information.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Field: First Name -->
+<div class="space-y-2">
+<label class="block text-label-md font-label-md text-on-surface" for="firstName">First Name <span class="text-error">*</span></label>
+<input class="w-full h-10 px-3 bg-surface border border-outline-variant rounded-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface-container-lowest focus:border-transparent transition-all" id="firstName" name="firstName" placeholder="e.g. Jane" required="" type="text"/>
+</div>
+<!-- Field: Last Name -->
+<div class="space-y-2">
+<label class="block text-label-md font-label-md text-on-surface" for="lastName">Last Name <span class="text-error">*</span></label>
+<input class="w-full h-10 px-3 bg-surface border border-outline-variant rounded-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface-container-lowest focus:border-transparent transition-all" id="lastName" name="lastName" placeholder="e.g. Doe" required="" type="text"/>
+</div>
+<!-- Field: Email -->
+<div class="space-y-2 md:col-span-2">
+<label class="block text-label-md font-label-md text-on-surface" for="email">Work Email <span class="text-error">*</span></label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-secondary text-[20px]">mail</span>
+</span>
+<input class="w-full h-10 pl-10 pr-3 bg-surface border border-outline-variant rounded-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface-container-lowest focus:border-transparent transition-all" id="email" name="email" placeholder="jane.doe@staffspire.com" required="" type="email"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Employment Details -->
+<section class="bg-surface-container-lowest border border-outline-variant/30 rounded-lg p-lg shadow-sm">
+<div class="mb-6 border-b border-outline-variant/20 pb-4">
+<h2 class="text-headline-sm font-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">work</span>
+                                Employment Details
+                            </h2>
+<p class="text-body-sm font-body-sm text-secondary mt-1">Organizational placement and start dates.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Field: Employee ID -->
+<div class="space-y-2">
+<label class="block text-label-md font-label-md text-on-surface" for="empId">Employee ID</label>
+<input class="w-full h-10 px-3 bg-surface-container-low border border-outline-variant/50 rounded-md text-body-md text-secondary cursor-not-allowed" id="empId" name="empId" placeholder="EMP-0000" readonly="" type="text" value="EMP-8924"/>
+<p class="text-label-sm font-label-sm text-secondary">Auto-generated.</p>
+</div>
+<!-- Field: Start Date -->
+<div class="space-y-2">
+<label class="block text-label-md font-label-md text-on-surface" for="startDate">Start Date <span class="text-error">*</span></label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-secondary text-[20px]">calendar_today</span>
+</span>
+<input class="w-full h-10 pl-10 pr-3 bg-surface border border-outline-variant rounded-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface-container-lowest focus:border-transparent transition-all text-on-surface" id="startDate" name="startDate" required="" type="date"/>
+</div>
+</div>
+<!-- Field: Department -->
+<div class="space-y-2">
+<label class="block text-label-md font-label-md text-on-surface" for="department">Department <span class="text-error">*</span></label>
+<div class="relative">
+<select class="w-full h-10 pl-3 pr-10 bg-surface border border-outline-variant rounded-md text-body-md appearance-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface-container-lowest focus:border-transparent transition-all" id="department" name="department" required="">
+<option disabled="" selected="" value="">Select department...</option>
+<option value="engineering">Engineering</option>
+<option value="design">Design</option>
+<option value="hr">Human Resources</option>
+<option value="sales">Sales</option>
+</select>
+<span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-secondary">expand_more</span>
+</span>
+</div>
+</div>
+<!-- Field: Designation -->
+<div class="space-y-2">
+<label class="flex items-center gap-1 text-label-md font-label-md text-on-surface" for="designation">
+                                    Designation <span class="text-error">*</span>
+<span class="material-symbols-outlined text-secondary text-[16px] cursor-help" title="Official job title as per employment contract.">help</span>
+</label>
+<input class="w-full h-10 px-3 bg-surface border border-outline-variant rounded-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface-container-lowest focus:border-transparent transition-all" id="designation" name="designation" placeholder="e.g. Senior Frontend Developer" required="" type="text"/>
+</div>
+</div>
+</section>
+<!-- Form Actions -->
+<div class="flex items-center justify-end gap-4 pt-4 border-t border-outline-variant/30 mt-8">
+<button class="px-6 py-2 rounded-lg text-label-md font-label-md text-secondary hover:bg-surface-container-low hover:text-on-surface transition-colors duration-200" type="button">
+                            Cancel
+                        </button>
+<button class="px-6 py-2 rounded-lg text-label-md font-label-md bg-primary text-on-primary hover:bg-on-primary-fixed-variant shadow-sm transition-all duration-200 flex items-center gap-2" type="submit">
+<span class="material-symbols-outlined text-[18px]">save</span>
+                            Save &amp; Continue
+                        </button>
+</div>
+</form>
+</div>
+</div>
+</main>
+</body></html>

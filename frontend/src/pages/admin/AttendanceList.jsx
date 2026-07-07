@@ -276,6 +276,7 @@ function AttendanceList() {
                         </tbody>
                     </table>
                 </div>
+            </div>
             <CustomConfirmModal
                 isOpen={confirmModal.isOpen}
                 onClose={() => setConfirmModal({ isOpen: false, employeeId: null, attendanceDate: null, employeeName: "" })}

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Chart, registerables } from "chart.js";
-import DashboardLayout from "../layouts/dashboardLayout";
+import DashboardLayout from "../layouts/DashboardLayout";
 import { 
     FaArrowUp, 
     FaArrowDown, 
