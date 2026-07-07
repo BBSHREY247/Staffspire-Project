@@ -373,7 +373,7 @@ const verifyOTP = async (req, res) => {
 
     const user = users[0];
 
-    if (user.reset_otp !== otp) {
+    if (String(user.reset_otp).trim() !== String(otp).trim()) {
 
       return res.status(400).json({
         success: false,

@@ -21,13 +21,38 @@ function Login() {
         setRememberMe(false);
     }, []);
 
+    const handlePaste = (e) => {
+        const pastedText = e.clipboardData.getData("text");
+        if (!pastedText) return;
+
+        // Auto-detect and parse combined credentials format e.g. "Employee ID: EM1000SS Temporary Password: pwd"
+        const idMatch = pastedText.match(/Employee\s+ID:\s*([A-Za-z0-9-]+)/i);
+        const pwdMatch = pastedText.match(/(?:Temporary\s+)?Password:\s*(\S+)/i);
+
+        if (idMatch && pwdMatch) {
+            e.preventDefault(); // Prevent pasting the long combined text into a single field
+            const extractedId = idMatch[1].trim();
+            const extractedPassword = pwdMatch[1].trim();
+            
+            setEmail(extractedId);
+            setPassword(extractedPassword);
+            
+            setAlertMsg("Credentials auto-filled successfully!");
+            setAlertType("success");
+            setTimeout(() => {
+                setAlertMsg("");
+                setAlertType("");
+            }, 3000);
+        }
+    };
+
     const handleLogin = async (e) => {
         if (e) e.preventDefault();
         setAlertMsg("");
         setAlertType("");
 
         let cleanEmail = email.trim();
-        if (/^em\d{4}ss$/i.test(cleanEmail)) {
+        if (/^EM\d{4}SS$/i.test(cleanEmail)) {
             cleanEmail = cleanEmail.toUpperCase();
         } else {
             cleanEmail = cleanEmail.toLowerCase();
@@ -130,6 +155,7 @@ function Login() {
                                     placeholder="Enter Email or Employee ID"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                    onPaste={handlePaste}
                                     autoComplete="off"
                                     required
                                 />

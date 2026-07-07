@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { FaEye, FaEyeSlash, FaLock, FaCheck } from "react-icons/fa";
+import InlineAlert from "../../components/InlineAlert";
 
 function ChangePassword() {
     const navigate = useNavigate();
@@ -13,12 +14,15 @@ function ChangePassword() {
     const [showCurrent, setShowCurrent] = useState(false);
     const [showNew, setShowNew] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
+    const [alertMsg, setAlertMsg] = useState("");
+    const [alertType, setAlertType] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (newPassword !== confirmPassword) {
-            alert("Passwords Do Not Match");
+            setAlertMsg("Passwords do not match. Please try again.");
+            setAlertType("error");
             return;
         }
 
@@ -37,11 +41,12 @@ function ChangePassword() {
                 }
             );
 
-            alert(response.data.message);
-            
+            setAlertMsg(response.data.message || "Password changed successfully!");
+            setAlertType("success");
+
             // Clear forced password change flag
             localStorage.removeItem("forcePasswordChange");
-            
+
             // Update user in localStorage
             const user = JSON.parse(localStorage.getItem("user")) || {};
             user.must_change_password = 0;
@@ -51,15 +56,18 @@ function ChangePassword() {
             setNewPassword("");
             setConfirmPassword("");
 
-            if (user.role === "Admin") navigate("/admin/dashboard");
-            else if (user.role === "Manager") navigate("/manager/dashboard");
-            else navigate("/employee/dashboard");
+            setTimeout(() => {
+                if (user.role === "Admin") navigate("/admin/dashboard");
+                else if (user.role === "Manager") navigate("/manager/dashboard");
+                else navigate("/employee/dashboard");
+            }, 1500);
         } catch (error) {
             console.log(error);
-            alert(
+            setAlertMsg(
                 error.response?.data?.message ||
                 "Failed To Change Password"
             );
+            setAlertType("error");
         }
     };
 
@@ -88,8 +96,15 @@ function ChangePassword() {
                     </h2>
 
                     <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                        
+
+                        <InlineAlert
+                            type={alertType}
+                            message={alertMsg}
+                            onClose={() => setAlertMsg("")}
+                        />
+
                         {/* Current Password */}
+
                         <div className="form-group-custom">
                             <label className="form-label-custom" style={{ fontWeight: "600", fontSize: "14px", color: "#475569" }}>Current Password</label>
                             <div style={{ position: "relative", marginTop: "6px" }}>
