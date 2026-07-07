@@ -30,6 +30,8 @@ import AdminTaskList from "./pages/admin/AdminTaskList";
 import TaskDetail from "./pages/admin/TaskDetail";
 import MyTasks from "./pages/employee/MyTasks";
 import ReportsDashboard from "./pages/reports/ReportsDashboard";
+import AlertsShowcase from "./pages/admin/AlertsShowcase";
+
 
 function App() {
     return (
@@ -127,6 +129,11 @@ function App() {
                     path="/reports"
                     element={<ReportsDashboard />}
                 />
+                <Route
+                    path="/alerts"
+                    element={<AlertsShowcase />}
+                />
+
                 <Route
                     path="/forgot-password"
                     element={<ForgotPassword />}

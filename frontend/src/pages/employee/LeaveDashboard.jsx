@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { FaPlus, FaTimes } from "react-icons/fa";
+import CustomConfirmModal from "../../components/CustomConfirmModal";
+
 
 function LeaveDashboard() {
     const [leaveTypes, setLeaveTypes] = useState([]);
@@ -10,6 +12,10 @@ function LeaveDashboard() {
     const [actionLoading, setActionLoading] = useState(false);
     const [message, setMessage] = useState(null);
     const [showApplyModal, setShowApplyModal] = useState(false);
+
+    // Custom confirm modal state
+    const [confirmModal, setConfirmModal] = useState({ isOpen: false, requestId: null, currentStatus: "", message: "" });
+
 
     // Form states
     const [leaveTypeId, setLeaveTypeId] = useState("");
@@ -106,13 +112,15 @@ function LeaveDashboard() {
         }
     };
 
-    const handleCancelRequest = async (requestId, currentStatus) => {
+    const handleCancelRequestClick = (requestId, currentStatus) => {
         const confirmMsg = currentStatus === "Approved"
             ? "Are you sure you want to request cancellation for this approved leave?"
             : "Are you sure you want to cancel this pending leave request?";
-            
-        if (!window.confirm(confirmMsg)) return;
+        setConfirmModal({ isOpen: true, requestId, currentStatus, message: confirmMsg });
+    };
 
+    const handleConfirmCancelRequest = async () => {
+        const { requestId, currentStatus } = confirmModal;
         try {
             setActionLoading(true);
             const token = localStorage.getItem("token");
@@ -132,8 +140,10 @@ function LeaveDashboard() {
             );
         } finally {
             setActionLoading(false);
+            setConfirmModal({ isOpen: false, requestId: null, currentStatus: "", message: "" });
         }
     };
+
 
     const formatDateNice = (dateStr) => {
         if (!dateStr) return "";
@@ -234,7 +244,7 @@ function LeaveDashboard() {
                                                 {record.status === "Pending" ? (
                                                     <button
                                                         className="clear-date-btn"
-                                                        onClick={() => handleCancelRequest(record.id, "Pending")}
+                                                        onClick={() => handleCancelRequestClick(record.id, record.status)}
                                                         style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "#ef4444" }}
                                                         disabled={actionLoading}
                                                     >
@@ -353,6 +363,16 @@ function LeaveDashboard() {
                     </div>
                 )}
             </div>
+            <CustomConfirmModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal({ isOpen: false, requestId: null, currentStatus: "", message: "" })}
+                onConfirm={handleConfirmCancelRequest}
+                title="Cancel Leave Request"
+                message={confirmModal.message}
+                confirmText={confirmModal.currentStatus === "Approved" ? "Request Cancellation" : "Cancel Request"}
+                cancelText="Keep Request"
+                type={confirmModal.currentStatus === "Approved" ? "warning" : "danger"}
+            />
         </DashboardLayout>
     );
 }

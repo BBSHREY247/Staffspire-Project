@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { FaSearch, FaCalendarAlt, FaHistory, FaCheckCircle, FaUserClock } from "react-icons/fa";
+import CustomConfirmModal from "../../components/CustomConfirmModal";
+
 
 function AttendanceList() {
     const loggedInUser = JSON.parse(localStorage.getItem("user")) || {};
@@ -9,6 +11,10 @@ function AttendanceList() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [dateFilter, setDateFilter] = useState("");
+
+    // Custom confirm modal state
+    const [confirmModal, setConfirmModal] = useState({ isOpen: false, employeeId: null, attendanceDate: null, employeeName: "" });
+
 
     const fetchAttendance = async () => {
         try {
@@ -29,8 +35,13 @@ function AttendanceList() {
         fetchAttendance();
     }, []);
 
-    const handleForceCheckOut = async (employeeId, attendanceDate) => {
-        if (!window.confirm("Are you sure you want to force check-out this employee?")) return;
+    const handleForceCheckOutClick = (employeeId, attendanceDate, firstName, lastName) => {
+        const fullName = `${firstName || ""} ${lastName || ""}`.trim() || employeeId;
+        setConfirmModal({ isOpen: true, employeeId, attendanceDate, employeeName: fullName });
+    };
+
+    const handleConfirmForceCheckOut = async () => {
+        const { employeeId, attendanceDate } = confirmModal;
         try {
             const token = localStorage.getItem("token");
             const recordDateStr = new Date(attendanceDate).toLocaleDateString("sv"); // Sweden format YYYY-MM-DD
@@ -39,13 +50,15 @@ function AttendanceList() {
                 { employeeId, attendanceDate: recordDateStr },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            alert("Employee checked out successfully.");
             fetchAttendance();
         } catch (error) {
             console.error("Force check-out error:", error);
             alert(error.response?.data?.message || "Failed to force check-out.");
+        } finally {
+            setConfirmModal({ isOpen: false, employeeId: null, attendanceDate: null, employeeName: "" });
         }
     };
+
 
     const getInitials = (firstName, lastName) => {
         const f = firstName ? firstName.charAt(0).toUpperCase() : "";
@@ -236,7 +249,7 @@ function AttendanceList() {
                                                 <span style={{ color: "#94a3b8", fontSize: "13px", fontWeight: "500" }}>Self</span>
                                             ) : !record.check_out ? (
                                                 <button
-                                                    onClick={() => handleForceCheckOut(record.employee_id, record.attendance_date)}
+                                                    onClick={() => handleForceCheckOutClick(record.employee_id, record.attendance_date, record.first_name, record.last_name)}
                                                     style={{
                                                         background: "#fee2e2",
                                                         color: "#ef4444",
@@ -263,7 +276,16 @@ function AttendanceList() {
                         </tbody>
                     </table>
                 </div>
-            </div>
+            <CustomConfirmModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal({ isOpen: false, employeeId: null, attendanceDate: null, employeeName: "" })}
+                onConfirm={handleConfirmForceCheckOut}
+                title="Force Check-out"
+                message={`Are you sure you want to force check-out ${confirmModal.employeeName}? This will end their working session for today.`}
+                confirmText="Force Check-out"
+                cancelText="Cancel"
+                type="warning"
+            />
         </DashboardLayout>
     );
 }

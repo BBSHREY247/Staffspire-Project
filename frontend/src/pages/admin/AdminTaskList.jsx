@@ -6,6 +6,8 @@ import {
     FaPlus, FaTimes, FaSearch, FaEye, FaTrashAlt,
     FaTasks, FaHourglassHalf, FaSpinner, FaCheckCircle, FaExclamationTriangle, FaPause
 } from "react-icons/fa";
+import CustomConfirmModal from "../../components/CustomConfirmModal";
+
 
 const API = "http://localhost:5000/api";
 
@@ -66,6 +68,10 @@ function AdminTaskList() {
     // Create modal
     const [showCreate, setShowCreate] = useState(false);
     const [form, setForm] = useState({ task_title: "", description: "", assigned_to: "", priority: "Medium", deadline: "" });
+
+    // Custom confirm modal state
+    const [confirmModal, setConfirmModal] = useState({ isOpen: false, id: null, title: "" });
+
 
     const token = localStorage.getItem("token");
     const headers = { Authorization: `Bearer ${token}` };
@@ -129,16 +135,23 @@ function AdminTaskList() {
         }
     };
 
-    const handleDelete = async (id, title) => {
-        if (!window.confirm(`Delete task "${title}"? This cannot be undone.`)) return;
+    const handleDeleteClick = (id, title) => {
+        setConfirmModal({ isOpen: true, id, title });
+    };
+
+    const handleConfirmDelete = async () => {
+        const { id } = confirmModal;
         try {
             await axios.delete(`${API}/tasks/${id}`, { headers });
             showNotification("success", "Task deleted.");
             fetchAll();
         } catch (err) {
             showNotification("error", err.response?.data?.message || "Failed to delete task.");
+        } finally {
+            setConfirmModal({ isOpen: false, id: null, title: "" });
         }
     };
+
 
     const formatDate = (d) => {
         if (!d) return "—";
@@ -261,8 +274,9 @@ function AdminTaskList() {
                                                 onMouseLeave={e => { e.currentTarget.style.background = "#eff6ff"; e.currentTarget.style.color = "#4f8cff"; }}
                                             ><FaEye /></button>
                                             <button
-                                                onClick={() => handleDelete(task.id, task.task_title)}
+                                                onClick={() => handleDeleteClick(task.id, task.task_title)}
                                                 title="Delete"
+
                                                 style={{ background: "#fff5f5", color: "#ef4444", border: "1.5px solid #fecaca", width: "34px", height: "34px", borderRadius: "8px", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}
                                                 onMouseEnter={e => { e.currentTarget.style.background = "#ef4444"; e.currentTarget.style.color = "white"; }}
                                                 onMouseLeave={e => { e.currentTarget.style.background = "#fff5f5"; e.currentTarget.style.color = "#ef4444"; }}
@@ -338,6 +352,17 @@ function AdminTaskList() {
                     </div>
                 </div>
             )}
+
+            <CustomConfirmModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal({ isOpen: false, id: null, title: "" })}
+                onConfirm={handleConfirmDelete}
+                title="Confirm Deletion"
+                message={`This action cannot be undone. All associated performance metrics for '${confirmModal.title}' will be purged.`}
+                confirmText="Delete Anyway"
+                cancelText="Undo"
+                type="danger"
+            />
         </DashboardLayout>
     );
 }

@@ -3,6 +3,8 @@ import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaUser, FaEnvelope, FaBuilding, FaIdBadge, FaEdit, FaTrash, FaCheck, FaTimes, FaLock, FaKey } from "react-icons/fa";
+import CustomConfirmModal from "../../components/CustomConfirmModal";
+
 
 function EmployeeDetails() {
     console.log("EmployeeDetails rendered");
@@ -15,6 +17,10 @@ function EmployeeDetails() {
     const [adminPasswordInput, setAdminPasswordInput] = useState("");
     const [revealedPassword, setRevealedPassword] = useState("");
     const navigate = useNavigate();
+
+    // Custom confirm modal state
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
 
     const loggedInUser = JSON.parse(localStorage.getItem("user")) || {};
     const isAdmin = loggedInUser.role === "Admin";
@@ -122,10 +128,11 @@ function EmployeeDetails() {
         }
     };
 
-    const handleDelete = async () => {
-        const confirmDelete = window.confirm("Delete this employee?");
-        if (!confirmDelete) return;
+    const handleDeleteClick = () => {
+        setIsDeleteModalOpen(true);
+    };
 
+    const handleConfirmDelete = async () => {
         try {
             const token = localStorage.getItem("token");
             const response = await axios.delete(
@@ -136,13 +143,15 @@ function EmployeeDetails() {
                     }
                 }
             );
-            alert(response.data.message);
             navigate("/admin/employees");
         } catch (error) {
             console.log(error);
             alert("Failed to delete employee");
+        } finally {
+            setIsDeleteModalOpen(false);
         }
     };
+
 
     // Helper to get initials for profile avatar
     const getInitials = (firstName, lastName) => {
@@ -397,7 +406,7 @@ function EmployeeDetails() {
                                 {isAdmin && (
                                     <button
                                         className="action-btn-custom action-btn-danger"
-                                        onClick={handleDelete}
+                                        onClick={handleDeleteClick}
                                     >
                                         <FaTrash /> Delete
                                     </button>
@@ -494,6 +503,16 @@ function EmployeeDetails() {
                     </div>
                 </div>
             )}
+            <CustomConfirmModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="Confirm Deletion"
+                message={`Are you sure you want to delete employee '${employee?.first_name} ${employee?.last_name}'? This action cannot be undone.`}
+                confirmText="Delete Anyway"
+                cancelText="Cancel"
+                type="danger"
+            />
         </DashboardLayout>
     );
 }

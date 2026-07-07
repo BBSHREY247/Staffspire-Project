@@ -9,8 +9,10 @@ import {
     FaChartBar, 
     FaCog, 
     FaSignOutAlt,
-    FaUserCircle
+    FaUserCircle,
+    FaBell
 } from "react-icons/fa";
+
 
 function Sidebar() {
     const navigate = useNavigate();
@@ -36,6 +38,8 @@ function Sidebar() {
         { name: "Settings", path: "/settings", icon: <FaCog /> },
     ];
 
+
+
     const employeeMenuItems = [
         { name: "Dashboard", path: "/employee/dashboard", icon: <FaHome /> },
         { name: "My Profile", path: "/employee/profile", icon: <FaUserCircle /> },
@@ -45,6 +49,8 @@ function Sidebar() {
         { name: "Reports", path: "/reports", icon: <FaChartBar /> },
         { name: "Settings", path: "/settings", icon: <FaCog /> },
     ];
+
+
 
     const managerMenuItems = [
         { name: "Dashboard", path: "/manager/dashboard", icon: <FaHome /> },
@@ -58,6 +64,8 @@ function Sidebar() {
         { name: "Reports", path: "/reports", icon: <FaChartBar /> },
         { name: "Change Password", path: "/change-password", icon: <FaCog /> },
     ];
+
+
 
     const menuItems = role === "Admin" ? adminMenuItems : role === "Manager" ? managerMenuItems : employeeMenuItems;
 

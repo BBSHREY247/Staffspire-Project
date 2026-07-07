@@ -3,6 +3,8 @@ import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaBuilding, FaUsers, FaEdit, FaTrash, FaCheck, FaTimes } from "react-icons/fa";
+import CustomConfirmModal from "../../components/CustomConfirmModal";
+
 
 function DepartmentDetails() {
     const { id } = useParams();
@@ -11,6 +13,10 @@ function DepartmentDetails() {
     const [dept, setDept] = useState(null);
     const [employeeCount, setEmployeeCount] = useState(0);
     const [newName, setNewName] = useState("");
+
+    // Custom confirm modal state
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
 
     const fetchDepartmentDetails = async () => {
         try {
@@ -63,10 +69,11 @@ function DepartmentDetails() {
         }
     };
 
-    const handleDelete = async () => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this department?");
-        if (!confirmDelete) return;
+    const handleDeleteClick = () => {
+        setIsDeleteModalOpen(true);
+    };
 
+    const handleConfirmDelete = async () => {
         try {
             const token = localStorage.getItem("token");
             await axios.delete(
@@ -77,13 +84,15 @@ function DepartmentDetails() {
                     }
                 }
             );
-            alert("Department deleted successfully");
             navigate("/admin/departments");
         } catch (error) {
             console.log(error);
             alert("Failed to delete department");
+        } finally {
+            setIsDeleteModalOpen(false);
         }
     };
+
 
     if (!dept) {
         return (
@@ -189,17 +198,28 @@ function DepartmentDetails() {
                                     </button>
                                     <button 
                                         className="action-btn-custom"
-                                        onClick={handleDelete}
+                                        onClick={handleDeleteClick}
                                         style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "#ef4444", color: "white" }}
                                     >
                                         <FaTrash /> Delete Department
                                     </button>
+
                                 </>
                             )}
                         </div>
                     </div>
                 </div>
             </div>
+            <CustomConfirmModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="Confirm Deletion"
+                message={`Are you sure you want to delete the department '${dept?.department_name}'? This action cannot be undone.`}
+                confirmText="Delete Anyway"
+                cancelText="Cancel"
+                type="danger"
+            />
         </DashboardLayout>
     );
 }
