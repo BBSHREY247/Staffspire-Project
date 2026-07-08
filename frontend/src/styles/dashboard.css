@@ -863,6 +863,8 @@
     margin-top: 20px;
 }
 
+
+
 .details-card {
     background: white;
     border-radius: 12px;
@@ -871,10 +873,11 @@
     border: 1px solid #e2e8f0;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    /* align-items: center; */
 }
 
 .details-card-avatar {
+    margin: 0 auto;
     width: 90px;
     height: 90px;
     border-radius: 50%;
@@ -890,7 +893,29 @@
     border: 4px solid #eff6ff;
 }
 
+.status-badge {
+    margin: 0 auto;
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.status-badge-active {
+    background: #dcfce7;
+    border-color: #bbf7d0;
+    color: #166534;
+}
+
+.status-badge-inactive {
+    background: #fee2e2;
+    border-color: #fecaca;
+    color: #991b1b;
+}
+
 .details-card-name {
+    margin: 0 auto;
     font-size: 20px;
     font-weight: 700;
     color: #1e293b;
@@ -898,6 +923,7 @@
 }
 
 .details-card-role {
+    margin: 0 auto;
     font-size: 13.5px;
     color: #64748b;
     font-weight: 600;
@@ -917,7 +943,6 @@
 .details-card-info-item {
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: 2px;
     margin-bottom: 12px;
 }

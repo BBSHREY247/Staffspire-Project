@@ -437,11 +437,9 @@ function AddEmployee() {
                                                 required
                                             >
                                                 <option value="" disabled>Select type...</option>
-                                                <option value="Full-Time">Full-Time</option>
-                                                <option value="Part-Time">Part-Time</option>
+                                                <option value="Full Time">Full Time</option>
+                                                <option value="Part Time">Part Time</option>
                                                 <option value="Contract">Contract</option>
-                                                <option value="Intern">Intern</option>
-                                                <option value="Freelance">Freelance</option>
                                             </select>
                                             <span className="material-symbols-outlined select-dropdown-arrow">expand_more</span>
                                         </div>

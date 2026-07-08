@@ -98,16 +98,29 @@ exports.getDepartmentById = async (req, res) => {
         }
         const dept = rows[0];
 
-        // Count employees in this department (matches by string name stored in department column)
-        const [[{ employeeCount }]] = await db.promise().query(
-            "SELECT COUNT(*) AS employeeCount FROM employees WHERE department = ?",
+        // Count + list employees in this department
+        const [employees] = await db.promise().query(
+            `SELECT id, employee_id, first_name, last_name, designation, status, employment_type
+             FROM employees WHERE department = ? ORDER BY first_name ASC`,
+            [dept.department_name]
+        );
+
+        // Find the manager of this department
+        const [managers] = await db.promise().query(
+            `SELECT e.id, e.first_name, e.last_name, e.designation
+             FROM employees e
+             JOIN users u ON e.email = u.email OR e.employee_id = u.login_id
+             WHERE e.department = ? AND u.role_id = 2
+             LIMIT 1`,
             [dept.department_name]
         );
 
         res.json({
             success: true,
             department: dept,
-            employeeCount: employeeCount || 0
+            employeeCount: employees.length,
+            employees,
+            manager: managers.length > 0 ? managers[0] : null
         });
     } catch (error) {
         console.log(error);

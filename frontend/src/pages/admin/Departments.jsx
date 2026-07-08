@@ -3,12 +3,15 @@ import axios from "axios";
 import { FaBuilding, FaPlus, FaEye, FaTimes } from "react-icons/fa";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useNavigate } from "react-router-dom";
+import InlineAlert from "../../components/InlineAlert";
 
 function Departments() {
     const navigate = useNavigate();
     const [departments, setDepartments] = useState([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [departmentName, setDepartmentName] = useState("");
+    const [modalAlert, setModalAlert] = useState("");
+    const [modalAlertType, setModalAlertType] = useState("error");
 
     const fetchDepartments = async () => {
         try {
@@ -25,9 +28,11 @@ function Departments() {
 
     const handleAddDepartment = async (e) => {
         e.preventDefault();
+        setModalAlert("");
 
         if (!departmentName.trim()) {
-            alert("Department name is required");
+            setModalAlert("Department name is required.");
+            setModalAlertType("warning");
             return;
         }
 
@@ -41,7 +46,8 @@ function Departments() {
             fetchDepartments();
         } catch (error) {
             console.log(error);
-            alert("Failed to add department");
+            setModalAlert(error.response?.data?.message || "Failed to add department.");
+            setModalAlertType("error");
         }
     };
 
@@ -136,9 +142,15 @@ function Departments() {
                             <FaTimes />
                         </button>
 
-                        <h3 style={{ marginBottom: "20px", display: "flex", alignItems: "center", gap: "8px", fontWeight: "700" }}>
+                        <h3 style={{ marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px", fontWeight: "700" }}>
                             <FaBuilding style={{ color: "var(--primary)" }} /> Add Department
                         </h3>
+
+                        <InlineAlert
+                            type={modalAlertType}
+                            message={modalAlert}
+                            onClose={() => setModalAlert("")}
+                        />
 
                         <form onSubmit={handleAddDepartment} className="form-group" style={{ margin: 0 }}>
                             <div className="form-group-custom" style={{ marginBottom: "20px" }}>

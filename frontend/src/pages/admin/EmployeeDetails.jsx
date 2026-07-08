@@ -2,13 +2,12 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaUser, FaEnvelope, FaBuilding, FaIdBadge, FaEdit, FaTrash, FaCheck, FaTimes, FaLock, FaKey } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaBuilding, FaIdBadge, FaEdit, FaTrash, FaCheck, FaTimes, FaLock, FaKey, FaPhone, FaVenusMars, FaMoneyBillAlt, FaBriefcase, FaCalendarAlt } from "react-icons/fa";
 import CustomConfirmModal from "../../components/CustomConfirmModal";
+import InlineAlert from "../../components/InlineAlert";
 
 
 function EmployeeDetails() {
-    console.log("EmployeeDetails rendered");
-
     const { id } = useParams();
     const [editing, setEditing] = useState(false);
     const [employee, setEmployee] = useState(null);
@@ -16,26 +15,30 @@ function EmployeeDetails() {
     const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
     const [adminPasswordInput, setAdminPasswordInput] = useState("");
     const [revealedPassword, setRevealedPassword] = useState("");
-    const navigate = useNavigate();
-
-    // Custom confirm modal state
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
+    const [alertMsg, setAlertMsg] = useState("");
+    const [alertType, setAlertType] = useState("error");
+    const [isSaving, setIsSaving] = useState(false);
+    const [pwPromptAlert, setPwPromptAlert] = useState("");
+    const navigate = useNavigate();
 
     const loggedInUser = JSON.parse(localStorage.getItem("user")) || {};
     const isAdmin = loggedInUser.role === "Admin";
     const isManager = loggedInUser.role === "Manager";
+
+    const showAlert = (msg, type = "error") => {
+        setAlertMsg(msg);
+        setAlertType(type);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        setTimeout(() => setAlertMsg(""), 6000);
+    };
 
     const fetchEmployee = async () => {
         try {
             const token = localStorage.getItem("token");
             const response = await axios.get(
                 `http://localhost:5000/api/employees/${id}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }
+                { headers: { Authorization: `Bearer ${token}` } }
             );
             setEmployee(response.data.employee);
         } catch (error) {
@@ -59,33 +62,24 @@ function EmployeeDetails() {
 
     const handleVerifyAdminPassword = async () => {
         if (!adminPasswordInput) {
-            alert("Admin password is required");
+            setPwPromptAlert("Admin password is required");
             return;
         }
-
+        setPwPromptAlert("");
         try {
             const token = localStorage.getItem("token");
             const response = await axios.post(
                 `http://localhost:5000/api/employees/${id}/reveal-password`,
                 { adminPassword: adminPasswordInput },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }
+                { headers: { Authorization: `Bearer ${token}` } }
             );
-
             if (response.data.success) {
                 setRevealedPassword(response.data.password);
                 setShowPasswordPrompt(false);
                 setAdminPasswordInput("");
             }
         } catch (error) {
-            console.log(error);
-            alert(
-                error.response?.data?.message ||
-                "Failed to verify admin password"
-            );
+            setPwPromptAlert(error.response?.data?.message || "Failed to verify admin password");
         }
     };
 
@@ -93,9 +87,57 @@ function EmployeeDetails() {
         if (revealedPassword) {
             setRevealedPassword("");
         } else {
-            setAdminPasswordInput(""); // clear any stale value before opening
+            setAdminPasswordInput("");
+            setPwPromptAlert("");
             setShowPasswordPrompt(true);
         }
+    };
+
+    const handleUpdate = async () => {
+        setIsSaving(true);
+        try {
+            const token = localStorage.getItem("token");
+
+            const response = await axios.put(
+                `http://localhost:5000/api/employees/${id}`,
+                employee,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            showAlert(response.data.message || "Employee updated successfully.", "success");
+            setEditing(false);
+            // Re-fetch from DB to confirm save persisted
+            await fetchEmployee();
+        } catch (error) {
+            console.error("[Update] Error:", error.response?.data || error.message);
+            showAlert(error.response?.data?.message || "Failed to update employee details.", "error");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleDeleteClick = () => setIsDeleteModalOpen(true);
+
+    const handleConfirmDelete = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            await axios.delete(
+                `http://localhost:5000/api/employees/${id}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            navigate("/admin/employees");
+        } catch (error) {
+            console.log(error);
+            showAlert(error.response?.data?.message || "Failed to delete employee.", "error");
+        } finally {
+            setIsDeleteModalOpen(false);
+        }
+    };
+
+    const getInitials = (firstName, lastName) => {
+        const f = firstName ? firstName.charAt(0).toUpperCase() : "";
+        const l = lastName ? lastName.charAt(0).toUpperCase() : "";
+        return `${f}${l}` || "EE";
     };
 
     if (!employee) {
@@ -108,72 +150,58 @@ function EmployeeDetails() {
         );
     }
 
-    const handleUpdate = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const response = await axios.put(
-                `http://localhost:5000/api/employees/${id}`,
-                employee,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }
-            );
-            alert(response.data.message);
-            setEditing(false);
-        } catch (error) {
-            console.log(error);
-            alert("Failed to update employee details");
-        }
+    /* ── Shared field style ── */
+    const inputStyle = {
+        width: "100%",
+        padding: "10px 14px",
+        border: "1px solid #e2e8f0",
+        borderRadius: "8px",
+        fontSize: "14px",
+        background: "#f8fafc",
+        color: "#1e293b",
+        outline: "none",
+        transition: "border 0.2s",
+        boxSizing: "border-box"
     };
-
-    const handleDeleteClick = () => {
-        setIsDeleteModalOpen(true);
+    const labelStyle = {
+        fontSize: "12px",
+        fontWeight: 700,
+        color: "#64748b",
+        textTransform: "uppercase",
+        letterSpacing: "0.05em",
+        marginBottom: "6px",
+        display: "block"
     };
-
-    const handleConfirmDelete = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const response = await axios.delete(
-                `http://localhost:5000/api/employees/${id}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }
-            );
-            navigate("/admin/employees");
-        } catch (error) {
-            console.log(error);
-            alert("Failed to delete employee");
-        } finally {
-            setIsDeleteModalOpen(false);
-        }
-    };
-
-
-    // Helper to get initials for profile avatar
-    const getInitials = (firstName, lastName) => {
-        const f = firstName ? firstName.charAt(0).toUpperCase() : "";
-        const l = lastName ? lastName.charAt(0).toUpperCase() : "";
-        return `${f}${l}` || "EE";
+    const fieldGroupStyle = {
+        display: "flex",
+        flexDirection: "column",
+        gap: "4px"
     };
 
     return (
         <DashboardLayout>
+            {/* Page Header */}
             <div className="employee-header" style={{ marginBottom: "20px" }}>
                 <h1 className="page-title" style={{ margin: 0 }}>Employee Profile</h1>
-                <button 
+                <button
                     className="action-btn-custom action-btn-secondary"
                     onClick={() => navigate("/admin/employees")}
                 >
-                    Back to List
+                    ← Back to List
                 </button>
             </div>
 
+            {/* Inline Alert Banner */}
+            {alertMsg && (
+                <InlineAlert
+                    type={alertType}
+                    message={alertMsg}
+                    onClose={() => setAlertMsg("")}
+                />
+            )}
+
             <div className="profile-details-grid">
-                {/* Left Card: Summary */}
+                {/* ── Left Card: Summary ── */}
                 <div className="details-card">
                     <div className="details-card-avatar">
                         {getInitials(employee.first_name, employee.last_name)}
@@ -183,145 +211,212 @@ function EmployeeDetails() {
                     </h2>
                     <span className="details-card-role">{employee.designation}</span>
 
+                    {/* Status badge */}
+                    <span className="status-badge" style={{
+                        background: employee.status === "Active" ? "#dcfce7" : "#fee2e2",
+                        color: employee.status === "Active" ? "#166534" : "#991b1b",
+                    }}>
+                        {employee.status || "Active"}
+                    </span>
+
                     <div className="details-card-divider"></div>
 
                     <div className="details-card-info-item">
                         <span className="details-card-info-label">Employee ID</span>
                         <span className="details-card-info-value">{employee.employee_id || `#${employee.id}`}</span>
                     </div>
-
-                    <div className="details-card-info-item">
-                        <span className="details-card-info-label">Email Address</span>
-                        <span className="details-card-info-value" style={{ wordBreak: "break-all" }}>{employee.email}</span>
-                    </div>
-
                     <div className="details-card-info-item">
                         <span className="details-card-info-label">Department</span>
                         <span className="details-card-info-value">{employee.department || "N/A"}</span>
                     </div>
+                    <div className="details-card-info-item">
+                        <span className="details-card-info-label">Employment Type</span>
+                        <span className="details-card-info-value">{employee.employment_type || "N/A"}</span>
+                    </div>
+                    {isAdmin && employee.salary && (
+                        <div className="details-card-info-item">
+                            <span className="details-card-info-label">Salary</span>
+                            <span className="details-card-info-value">₹{Number(employee.salary).toLocaleString()}</span>
+                        </div>
+                    )}
                 </div>
 
-                {/* Right Card: Full Info / Edit Fields */}
+                {/* ── Right Card: Info / Edit ── */}
                 <div className="info-card">
                     <h3 className="info-card-title">
-                        {editing ? "Modify Employee Information" : "General Information"}
+                        {editing ? "✏️ Edit Employee Information" : "📋 General Information"}
                     </h3>
 
                     {editing ? (
-                        <form className="form-group" style={{ margin: 0 }} onSubmit={(e) => e.preventDefault()}>
-                            <label htmlFor="first_name">First Name</label>
-                            <input
-                                type="text"
-                                id="first_name"
-                                value={employee.first_name || ""}
-                                onChange={(e) => setEmployee({ ...employee, first_name: e.target.value })}
-                                disabled={isManager}
-                                required
-                            />
-                            <br />
+                        /* ════ EDIT FORM ════ */
+                        <form
+                            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "18px", marginTop: "16px" }}
+                            onSubmit={(e) => e.preventDefault()}
+                        >
+                            {/* First Name */}
+                            <div style={fieldGroupStyle}>
+                                <label style={labelStyle}>First Name *</label>
+                                <input
+                                    style={inputStyle}
+                                    type="text"
+                                    value={employee.first_name || ""}
+                                    onChange={(e) => setEmployee({ ...employee, first_name: e.target.value })}
+                                    disabled={isManager}
+                                    required
+                                />
+                            </div>
 
-                            <label htmlFor="last_name">Last Name</label>
-                            <input
-                                type="text"
-                                id="last_name"
-                                value={employee.last_name || ""}
-                                onChange={(e) => setEmployee({ ...employee, last_name: e.target.value })}
-                                disabled={isManager}
-                                required
-                            />
-                            <br />
+                            {/* Last Name */}
+                            <div style={fieldGroupStyle}>
+                                <label style={labelStyle}>Last Name *</label>
+                                <input
+                                    style={inputStyle}
+                                    type="text"
+                                    value={employee.last_name || ""}
+                                    onChange={(e) => setEmployee({ ...employee, last_name: e.target.value })}
+                                    disabled={isManager}
+                                    required
+                                />
+                            </div>
 
-                            <label htmlFor="email">Email Address</label>
-                            <input
-                                type="email"
-                                id="email"
-                                value={employee.email || ""}
-                                onChange={(e) => setEmployee({ ...employee, email: e.target.value })}
-                                disabled={isManager}
-                                required
-                            />
-                            <br />
+                            {/* Email */}
+                            <div style={{ ...fieldGroupStyle, gridColumn: "1 / -1" }}>
+                                <label style={labelStyle}>Work Email *</label>
+                                <input
+                                    style={inputStyle}
+                                    type="email"
+                                    value={employee.email || ""}
+                                    onChange={(e) => setEmployee({ ...employee, email: e.target.value })}
+                                    disabled={isManager}
+                                    required
+                                />
+                            </div>
 
-                            <label htmlFor="department">Department</label>
-                            <select
-                                id="department"
-                                value={employee.department || ""}
-                                onChange={(e) => setEmployee({ ...employee, department: e.target.value })}
-                                disabled={isManager}
-                                required
-                            >
-                                <option value="">Select Department</option>
-                                {departments.map((dept) => (
-                                    <option key={dept.id} value={dept.department_name}>
-                                        {dept.department_name}
-                                    </option>
-                                ))}
-                            </select>
-                            <br />
+                            {/* Mobile */}
+                            <div style={fieldGroupStyle}>
+                                <label style={labelStyle}>Mobile Number</label>
+                                <input
+                                    style={inputStyle}
+                                    type="text"
+                                    value={employee.mobile || ""}
+                                    onChange={(e) => setEmployee({ ...employee, mobile: e.target.value })}
+                                    placeholder="e.g. +91 9876543210"
+                                />
+                            </div>
 
-                            <label htmlFor="designation">Designation</label>
-                            <input
-                                type="text"
-                                id="designation"
-                                value={employee.designation || ""}
-                                onChange={(e) => setEmployee({ ...employee, designation: e.target.value })}
-                                required
-                            />
-                            <br />
+                            {/* Gender */}
+                            <div style={fieldGroupStyle}>
+                                <label style={labelStyle}>Gender</label>
+                                <select
+                                    style={inputStyle}
+                                    value={employee.gender || ""}
+                                    onChange={(e) => setEmployee({ ...employee, gender: e.target.value })}
+                                    disabled={isManager}
+                                >
+                                    <option value="">Select gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                    <option value="Prefer not to say">Prefer not to say</option>
+                                </select>
+                            </div>
 
-                            <label htmlFor="mobile">Mobile Number</label>
-                            <input
-                                type="text"
-                                id="mobile"
-                                value={employee.mobile || ""}
-                                onChange={(e) => setEmployee({ ...employee, mobile: e.target.value })}
-                                placeholder="Enter mobile number"
-                                required
-                            />
-                            <br />
+                            {/* Department */}
+                            <div style={fieldGroupStyle}>
+                                <label style={labelStyle}>Department *</label>
+                                <select
+                                    style={inputStyle}
+                                    value={employee.department || ""}
+                                    onChange={(e) => setEmployee({ ...employee, department: e.target.value })}
+                                    disabled={isManager}
+                                    required
+                                >
+                                    <option value="">Select department</option>
+                                    {departments.map((dept) => (
+                                        <option key={dept.id} value={dept.department_name}>
+                                            {dept.department_name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
 
-                            <label htmlFor="status">Status</label>
-                            <select
-                                id="status"
-                                value={employee.status || "Active"}
-                                onChange={(e) => setEmployee({ ...employee, status: e.target.value })}
-                                required
-                            >
-                                <option value="Active">Active</option>
-                                <option value="Inactive">Inactive</option>
-                            </select>
-                            <br />
+                            {/* Designation */}
+                            <div style={fieldGroupStyle}>
+                                <label style={labelStyle}>Designation *</label>
+                                <input
+                                    style={inputStyle}
+                                    type="text"
+                                    value={employee.designation || ""}
+                                    onChange={(e) => setEmployee({ ...employee, designation: e.target.value })}
+                                    required
+                                />
+                            </div>
 
+                            {/* Employment Type */}
+                            <div style={fieldGroupStyle}>
+                                <label style={labelStyle}>Employment Type</label>
+                                <select
+                                    style={inputStyle}
+                                    value={employee.employment_type || ""}
+                                    onChange={(e) => setEmployee({ ...employee, employment_type: e.target.value })}
+                                >
+                                    <option value="">Select type</option>
+                                    <option value="Full Time">Full Time</option>
+                                    <option value="Part Time">Part Time</option>
+                                    <option value="Contract">Contract</option>
+                                </select>
+                            </div>
+
+                            {/* Status */}
+                            <div style={fieldGroupStyle}>
+                                <label style={labelStyle}>Status</label>
+                                <select
+                                    style={inputStyle}
+                                    value={employee.status || "Active"}
+                                    onChange={(e) => setEmployee({ ...employee, status: e.target.value })}
+                                >
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                </select>
+                            </div>
+
+                            {/* Role — Admin only */}
                             {isAdmin && (
-                                <>
-                                    <label htmlFor="role">Role</label>
+                                <div style={fieldGroupStyle}>
+                                    <label style={labelStyle}>Role</label>
                                     <select
-                                        id="role"
+                                        style={inputStyle}
                                         value={employee.role || "Employee"}
                                         onChange={(e) => setEmployee({ ...employee, role: e.target.value })}
-                                        required
                                     >
                                         <option value="Employee">Employee</option>
                                         <option value="Manager">Manager</option>
                                     </select>
-                                    <br />
-
-                                    <label htmlFor="salary">Salary</label>
-                                    <input
-                                        type="number"
-                                        id="salary"
-                                        value={employee.salary || ""}
-                                        onChange={(e) => setEmployee({ ...employee, salary: e.target.value })}
-                                    />
-                                    <br />
-                                </>
+                                </div>
                             )}
 
-                            <div className="actions-container">
+                            {/* Salary — Admin only */}
+                            {isAdmin && (
+                                <div style={fieldGroupStyle}>
+                                    <label style={labelStyle}>Salary (Monthly ₹)</label>
+                                    <input
+                                        style={inputStyle}
+                                        type="number"
+                                        min="0"
+                                        value={employee.salary || ""}
+                                        onChange={(e) => setEmployee({ ...employee, salary: e.target.value })}
+                                        placeholder="e.g. 85000"
+                                    />
+                                </div>
+                            )}
+
+                            {/* Action buttons */}
+                            <div style={{ gridColumn: "1 / -1", display: "flex", gap: "12px", justifyContent: "flex-end", marginTop: "4px" }}>
                                 <button
                                     type="button"
                                     className="action-btn-custom action-btn-secondary"
                                     onClick={() => setEditing(false)}
+                                    disabled={isSaving}
                                 >
                                     <FaTimes /> Cancel
                                 </button>
@@ -329,45 +424,37 @@ function EmployeeDetails() {
                                     type="button"
                                     className="action-btn-custom action-btn-primary"
                                     onClick={handleUpdate}
+                                    disabled={isSaving}
                                 >
-                                    <FaCheck /> Save Changes
+                                    <FaCheck /> {isSaving ? "Saving..." : "Save Changes"}
                                 </button>
                             </div>
                         </form>
                     ) : (
+                            /* ════ VIEW MODE ════ */
                         <div>
-                            <div className="details-info-row">
-                                <span className="details-info-label"><FaIdBadge style={{ marginRight: "8px", verticalAlign: "middle" }} /> ID Reference</span>
-                                <span className="details-info-value">#{employee.id}</span>
+                                {/* 2-col info grid */}
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0" }}>
+                                    <InfoRow icon={<FaIdBadge />} label="ID Reference" value={`#${employee.id}`} />
+                                    <InfoRow icon={<FaIdBadge />} label="Employee ID" value={employee.employee_id || "—"} />
+                                    <InfoRow icon={<FaUser />} label="First Name" value={employee.first_name} />
+                                    <InfoRow icon={<FaUser />} label="Last Name" value={employee.last_name} />
+                                    <InfoRow icon={<FaEnvelope />} label="Email Address" value={employee.email} fullWidth />
+                                    <InfoRow icon={<FaPhone />} label="Mobile" value={employee.mobile || "—"} />
+                                    <InfoRow icon={<FaVenusMars />} label="Gender" value={employee.gender || "—"} />
+                                    <InfoRow icon={<FaBuilding />} label="Department" value={employee.department || "—"} />
+                                    <InfoRow icon={<FaIdBadge />} label="Designation" value={employee.designation} />
+                                    <InfoRow icon={<FaBriefcase />} label="Employment Type" value={employee.employment_type || "—"} />
+                                    <InfoRow icon={<FaUser />} label="Role" value={employee.role || "Employee"} />
+                                    <InfoRow icon={<FaCalendarAlt />} label="Join Date" value={employee.joining_date ? new Date(employee.joining_date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "—"} />
+                                    {isAdmin && (
+                                        <InfoRow icon={<FaMoneyBillAlt />} label="Salary" value={employee.salary ? `₹${Number(employee.salary).toLocaleString()}` : "—"} />
+                                    )}
                             </div>
-                            <div className="details-info-row">
-                                <span className="details-info-label"><FaUser style={{ marginRight: "8px", verticalAlign: "middle" }} /> First Name</span>
-                                <span className="details-info-value">{employee.first_name}</span>
-                            </div>
-                            <div className="details-info-row">
-                                <span className="details-info-label"><FaUser style={{ marginRight: "8px", verticalAlign: "middle" }} /> Last Name</span>
-                                <span className="details-info-value">{employee.last_name}</span>
-                            </div>
-                            <div className="details-info-row">
-                                <span className="details-info-label"><FaEnvelope style={{ marginRight: "8px", verticalAlign: "middle" }} /> Email Address</span>
-                                <span className="details-info-value">{employee.email}</span>
-                            </div>
-                            <div className="details-info-row">
-                                <span className="details-info-label"><FaBuilding style={{ marginRight: "8px", verticalAlign: "middle" }} /> Department</span>
-                                <span className="details-info-value">{employee.department || "N/A"}</span>
-                            </div>
-                            <div className="details-info-row">
-                                <span className="details-info-label"><FaIdBadge style={{ marginRight: "8px", verticalAlign: "middle" }} /> Designation</span>
-                                <span className="details-info-value">{employee.designation}</span>
-                            </div>
-                            <div className="details-info-row">
-                                <span className="details-info-label"><FaUser style={{ marginRight: "8px", verticalAlign: "middle" }} /> Position / Role</span>
-                                <span className="details-info-value">{employee.role || "Employee"}</span>
-                            </div>
-                            
-                            {/* Reversibly Encrypted Password Reveal Row */}
+
+                                {/* Password reveal (Admin only) */}
                             {isAdmin && (
-                                <div className="details-info-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                    <div className="details-info-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "4px" }}>
                                     <span className="details-info-label">
                                         <FaKey style={{ marginRight: "8px", verticalAlign: "middle" }} /> Password
                                     </span>
@@ -382,19 +469,7 @@ function EmployeeDetails() {
                                         <button
                                             type="button"
                                             onClick={handleRevealPasswordClick}
-                                            style={{
-                                                border: "none",
-                                                background: "#e0e7ff",
-                                                color: "#4f46e5",
-                                                padding: "6px 12px",
-                                                borderRadius: "6px",
-                                                fontSize: "12.5px",
-                                                fontWeight: "600",
-                                                cursor: "pointer",
-                                                transition: "background 0.2s"
-                                            }}
-                                            onMouseEnter={(e) => e.currentTarget.style.background = "#c7d2fe"}
-                                            onMouseLeave={(e) => e.currentTarget.style.background = "#e0e7ff"}
+                                                style={{ border: "none", background: "#e0e7ff", color: "#4f46e5", padding: "6px 12px", borderRadius: "6px", fontSize: "12.5px", fontWeight: "600", cursor: "pointer" }}
                                         >
                                             {revealedPassword ? "Hide" : "Show Password"}
                                         </button>
@@ -404,18 +479,12 @@ function EmployeeDetails() {
 
                             <div className="actions-container" style={{ marginTop: "24px" }}>
                                 {isAdmin && (
-                                    <button
-                                        className="action-btn-custom action-btn-danger"
-                                        onClick={handleDeleteClick}
-                                    >
+                                        <button className="action-btn-custom action-btn-danger" onClick={handleDeleteClick}>
                                         <FaTrash /> Delete
                                     </button>
                                 )}
                                 {!(isManager && employee.email === loggedInUser.email) && (
-                                    <button
-                                        className="action-btn-custom action-btn-primary"
-                                        onClick={() => setEditing(true)}
-                                    >
+                                        <button className="action-btn-custom action-btn-primary" onClick={() => setEditing(true)}>
                                         <FaEdit /> Edit Profile
                                     </button>
                                 )}
@@ -428,53 +497,37 @@ function EmployeeDetails() {
             {/* Admin Password Prompt Modal */}
             {showPasswordPrompt && (
                 <div style={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    backgroundColor: "rgba(15, 23, 42, 0.4)",
-                    backdropFilter: "blur(4px)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    zIndex: 1000
+                    position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+                    backgroundColor: "rgba(15,23,42,0.4)", backdropFilter: "blur(4px)",
+                    display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000
                 }}>
                     <div style={{
-                        width: "100%",
-                        maxWidth: "400px",
-                        padding: "30px",
-                        borderRadius: "12px",
-                        background: "white",
-                        boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)",
-                        border: "1px solid #e2e8f0"
+                        width: "100%", maxWidth: "400px", padding: "30px",
+                        borderRadius: "12px", background: "white",
+                        boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1)", border: "1px solid #e2e8f0"
                     }}>
                         <h3 style={{ margin: "0 0 12px 0", fontWeight: "700", display: "flex", alignItems: "center", gap: "8px", color: "#1e293b" }}>
                             <FaLock style={{ color: "#4f46e5" }} /> Verify Admin Identity
                         </h3>
-                        <p style={{ margin: "0 0 20px 0", fontSize: "13.5px", color: "#64748b", lineHeight: "1.5" }}>
-                            To show the employee's password, please enter your administrator password below.
+                        <p style={{ margin: "0 0 16px 0", fontSize: "13.5px", color: "#64748b", lineHeight: "1.5" }}>
+                            Enter your administrator password to reveal this employee's credentials.
                         </p>
 
-                        <div className="form-group-custom" style={{ marginBottom: "20px" }}>
-                            <label className="form-label-custom" style={{ fontSize: "13px", fontWeight: "600", color: "#475569" }}>Admin Password</label>
+                        {/* Inline error inside modal */}
+                        {pwPromptAlert && (
+                            <InlineAlert type="error" message={pwPromptAlert} onClose={() => setPwPromptAlert("")} />
+                        )}
+
+                        <div style={{ marginBottom: "20px" }}>
+                            <label style={labelStyle}>Admin Password</label>
                             <input
                                 type="password"
                                 placeholder="Enter your admin password"
                                 value={adminPasswordInput}
                                 onChange={(e) => setAdminPasswordInput(e.target.value)}
                                 autoComplete="new-password"
-                                style={{
-                                    padding: "10px",
-                                    width: "100%",
-                                    borderRadius: "6px",
-                                    border: "1px solid #cbd5e1",
-                                    marginTop: "6px",
-                                    fontSize: "14px"
-                                }}
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter") handleVerifyAdminPassword();
-                                }}
+                                style={{ ...inputStyle, marginTop: "4px" }}
+                                onKeyDown={(e) => { if (e.key === "Enter") handleVerifyAdminPassword(); }}
                                 autoFocus
                             />
                         </div>
@@ -483,10 +536,7 @@ function EmployeeDetails() {
                             <button
                                 type="button"
                                 className="action-btn-custom action-btn-secondary"
-                                onClick={() => {
-                                    setShowPasswordPrompt(false);
-                                    setAdminPasswordInput("");
-                                }}
+                                onClick={() => { setShowPasswordPrompt(false); setAdminPasswordInput(""); setPwPromptAlert(""); }}
                                 style={{ padding: "8px 16px", fontSize: "13px" }}
                             >
                                 Cancel
@@ -503,6 +553,7 @@ function EmployeeDetails() {
                     </div>
                 </div>
             )}
+
             <CustomConfirmModal
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)}
@@ -514,6 +565,19 @@ function EmployeeDetails() {
                 type="danger"
             />
         </DashboardLayout>
+    );
+}
+
+/* ── Small helper component for info rows ── */
+function InfoRow({ icon, label, value, fullWidth }) {
+    return (
+        <div className="details-info-row" style={fullWidth ? { gridColumn: "1 / -1" } : {}}>
+            <span className="details-info-label">
+                <span style={{ marginRight: "8px", verticalAlign: "middle" }}>{icon}</span>
+                {label}
+            </span>
+            <span className="details-info-value">{value}</span>
+        </div>
     );
 }
 
