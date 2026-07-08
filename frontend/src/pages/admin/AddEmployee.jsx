@@ -330,7 +330,7 @@ function AddEmployee() {
                                                 type="email"
                                                 name="email"
                                                 id="email"
-                                                placeholder="jane.doe@staffspire.com"
+                                                placeholder="jane.doe@Softspire.com"
                                                 value={formData.email}
                                                 onChange={handleChange}
                                                 className="form-textbox has-icon-left"

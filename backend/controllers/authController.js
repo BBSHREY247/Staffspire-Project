@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs");
 const db = require("../config/db");
 const generateToken = require("../utils/generateToken");
 const transporter =
-require("../config/mailConfig");
+  require("../config/mailConfig");
 
 const registerUser = async (req, res) => {
   try {
@@ -230,7 +230,7 @@ const forgotPassword = async (req, res) => {
 
       to: email,
 
-      subject: "StaffSpire Password Reset OTP",
+      subject: "Softspire Password Reset OTP",
 
       html: `
         <h2>Password Reset Request</h2>

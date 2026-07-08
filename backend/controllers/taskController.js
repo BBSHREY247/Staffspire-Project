@@ -68,7 +68,7 @@ const createTask = async (req, res) => {
         if (assigneeRows.length > 0) {
             const assignee = assigneeRows[0];
             const taskUrl = `http://localhost:5173/employee/tasks`;
-            
+
             // 1. Create database notification for UI bell
             const { createNotification } = require("./notificationController");
             await createNotification(
@@ -83,7 +83,7 @@ const createTask = async (req, res) => {
                 <div style="font-family: sans-serif; padding: 20px; color: #1e293b; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 12px;">
                     <h2 style="color: #4f7df0; margin-top: 0;">New Task Assigned</h2>
                     <p>Hello ${assignee.first_name || "Employee"},</p>
-                    <p>You have been assigned a new task on StaffSpire.</p>
+                    <p>You have been assigned a new task on Softspire.</p>
                     
                     <div style="background: #f8fafc; border-left: 4px solid #4f7df0; padding: 16px; margin: 20px 0; border-radius: 4px;">
                         <strong style="font-size: 16px;">${task_title}</strong>
@@ -110,7 +110,7 @@ const createTask = async (req, res) => {
                     </table>
                     
                     <a href="${taskUrl}" style="display: inline-block; background: #4f7df0; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; text-align: center;">View Task Dashboard</a>
-                    <p style="margin-top: 24px; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 16px;">This is an automated message from StaffSpire Solutions. Please do not reply.</p>
+                    <p style="margin-top: 24px; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 16px;">This is an automated message from Softspire Solutions. Please do not reply.</p>
                 </div>
             `;
             await sendEmail({

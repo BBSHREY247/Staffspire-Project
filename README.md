@@ -1,8 +1,8 @@
-# StaffSpire Employee Management System
+# Softspire Employee Management System
 
 A full-stack Employee Management System (HRIS) built with **React + Vite** (frontend) and **Node.js + Express + MySQL** (backend).
 
-[![CI](https://github.com/yourusername/staffspire/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/staffspire/actions/workflows/ci.yml)
+[![CI](https://github.com/yourusername/Softspire/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/Softspire/actions/workflows/ci.yml)
 
 ---
 
@@ -38,7 +38,7 @@ A full-stack Employee Management System (HRIS) built with **React + Vite** (fron
 ## Project Structure
 
 ```
-staffspire/
+Softspire/
 ├── backend/
 │   ├── config/           # DB, Swagger, Mail config
 │   ├── controllers/      # Business logic (9 modules)
@@ -83,7 +83,7 @@ staffspire/
 
 ```bash
 git clone <repo-url>
-cd staffspire
+cd Softspire
 
 # Install all workspace dependencies
 npm install
@@ -101,10 +101,10 @@ cp backend/.env.example backend/.env
 Create the MySQL database:
 
 ```sql
-CREATE DATABASE staffspire CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE Softspire CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-Then run the schema from `StaffSpire Employee Management System.pdf` (Section 5).
+Then run the schema from `Softspire Employee Management System.pdf` (Section 5).
 
 ### 4. Run Development
 
@@ -200,4 +200,4 @@ npm run test:watch --workspace=backend
 
 ## License
 
-MIT © StaffSpire
+MIT © Softspire

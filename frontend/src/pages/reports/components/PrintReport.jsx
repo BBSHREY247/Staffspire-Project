@@ -3,7 +3,8 @@ import React from "react";
 function PrintReport({ reportTitle, columns, keys, data = [] }) {
     return (
         <div className="print-area" style={{ display: "none" }}>
-            <style dangerouslySetInnerHTML={{ __html: `
+            <style dangerouslySetInnerHTML={{
+                __html: `
                 @media print {
                     body * {
                         visibility: hidden !important;
@@ -66,11 +67,11 @@ function PrintReport({ reportTitle, columns, keys, data = [] }) {
                     }
                 }
             ` }} />
-            
+
             <div className="print-header">
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
                     <div>
-                        <h1 style={{ margin: 0, fontSize: "24px", fontWeight: "bold" }}>StaffSpire</h1>
+                        <h1 style={{ margin: 0, fontSize: "24px", fontWeight: "bold" }}>Softspire</h1>
                         <span style={{ fontSize: "11px", color: "#555" }}>Employee Management System</span>
                     </div>
                     <div style={{ textAlign: "right" }}>
@@ -109,7 +110,7 @@ function PrintReport({ reportTitle, columns, keys, data = [] }) {
             </table>
 
             <div className="print-footer">
-                StaffSpire Systems © {new Date().getFullYear()} — Confidential Report
+                Softspire Systems © {new Date().getFullYear()} — Confidential Report
             </div>
         </div>
     );

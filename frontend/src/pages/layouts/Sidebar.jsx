@@ -21,7 +21,7 @@ function Sidebar() {
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-        navigate("/");
+        navigate("/login");
     };
 
     const user = JSON.parse(localStorage.getItem("user")) || {};

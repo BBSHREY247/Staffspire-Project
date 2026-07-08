@@ -43,7 +43,7 @@ function ResetPassword() {
             setAlertType("success");
             localStorage.removeItem("resetEmail");
             localStorage.removeItem("otpVerified");
-            setTimeout(() => navigate("/"), 1800);
+            setTimeout(() => navigate("/login"), 1800);
         } catch (error) {
             setAlertMsg(
                 error.response?.data?.message || "Failed to reset password. Please try again."

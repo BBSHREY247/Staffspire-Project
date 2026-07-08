@@ -18,7 +18,7 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: staffspire_test
+          MYSQL_DATABASE: Softspire_test
         ports:
           - 3306:3306
         options: >-
@@ -49,7 +49,7 @@ jobs:
           DB_HOST: 127.0.0.1
           DB_USER: root
           DB_PASSWORD: root
-          DB_NAME: staffspire_test
+          DB_NAME: Softspire_test
           JWT_SECRET: test_secret
           NODE_ENV: test
 

@@ -242,7 +242,7 @@ function ReportsDashboard() {
 
                 {/* Hidden Print Layout */}
                 <PrintReport
-                    reportTitle={tabs.find(t => t.id === activeTab)?.name || "StaffSpire Report"}
+                    reportTitle={tabs.find(t => t.id === activeTab)?.name || "Softspire Report"}
                     columns={config.columns}
                     keys={config.keys}
                     data={data}

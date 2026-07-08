@@ -39,7 +39,7 @@ const generatePDF = (res, { reportTitle, generatedBy, filters, headers, keys, ro
             }
 
             doc.fillColor("#1E293B");
-            doc.font("Helvetica-Bold").fontSize(18).text("StaffSpire", 95, 25);
+            doc.font("Helvetica-Bold").fontSize(18).text("Softspire", 95, 25);
             doc.font("Helvetica").fontSize(9).fillColor("#64748B").text("Employee Management System", 95, 45);
 
             // Divider Line
@@ -97,7 +97,7 @@ const generatePDF = (res, { reportTitle, generatedBy, filters, headers, keys, ro
         // Pre-format all cell values for this row and calculate max cell height
         let rowHeight = 20; // default minimum row height
         const formattedRow = {};
-        
+
         doc.font("Helvetica").fontSize(8);
         keys.forEach((key) => {
             let val = row[key];
@@ -114,7 +114,7 @@ const generatePDF = (res, { reportTitle, generatedBy, filters, headers, keys, ro
                         const hh = String(d.getHours()).padStart(2, "0");
                         const min = String(d.getMinutes()).padStart(2, "0");
                         const ss = String(d.getSeconds()).padStart(2, "0");
-                        
+
                         if (hh === "00" && min === "00" && ss === "00") {
                             val = `${yyyy}-${mm}-${dd}`;
                         } else {
@@ -122,13 +122,13 @@ const generatePDF = (res, { reportTitle, generatedBy, filters, headers, keys, ro
                         }
                     }
                 }
-                
+
                 if (typeof val === "string" && val.length > 28) {
                     val = val.substring(0, 25) + "...";
                 }
             }
             formattedRow[key] = String(val);
-            
+
             // Measure height of this text cell
             const cellTextHeight = doc.heightOfString(formattedRow[key], {
                 width: colWidth - 4,

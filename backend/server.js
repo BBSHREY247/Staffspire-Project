@@ -36,14 +36,14 @@ app.use(
 );
 
 app.get("/", (req, res) => {
-    res.send("StaffSpire Backend Running");
+    res.send("Softspire Backend Running");
 });
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const departmentRoutes =
-require("./routes/departmentRoutes");
+    require("./routes/departmentRoutes");
 
 app.use(
     "/api/departments",

@@ -64,7 +64,7 @@ const applyLeave = async (req, res) => {
 
         if (empRows.length > 0) {
             const applicant = empRows[0];
-            
+
             // Find the manager of this department
             const [managerRows] = await db.promise().query(
                 `SELECT e.email, e.first_name, u.id AS user_id 
@@ -73,9 +73,9 @@ const applyLeave = async (req, res) => {
                  WHERE e.department = ? AND u.role_id = 2`,
                 [applicant.department]
             );
-            
+
             const manager = managerRows.length > 0 ? managerRows[0] : null;
-            
+
             // Default to first admin if no manager exists
             let targetRecipient = manager;
             if (!targetRecipient) {
@@ -86,10 +86,10 @@ const applyLeave = async (req, res) => {
                     targetRecipient = adminRows[0];
                 }
             }
-            
+
             if (targetRecipient) {
                 const leaveUrl = `http://localhost:5173/admin/leaves`;
-                
+
                 // 1. Create database notification for UI bell
                 const { createNotification } = require("./notificationController");
                 await createNotification(
@@ -126,7 +126,7 @@ const applyLeave = async (req, res) => {
                         </table>
                         
                         <a href="${leaveUrl}" style="display: inline-block; background: #4f7df0; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; text-align: center;">Go to Leave Approvals</a>
-                        <p style="margin-top: 24px; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 16px;">This is an automated message from StaffSpire Solutions. Please do not reply.</p>
+                        <p style="margin-top: 24px; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 16px;">This is an automated message from Softspire Solutions. Please do not reply.</p>
                     </div>
                 `;
                 await sendEmail({

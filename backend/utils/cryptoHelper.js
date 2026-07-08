@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 const algorithm = "aes-256-cbc";
-const secretKey = crypto.createHash('sha256').update(process.env.JWT_SECRET || "staffspire_secure_key").digest();
+const secretKey = crypto.createHash('sha256').update(process.env.JWT_SECRET || "Softspire_secure_key").digest();
 
 const encryptPassword = (text) => {
     try {

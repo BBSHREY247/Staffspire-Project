@@ -4,7 +4,13 @@ import {
     Route
 } from "react-router-dom";
 
-import Login from "./auth/Login";
+import Login from "./auth/login";
+
+import Home from "./pages/public/Home";
+import Features from "./pages/public/Features";
+import Solutions from "./pages/public/Solutions";
+import About from "./pages/public/About";
+import Contact from "./pages/public/Contact";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManagerDashboard from "./pages/manager/ManagerDashboard";
@@ -40,6 +46,31 @@ function App() {
 
                 <Route
                     path="/"
+                    element={<Home />}
+                />
+
+                <Route
+                    path="/features"
+                    element={<Features />}
+                />
+
+                <Route
+                    path="/solutions"
+                    element={<Solutions />}
+                />
+
+                <Route
+                    path="/about"
+                    element={<About />}
+                />
+
+                <Route
+                    path="/contact"
+                    element={<Contact />}
+                />
+
+                <Route
+                    path="/login"
                     element={<Login />}
                 />
 

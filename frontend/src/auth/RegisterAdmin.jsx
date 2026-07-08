@@ -76,7 +76,7 @@ function RegisterAdmin() {
 
             // Redirect to login after 2 seconds
             setTimeout(() => {
-                navigate("/");
+                navigate("/login");
             }, 2000);
 
         } catch (err) {
@@ -198,7 +198,7 @@ function RegisterAdmin() {
                     </p>
                     <p
                         className="forgot-link"
-                        onClick={() => navigate("/")}
+                        onClick={() => navigate("/login")}
                     >
                         Back to Login
                     </p>

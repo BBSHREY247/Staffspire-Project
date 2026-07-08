@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import logo from "../assets/Softspire_Logo.jpeg";
+import Navbar from "../components/public/Navbar";
 
 function Login() {
     const [email, setEmail] = useState("");
@@ -33,10 +34,10 @@ function Login() {
             e.preventDefault(); // Prevent pasting the long combined text into a single field
             const extractedId = idMatch[1].trim();
             const extractedPassword = pwdMatch[1].trim();
-            
+
             setEmail(extractedId);
             setPassword(extractedPassword);
-            
+
             setAlertMsg("Credentials auto-filled successfully!");
             setAlertType("success");
             setTimeout(() => {
@@ -85,7 +86,6 @@ function Login() {
                 localStorage.removeItem("rememberedEmail");
             }
 
-            // Automatically uncheck the remember me checkbox after successful login
             setRememberMe(false);
 
             if (response.data.user.must_change_password) {
@@ -102,13 +102,15 @@ function Login() {
             setAlertType("success");
 
             const role = response.data.user.role;
-            if (role === "Admin") {
-                navigate("/admin/dashboard");
-            } else if (role === "Manager") {
-                navigate("/manager/dashboard");
-            } else if (role === "Employee") {
-                navigate("/employee/dashboard");
-            }
+            setTimeout(() => {
+                if (role === "Admin") {
+                    navigate("/admin/dashboard");
+                } else if (role === "Manager") {
+                    navigate("/manager/dashboard");
+                } else if (role === "Employee") {
+                    navigate("/employee/dashboard");
+                }
+            }, 1200);
         } catch (error) {
             setAlertMsg(error.response?.data?.message || "Login Failed");
             setAlertType("error");
@@ -118,121 +120,124 @@ function Login() {
     };
 
     return (
-        <div className="login-page">
-            <main className="login-main">
-                <section className="login-card">
-                    <div className="login-card-inner">
-                        {/* Logo */}
-                        <div className="login-logo-wrap">
-                            <img
-                                src={logo}
-                                alt="SoftSpire Solutions"
-                                className="login-logo"
-                            />
-                        </div>
-
-                        {/* Heading */}
-                        <div className="login-heading">
-                            <h1>Welcome back</h1>
-                            <p>Log in to your StaffSpire enterprise portal to manage human capital.</p>
-                        </div>
-
-                        {/* Alert */}
-                        {alertMsg && (
-                            <div className={`login-alert login-alert-${alertType}`}>
-                                {alertMsg}
-                            </div>
-                        )}
-
-                        {/* Form */}
-                        <form className="login-form" onSubmit={handleLogin} autoComplete="off">
-                            <div className="login-field">
-                                <label htmlFor="email">Email or Employee ID</label>
-                                <input
-                                    id="email"
-                                    name="email"
-                                    type="text"
-                                    placeholder="Enter Email or Employee ID"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    onPaste={handlePaste}
-                                    autoComplete="off"
-                                    required
+        <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+            <Navbar theme="dark" />
+            <div className="login-page" style={{ flex: 1, padding: "40px 24px" }}>
+                <main className="login-main">
+                    <section className="login-card">
+                        <div className="login-card-inner">
+                            {/* Logo */}
+                            <div className="login-logo-wrap">
+                                <img
+                                    src={logo}
+                                    alt="SoftSpire Solutions"
+                                    className="login-logo"
                                 />
                             </div>
 
-                            <div className="login-field">
-                                <label htmlFor="password">Password</label>
-                                <div className="login-password-wrap">
+                            {/* Heading */}
+                            <div className="login-heading">
+                                <h1>Welcome back</h1>
+                                <p>Log in to your Softspire enterprise portal to manage human capital.</p>
+                            </div>
+
+                            {/* Alert */}
+                            {alertMsg && (
+                                <div className={`login-alert login-alert-${alertType}`}>
+                                    {alertMsg}
+                                </div>
+                            )}
+
+                            {/* Form */}
+                            <form className="login-form" onSubmit={handleLogin} autoComplete="off">
+                                <div className="login-field">
+                                    <label htmlFor="email">Email or Employee ID</label>
                                     <input
-                                        id="password"
-                                        name="password"
-                                        type={showPassword ? "text" : "password"}
-                                        placeholder="Enter Password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        autoComplete="new-password"
+                                        id="email"
+                                        name="email"
+                                        type="text"
+                                        placeholder="Enter Email or Employee ID"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        onPaste={handlePaste}
+                                        autoComplete="off"
                                         required
                                     />
+                                </div>
+
+                                <div className="login-field">
+                                    <label htmlFor="password">Password</label>
+                                    <div className="login-password-wrap">
+                                        <input
+                                            id="password"
+                                            name="password"
+                                            type={showPassword ? "text" : "password"}
+                                            placeholder="Enter Password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            autoComplete="new-password"
+                                            required
+                                        />
+                                        <button
+                                            type="button"
+                                            className="login-eye-btn"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            aria-label="Toggle password visibility"
+                                            tabIndex={-1}
+                                        >
+                                            {showPassword ? <FaRegEyeSlash size={20} /> : <FaRegEye size={20} />}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="login-options">
+                                    <div className="login-remember">
+                                        <input
+                                            id="remember-me"
+                                            name="remember-me"
+                                            type="checkbox"
+                                            checked={rememberMe}
+                                            onChange={(e) => setRememberMe(e.target.checked)}
+                                        />
+                                        <label htmlFor="remember-me">Remember me</label>
+                                    </div>
                                     <button
                                         type="button"
-                                        className="login-eye-btn"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        aria-label="Toggle password visibility"
-                                        tabIndex={-1}
+                                        className="login-forgot-link"
+                                        onClick={() => navigate("/forgot-password")}
                                     >
-                                        {showPassword ? <FaRegEyeSlash size={20} /> : <FaRegEye size={20} />}
+                                        Forgot Password?
                                     </button>
                                 </div>
-                            </div>
 
-                            <div className="login-options">
-                                <div className="login-remember">
-                                    <input
-                                        id="remember-me"
-                                        name="remember-me"
-                                        type="checkbox"
-                                        checked={rememberMe}
-                                        onChange={(e) => setRememberMe(e.target.checked)}
-                                    />
-                                    <label htmlFor="remember-me">Remember me</label>
+                                <div className="login-submit-wrap">
+                                    <button
+                                        type="submit"
+                                        className="login-submit-btn"
+                                        disabled={isLoading}
+                                    >
+                                        {isLoading ? "Logging in..." : "Login"}
+                                    </button>
                                 </div>
-                                <button
-                                    type="button"
-                                    className="login-forgot-link"
-                                    onClick={() => navigate("/forgot-password")}
-                                >
-                                    Forgot Password?
-                                </button>
-                            </div>
+                            </form>
 
-                            <div className="login-submit-wrap">
-                                <button
-                                    type="submit"
-                                    className="login-submit-btn"
-                                    disabled={isLoading}
-                                >
-                                    {isLoading ? "Logging in..." : "Login"}
-                                </button>
+                            {/* Footer */}
+                            <div className="login-footer">
+                                <p>
+                                    Need to setup a new deployment?{" "}
+                                    <button
+                                        type="button"
+                                        className="login-register-link"
+                                        onClick={() => navigate("/register-admin")}
+                                    >
+                                        Register Admin
+                                    </button>
+                                </p>
                             </div>
-                        </form>
-
-                        {/* Footer */}
-                        <div className="login-footer">
-                            <p>
-                                Need to setup a new deployment?{" "}
-                                <button
-                                    type="button"
-                                    className="login-register-link"
-                                    onClick={() => navigate("/register-admin")}
-                                >
-                                    Register Admin
-                                </button>
-                            </p>
                         </div>
-                    </div>
-                </section>
-            </main>
+                    </section>
+                </main>
+            </div>
         </div>
     );
 }

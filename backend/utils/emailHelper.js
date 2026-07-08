@@ -30,10 +30,10 @@ const sendEmail = async ({ to, subject, html, text }) => {
             });
 
             await transporter.sendMail({
-                from: `"StaffSpire Alert" <${user}>`,
+                from: `"Softspire Alert" <${user}>`,
                 to,
                 subject,
-                text: text || "StaffSpire Notification Update",
+                text: text || "Softspire Notification Update",
                 html
             });
             console.log(`[Email] Successfully sent email to ${to}`);
@@ -49,7 +49,7 @@ const sendEmail = async ({ to, subject, html, text }) => {
         const logPath = path.join(logDir, "mock_emails.log");
         const timestamp = new Date().toISOString();
         const divider = "=".repeat(60);
-        
+
         const logContent = `
 ${divider}
 TIMESTAMP: ${timestamp}
