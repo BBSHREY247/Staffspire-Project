@@ -30,10 +30,10 @@ const sendEmail = async ({ to, subject, html, text }) => {
             });
 
             await transporter.sendMail({
-                from: `"Softspire Alert" <${user}>`,
+                from: `"Staffspire Alert" <${user}>`,
                 to,
                 subject,
-                text: text || "Softspire Notification Update",
+                text: text || "Staffspire Notification Update",
                 html
             });
             console.log(`[Email] Successfully sent email to ${to}`);

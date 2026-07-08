@@ -7,7 +7,7 @@ function CTASection() {
             <div className="pub-cta-box">
                 <h2 className="pub-cta-title">Ready to modernize your workforce?</h2>
                 <p className="pub-cta-desc">
-                    Get started with Softspire today and streamline employee attendance, tasks, leaves, and departmental reports under one cohesive workspace.
+                    Get started with Staffspire today and streamline employee attendance, tasks, leaves, and departmental reports under one cohesive workspace.
                 </p>
                 <div className="pub-cta-btns">
                     <Link to="/login" className="pub-btn pub-btn-primary" style={{ padding: "14px 32px" }}>

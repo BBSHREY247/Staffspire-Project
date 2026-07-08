@@ -138,7 +138,7 @@ function Login() {
                             {/* Heading */}
                             <div className="login-heading">
                                 <h1>Welcome back</h1>
-                                <p>Log in to your Softspire enterprise portal to manage human capital.</p>
+                                <p>Log in to your Staffspire enterprise portal to manage human capital.</p>
                             </div>
 
                             {/* Alert */}

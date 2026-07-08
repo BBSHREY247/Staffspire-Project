@@ -1,7 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import "../styles/login.css";
+import { useNavigate, Link } from "react-router-dom";
+import logo from "../assets/Softspire_Logo.jpeg";
+import Navbar from "../components/public/Navbar";
 import InlineAlert from "../components/InlineAlert";
 
 function ForgotPassword() {
@@ -43,70 +44,76 @@ function ForgotPassword() {
     };
 
     return (
-        <div className="login-page-root">
-            <div className="login-card">
-                {/* Header */}
-                <div className="login-card-header">
-                    <div className="login-logo-ring">
-                        <span className="material-symbols-outlined" style={{ fontSize: "28px", color: "#6366f1" }}>
-                            lock_reset
-                        </span>
-                    </div>
-                    <h1 className="login-title">Forgot Password</h1>
-                    <p className="login-subtitle">Enter your registered email to receive a one-time password.</p>
-                </div>
-
-                <div className="login-card-body">
-                    <InlineAlert
-                        type={alertType}
-                        message={alertMsg}
-                        onClose={() => setAlertMsg("")}
-                    />
-
-                    <form onSubmit={handleSubmit}>
-                        <div className="login-field">
-                            <label htmlFor="fp-email">Email Address</label>
-                            <div className="login-input-wrap">
-                                <span className="material-symbols-outlined login-input-icon">mail</span>
-                                <input
-                                    id="fp-email"
-                                    type="email"
-                                    placeholder="your@email.com"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="login-input has-icon"
-                                    required
-                                    autoFocus
+        <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+            <Navbar theme="dark" />
+            <div className="login-page" style={{ flex: 1, padding: "40px 24px" }}>
+                <main className="login-main">
+                    <section className="login-card">
+                        <div className="login-card-inner">
+                            {/* Logo */}
+                            <div className="login-logo-wrap">
+                                <img
+                                    src={logo}
+                                    alt="SoftSpire Solutions"
+                                    className="login-logo"
                                 />
                             </div>
-                        </div>
 
-                        <button
-                            type="submit"
-                            className="login-btn-primary"
-                            disabled={isLoading}
-                            style={{ marginTop: "8px" }}
-                        >
-                            {isLoading ? (
-                                <>
-                                    <span className="material-symbols-outlined login-btn-icon" style={{ animation: "spin 1s linear infinite" }}>progress_activity</span>
-                                    Sending OTP...
-                                </>
-                            ) : (
-                                <>
-                                    <span className="material-symbols-outlined login-btn-icon">send</span>
-                                    Send OTP
-                                </>
-                            )}
-                        </button>
+                            {/* Heading */}
+                            <div className="login-heading">
+                                <h1>Forgot Password</h1>
+                                <p>Enter your registered email to receive a one-time password.</p>
+                            </div>
 
-                        <div style={{ textAlign: "center", marginTop: "16px" }}>
-                            <a href="/" style={{ color: "#6366f1", fontSize: "0.85rem", textDecoration: "none" }}>
-                                ← Back to Login
-                            </a>
+                            {/* Alert */}
+                            <InlineAlert
+                                type={alertType}
+                                message={alertMsg}
+                                onClose={() => setAlertMsg("")}
+                            />
+
+                            {/* Form */}
+                            <form onSubmit={handleSubmit} autoComplete="off">
+                                <div className="login-field">
+                                    <label htmlFor="fp-email">Email Address</label>
+                                    <div className="login-input-wrap">
+                                        <span className="material-symbols-outlined login-input-icon">mail</span>
+                                        <input
+                                            id="fp-email"
+                                            type="email"
+                                            placeholder="Enter your email address"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            className="login-input has-icon"
+                                            required
+                                            autoFocus
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="login-submit-wrap">
+                                    <button
+                                        type="submit"
+                                        className="login-submit-btn"
+                                        disabled={isLoading}
+                                    >
+                                        {isLoading ? "Sending OTP..." : "Send OTP"}
+                                    </button>
+                                </div>
+                            </form>
+
+                            {/* Footer */}
+                            <div className="login-footer">
+                                <p>
+                                    Remembered your password?{" "}
+                                    <Link to="/login" className="login-register-link" style={{ textDecoration: "none", fontWeight: 600 }}>
+                                        Back to Login
+                                    </Link>
+                                </p>
+                            </div>
                         </div>
-                    </form>
-                </div>
+                    </section>
+                </main>
             </div>
         </div>
     );

@@ -230,7 +230,7 @@ const forgotPassword = async (req, res) => {
 
       to: email,
 
-      subject: "Softspire Password Reset OTP",
+      subject: "Staffspire Password Reset OTP",
 
       html: `
         <h2>Password Reset Request</h2>

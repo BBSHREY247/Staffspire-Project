@@ -20,7 +20,7 @@ import AddEmployee from "./pages/admin/AddEmployee";
 import EmployeeDetails from "./pages/admin/EmployeeDetails";
 import ChangePassword from "./pages/admin/changePassword";
 import Settings from "./pages/settings/settings";
-import ForgotPassword from "./auth/ForgotPassword";
+import ForgotPassword from "./auth/forgotPassword";
 import VerifyOTP from "./auth/VerifyOTP";
 import ResetPassword from "./auth/ResetPassword";
 import RegisterAdmin from "./auth/RegisterAdmin";

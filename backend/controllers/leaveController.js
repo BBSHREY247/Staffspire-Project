@@ -126,7 +126,7 @@ const applyLeave = async (req, res) => {
                         </table>
                         
                         <a href="${leaveUrl}" style="display: inline-block; background: #4f7df0; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; text-align: center;">Go to Leave Approvals</a>
-                        <p style="margin-top: 24px; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 16px;">This is an automated message from Softspire Solutions. Please do not reply.</p>
+                        <p style="margin-top: 24px; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 16px;">This is an automated message from Staffspire Solutions. Please do not reply.</p>
                     </div>
                 `;
                 await sendEmail({

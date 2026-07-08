@@ -13,7 +13,7 @@ function Hero() {
                     Smart Workforce <span style={{ color: "var(--pub-primary)" }}>Management</span> for Modern Organizations.
                 </h1>
                 <p className="pub-hero-subtitle">
-                    Softspire is an enterprise-grade Human Resource Information System that helps organizations manage employees, attendance, leave, tasks, reports, and departmental operations from one centralized platform.
+                    Staffspire is an enterprise-grade Human Resource Information System that helps organizations manage employees, attendance, leave, tasks, reports, and departmental operations from one centralized platform.
                 </p>
                 <div className="pub-hero-btns">
                     <Link to="/login" className="pub-btn pub-btn-primary" style={{ padding: "14px 28px" }}>

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../styles/login.css";
+import logo from "../assets/Softspire_Logo.jpeg";
+import Navbar from "../components/public/Navbar";
 import InlineAlert from "../components/InlineAlert";
 
 function VerifyOTP() {
@@ -39,71 +40,84 @@ function VerifyOTP() {
     };
 
     return (
-        <div className="login-page-root">
-            <div className="login-card">
-                <div className="login-card-header">
-                    <div className="login-logo-ring">
-                        <span className="material-symbols-outlined" style={{ fontSize: "28px", color: "#6366f1" }}>
-                            password
-                        </span>
-                    </div>
-                    <h1 className="login-title">Verify OTP</h1>
-                    <p className="login-subtitle">Enter the 6-digit code sent to your email.</p>
-                </div>
-
-                <div className="login-card-body">
-                    <InlineAlert
-                        type={alertType}
-                        message={alertMsg}
-                        onClose={() => setAlertMsg("")}
-                    />
-
-                    <form onSubmit={handleSubmit}>
-                        <div className="login-field">
-                            <label htmlFor="otp-input">One-Time Password</label>
-                            <div className="login-input-wrap">
-                                <span className="material-symbols-outlined login-input-icon">pin</span>
-                                <input
-                                    id="otp-input"
-                                    type="text"
-                                    placeholder="e.g. 284609"
-                                    value={otp}
-                                    onChange={(e) => setOtp(e.target.value)}
-                                    className="login-input has-icon"
-                                    maxLength={6}
-                                    required
-                                    autoFocus
-                                    style={{ letterSpacing: "0.25em", fontSize: "1.1rem" }}
+        <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+            <Navbar theme="dark" />
+            <div className="login-page" style={{ flex: 1, padding: "40px 24px" }}>
+                <main className="login-main">
+                    <section className="login-card">
+                        <div className="login-card-inner">
+                            {/* Logo */}
+                            <div className="login-logo-wrap">
+                                <img
+                                    src={logo}
+                                    alt="SoftSpire Solutions"
+                                    className="login-logo"
                                 />
                             </div>
-                        </div>
 
-                        <button
-                            type="submit"
-                            className="login-btn-primary"
-                            disabled={isLoading}
-                            style={{ marginTop: "8px" }}
-                        >
-                            {isLoading ? (
-                                <>
-                                    <span className="material-symbols-outlined login-btn-icon" style={{ animation: "spin 1s linear infinite" }}>progress_activity</span>
-                                    Verifying...
-                                </>
-                            ) : (
-                                <>
-                                    <span className="material-symbols-outlined login-btn-icon">verified</span>
-                                    Verify OTP
-                                </>
-                            )}
-                        </button>
+                            {/* Heading */}
+                            <div className="login-heading">
+                                <h1>Verify OTP</h1>
+                                <p>Enter the 6-digit code sent to your email.</p>
+                            </div>
 
-                        <div style={{ textAlign: "center", marginTop: "16px" }}>
-                            <a href="/forgot-password" style={{ color: "#6366f1", fontSize: "0.85rem", textDecoration: "none" }}>
-                                ← Resend OTP
-                            </a>
+                            {/* Alert */}
+                            <InlineAlert
+                                type={alertType}
+                                message={alertMsg}
+                                onClose={() => setAlertMsg("")}
+                            />
+
+                            {/* Form */}
+                            <form onSubmit={handleSubmit} autoComplete="off">
+                                <div className="login-field">
+                                    <label htmlFor="otp-input">One-Time Password</label>
+                                    <div className="login-input-wrap">
+                                        {/* <span className="material-symbols-outlined login-input-icon">pin</span> */}
+                                        <input
+                                            id="otp-input"
+                                            type="text"
+                                            placeholder="e.g. 284609"
+                                            value={otp}
+                                            onChange={(e) => setOtp(e.target.value)}
+                                            className="login-input has-icon"
+                                            maxLength={6}
+                                            required
+                                            autoFocus
+                                            style={{ letterSpacing: "0.25em", fontSize: "1.1rem" }}
+                                        />
+                                    </div>
+                                </div>
+                                <br />
+
+                                <div className="login-submit-wrap">
+                                    <button
+                                        type="submit"
+                                        className="login-submit-btn"
+                                        disabled={isLoading}
+                                    >
+                                        {isLoading ? "Verifying..." : "Verify OTP"}
+                                    </button>
+                                </div>
+                            </form>
+
+                            {/* Footer */}
+                            <div className="login-footer">
+                                <p>
+                                    Did not receive the code?{" "}
+                                    <button
+                                        type="button"
+                                        className="login-register-link"
+                                        onClick={() => navigate("/forgot-password")}
+                                        style={{ background: "none", border: "none", color: "#4f46e5", fontWeight: 600, cursor: "pointer" }}
+                                    >
+                                        Resend OTP
+                                    </button>
+                                </p>
+                            </div>
                         </div>
-                    </form>
-                </div>
+                    </section>
+                </main>
             </div>
         </div>
     );

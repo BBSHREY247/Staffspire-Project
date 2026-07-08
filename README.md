@@ -1,4 +1,4 @@
-# Softspire Employee Management System
+# Staffspire Employee Management System
 
 A full-stack Employee Management System (HRIS) built with **React + Vite** (frontend) and **Node.js + Express + MySQL** (backend).
 
@@ -101,10 +101,10 @@ cp backend/.env.example backend/.env
 Create the MySQL database:
 
 ```sql
-CREATE DATABASE Softspire CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE Staffspire CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-Then run the schema from `Softspire Employee Management System.pdf` (Section 5).
+Then run the schema from `Staffspire Employee Management System.pdf` (Section 5).
 
 ### 4. Run Development
 

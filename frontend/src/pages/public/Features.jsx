@@ -16,7 +16,7 @@ function Features() {
                         Powerful Features for modern HR teams
                     </h1>
                     <p style={{ color: "var(--pub-text-secondary)", fontSize: "1.1rem", maxWidth: "600px" }}>
-                        Softspire is packed with robust modules tailored to streamline day-to-day employee actions, attendance logs, and administrative duties.
+                        Staffspire is packed with robust modules tailored to streamline day-to-day employee actions, attendance logs, and administrative duties.
                     </p>
                 </div>
             </section>

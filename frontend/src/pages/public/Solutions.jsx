@@ -8,7 +8,7 @@ function Solutions() {
             title: "Small Businesses",
             badge: "Efficiency & Growth",
             problem: "Manual spreadsheet tracking of attendance, absence, and leaves leads to high error rates and wasted hours weekly.",
-            solve: "Softspire automates employee records, calculations, and approvals, saving admin hours and giving you back time to focus on scaling."
+            solve: "Staffspire automates employee records, calculations, and approvals, saving admin hours and giving you back time to focus on scaling."
         },
         {
             title: "Medium Enterprises",
@@ -20,7 +20,7 @@ function Solutions() {
             title: "Educational Institutions",
             badge: "Faculty & Staff Scheduling",
             problem: "Managing high volumes of non-teaching staff, daily shift logs, and department-level reporting manually is complex.",
-            solve: "Softspire provides clear check-in logs, late detection, and customizable department rosters, perfect for managing institutional divisions."
+            solve: "Staffspire provides clear check-in logs, late detection, and customizable department rosters, perfect for managing institutional divisions."
         },
         {
             title: "Corporate HR",
@@ -48,7 +48,7 @@ function Solutions() {
                         Built for all organizational structures
                     </h1>
                     <p style={{ color: "var(--pub-text-secondary)", fontSize: "1.1rem", maxWidth: "600px" }}>
-                        Softspire scales seamlessly to address custom management hurdles across a wide array of company shapes and sizes.
+                        Staffspire scales seamlessly to address custom management hurdles across a wide array of company shapes and sizes.
                     </p>
                 </div>
             </section>

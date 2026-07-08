@@ -13,7 +13,7 @@ function About() {
     const timeline = [
         {
             date: "Q3 2025",
-            title: "Softspire Core Launch",
+            title: "Staffspire Core Launch",
             desc: "Shipped core modules: employee listings, multi-step additions, password reveal mechanics, and department assignments."
         },
         {
@@ -40,7 +40,7 @@ function About() {
                         Our Background &amp; Vision
                     </h1>
                     <p style={{ color: "var(--pub-text-secondary)", fontSize: "1.1rem", maxWidth: "600px" }}>
-                        Softspire is engineered to replace fragmented workflows with unified department coordination, attendance monitoring, and secure role-based access.
+                        Staffspire is engineered to replace fragmented workflows with unified department coordination, attendance monitoring, and secure role-based access.
                     </p>
                 </div>
             </section>

@@ -36,7 +36,7 @@ app.use(
 );
 
 app.get("/", (req, res) => {
-    res.send("Softspire Backend Running");
+    res.send("Staffspire Backend Running");
 });
 
 app.use(express.json());

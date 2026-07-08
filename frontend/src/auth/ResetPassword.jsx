@@ -1,7 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import "../styles/login.css";
+import { useNavigate, Link } from "react-router-dom";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import logo from "../assets/Softspire_Logo.jpeg";
+import Navbar from "../components/public/Navbar";
 import InlineAlert from "../components/InlineAlert";
 
 function ResetPassword() {
@@ -55,108 +57,118 @@ function ResetPassword() {
     };
 
     return (
-        <div className="login-page-root">
-            <div className="login-card">
-                <div className="login-card-header">
-                    <div className="login-logo-ring">
-                        <span className="material-symbols-outlined" style={{ fontSize: "28px", color: "#6366f1" }}>
-                            lock
-                        </span>
-                    </div>
-                    <h1 className="login-title">Reset Password</h1>
-                    <p className="login-subtitle">Choose a strong new password for your account.</p>
-                </div>
-
-                <div className="login-card-body">
-                    <InlineAlert
-                        type={alertType}
-                        message={alertMsg}
-                        onClose={() => setAlertMsg("")}
-                    />
-
-                    <form onSubmit={handleSubmit}>
-                        {/* New Password */}
-                        <div className="login-field">
-                            <label htmlFor="new-password">New Password</label>
-                            <div className="login-password-wrap">
-                                <input
-                                    id="new-password"
-                                    type={showNew ? "text" : "password"}
-                                    placeholder="Enter new password"
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                    className="login-input"
-                                    required
-                                    autoFocus
+        <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+            <Navbar theme="dark" />
+            <div className="login-page" style={{ flex: 1, padding: "40px 24px" }}>
+                <main className="login-main">
+                    <section className="login-card">
+                        <div className="login-card-inner">
+                            {/* Logo */}
+                            <div className="login-logo-wrap">
+                                <img
+                                    src={logo}
+                                    alt="SoftSpire Solutions"
+                                    className="login-logo"
                                 />
-                                <button
-                                    type="button"
-                                    className="login-eye-btn"
-                                    onClick={() => setShowNew(p => !p)}
-                                    tabIndex={-1}
-                                >
-                                    <span className="material-symbols-outlined">
-                                        {showNew ? "visibility_off" : "visibility"}
-                                    </span>
-                                </button>
+                            </div>
+
+                            {/* Heading */}
+                            <div className="login-heading">
+                                <h1>Reset Password</h1>
+                                <p>Choose a strong new password for your account.</p>
+                            </div>
+
+                            {/* Alert */}
+                            <InlineAlert
+                                type={alertType}
+                                message={alertMsg}
+                                onClose={() => setAlertMsg("")}
+                            />
+
+                            {/* Form */}
+                            <form onSubmit={handleSubmit} autoComplete="off">
+                                {/* New Password */}
+                                <div className="login-field">
+                                    <label htmlFor="new-password">New Password</label>
+                                    <div className="login-password-wrap">
+                                        <input
+                                            id="new-password"
+                                            type={showNew ? "text" : "password"}
+                                            placeholder="Enter new password"
+                                            value={newPassword}
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                            required
+                                            autoFocus
+                                        />
+                                        <br />
+                                        <button
+                                            type="button"
+                                            className="login-eye-btn"
+                                            onClick={() => setShowNew(p => !p)}
+                                            tabIndex={-1}
+                                        >
+                                            {showNew ? <FaRegEyeSlash size={20} /> : <FaRegEye size={20} />}
+                                        </button>
+                                    </div>
+                                </div>
+                                <br />
+
+                                {/* Confirm Password */}
+                                <div className="login-field">
+                                    <label htmlFor="confirm-password">Confirm Password</label>
+                                    <div className="login-password-wrap">
+                                        <input
+                                            id="confirm-password"
+                                            type={showConfirm ? "text" : "password"}
+                                            placeholder="Re-enter new password"
+                                            value={confirmPassword}
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                            required
+                                            style={{
+                                                borderColor: confirmPassword && confirmPassword !== newPassword
+                                                    ? "#ef4444" : undefined
+                                            }}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="login-eye-btn"
+                                            onClick={() => setShowConfirm(p => !p)}
+                                            tabIndex={-1}
+                                        >
+                                            {showConfirm ? <FaRegEyeSlash size={20} /> : <FaRegEye size={20} />}
+                                        </button>
+                                    </div>
+                                    {confirmPassword && confirmPassword !== newPassword && (
+                                        <span style={{ fontSize: "12px", color: "#ef4444", marginTop: "4px", display: "block" }}>
+                                            ⚠ Passwords do not match
+                                        </span>
+                                    )}
+                                </div>
+                                <br />
+
+                                <div className="login-submit-wrap">
+                                    <button
+                                        type="submit"
+                                        className="login-submit-btn"
+                                        disabled={isLoading}
+                                    >
+                                        {isLoading ? "Resetting..." : "Reset Password"}
+                                    </button>
+                                </div>
+                            </form>
+
+                            {/* Footer */}
+                            <div className="login-footer">
+                                <p>
+                                    Want to go back?{" "}
+                                    <Link to="/login" className="login-register-link" style={{ textDecoration: "none", fontWeight: 600 }}>
+                                        Back to Login
+                                    </Link>
+                                </p>
                             </div>
                         </div>
-
-                        {/* Confirm Password */}
-                        <div className="login-field">
-                            <label htmlFor="confirm-password">Confirm Password</label>
-                            <div className="login-password-wrap">
-                                <input
-                                    id="confirm-password"
-                                    type={showConfirm ? "text" : "password"}
-                                    placeholder="Re-enter new password"
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    className="login-input"
-                                    required
-                                    style={{
-                                        borderColor: confirmPassword && confirmPassword !== newPassword
-                                            ? "#ef4444" : undefined
-                                    }}
-                                />
-                                <button
-                                    type="button"
-                                    className="login-eye-btn"
-                                    onClick={() => setShowConfirm(p => !p)}
-                                    tabIndex={-1}
-                                >
-                                    <span className="material-symbols-outlined">
-                                        {showConfirm ? "visibility_off" : "visibility"}
-                                    </span>
-                                </button>
-                            </div>
-                            {confirmPassword && confirmPassword !== newPassword && (
-                                <span style={{ fontSize: "12px", color: "#ef4444", marginTop: "4px", display: "block" }}>
-                                    ⚠ Passwords do not match
-                                </span>
-                            )}
-                        </div>
-
-                        <button
-                            type="submit"
-                            className="login-btn-primary"
-                            disabled={isLoading}
-                            style={{ marginTop: "8px" }}
-                        >
-                            {isLoading ? (
-                                <>
-                                    <span className="material-symbols-outlined login-btn-icon" style={{ animation: "spin 1s linear infinite" }}>progress_activity</span>
-                                    Resetting...
-                                </>
-                            ) : (
-                                <>
-                                    <span className="material-symbols-outlined login-btn-icon">lock_reset</span>
-                                    Reset Password
-                                </>
-                            )}
-                        </button>
-                    </form>
-                </div>
+                    </section>
+                </main>
             </div>
         </div>
     );
