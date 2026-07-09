@@ -94,7 +94,8 @@ const createEmployee = async (req, res) => {
             start_date,
             role,
             custom_employee_id,
-            custom_password
+            custom_password,
+            date_of_birth
         } = req.body;
 
         if (!first_name || !last_name || !email || !department || !designation) {
@@ -180,8 +181,8 @@ const createEmployee = async (req, res) => {
         const roleId = role === "Manager" ? 2 : 3;
 
         const insertEmpSql = `
-            INSERT INTO employees (first_name, last_name, email, mobile, gender, department, designation, salary, employment_type, joining_date, employee_id, password)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO employees (first_name, last_name, email, mobile, gender, department, designation, salary, employment_type, joining_date, employee_id, password, date_of_birth)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
         const insertUserSql = `
             INSERT INTO users (name, email, password, role_id, login_id, must_change_password)
@@ -195,7 +196,8 @@ const createEmployee = async (req, res) => {
             department, designation,
             salary || null, employment_type || null,
             start_date || null,
-            employeeId, encryptedPassword
+            employeeId, encryptedPassword,
+            date_of_birth || null
         ]);
 
         return res.status(201).json({
@@ -243,6 +245,11 @@ const getEmployeeById = async (req, res) => {
                     message: "Forbidden: Employee is not in your department."
                 });
             }
+        }
+
+        if (employee && employee.date_of_birth) {
+            const d = new Date(employee.date_of_birth);
+            employee.date_of_birth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         }
 
         res.status(200).json({
@@ -321,7 +328,9 @@ const updateEmployee = async (req, res) => {
                 salary,
                 employment_type,
                 status,
-                role: userRole
+                role: userRole,
+                date_of_birth,
+                probation_period
             } = req.body;
 
             const [userRows] = await db.promise().query(
@@ -351,7 +360,8 @@ const updateEmployee = async (req, res) => {
             await db.promise().query(
                 `UPDATE employees
                  SET first_name = ?, last_name = ?, email = ?, department = ?, designation = ?,
-                     mobile = ?, gender = ?, salary = ?, employment_type = ?, status = ?
+                     mobile = ?, gender = ?, salary = ?, employment_type = ?, status = ?,
+                     date_of_birth = ?, probation_period = ?
                  WHERE id = ?`,
                 [
                     first_name !== undefined ? first_name : employee.first_name,
@@ -364,6 +374,8 @@ const updateEmployee = async (req, res) => {
                     salary !== undefined ? salary : employee.salary,
                     employment_type !== undefined ? employment_type : employee.employment_type,
                     status !== undefined ? status : employee.status,
+                    date_of_birth !== undefined ? date_of_birth : employee.date_of_birth,
+                    probation_period !== undefined ? probation_period : employee.probation_period,
                     id
                 ]
             );

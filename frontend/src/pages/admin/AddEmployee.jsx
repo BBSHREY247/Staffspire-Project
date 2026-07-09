@@ -13,6 +13,7 @@ function AddEmployee() {
         email: "",
         mobile: "",
         gender: "",
+        date_of_birth: "",
         start_date: "",
         department: "",
         designation: "",
@@ -316,6 +317,22 @@ function AddEmployee() {
                                                 <option value="Other">Other</option>
                                             </select>
                                             <span className="material-symbols-outlined select-dropdown-arrow">expand_more</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Date of Birth */}
+                                    <div className="form-input-group">
+                                        <label htmlFor="date_of_birth">Date of Birth</label>
+                                        <div className="filter-input-wrapper">
+                                            <span className="material-symbols-outlined filter-input-icon">cake</span>
+                                            <input
+                                                type="date"
+                                                name="date_of_birth"
+                                                id="date_of_birth"
+                                                value={formData.date_of_birth}
+                                                onChange={handleChange}
+                                                className="form-textbox has-icon-left"
+                                            />
                                         </div>
                                     </div>
 

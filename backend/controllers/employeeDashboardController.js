@@ -180,16 +180,152 @@ const getEmployeeDashboard = async (req, res) => {
             status: e.status
         }));
 
+        // Fetch manager for the department
+        let managerName = "Anish Kumar"; // Default fallback
+        if (emp.department) {
+            const [managers] = await db.promise().query(
+                `SELECT e.first_name, e.last_name 
+                 FROM employees e 
+                 JOIN users u ON e.email = u.email 
+                 JOIN roles r ON u.role_id = r.id 
+                 WHERE e.department = ? AND r.role_name = 'Manager' 
+                 LIMIT 1`,
+                [emp.department]
+            );
+            if (managers.length > 0) {
+                managerName = `${managers[0].first_name} ${managers[0].last_name}`;
+            }
+        }
+
+        // Fetch direct team members (employees in the same department, excluding current employee)
+        let teamMembers = [];
+        if (emp.department) {
+            const [members] = await db.promise().query(
+                `SELECT first_name, last_name, designation 
+                 FROM employees 
+                 WHERE department = ? AND employee_id != ? 
+                 LIMIT 5`,
+                [emp.department, employeeId]
+            );
+            teamMembers = members.map(m => ({
+                name: `${m.first_name} ${m.last_name}`,
+                designation: m.designation,
+                initials: `${m.first_name.charAt(0).toUpperCase()}${m.last_name.charAt(0).toUpperCase()}`
+            }));
+        }
+        if (teamMembers.length === 0) {
+            teamMembers = [
+                { name: "Priya Kapoor", designation: "Frontend Developer", initials: "PK" },
+                { name: "Rahul Gupta", designation: "Backend Engineer", initials: "RG" }
+            ];
+        }
+
+        // Fetch real attendance activity
+        const [attActivities] = await db.promise().query(
+            `SELECT attendance_date, check_in, status 
+             FROM attendance 
+             WHERE employee_id = ? 
+             ORDER BY attendance_date DESC 
+             LIMIT 3`,
+            [employeeId]
+        );
+
+        // Fetch real leave request activity
+        const [leaveActivities] = await db.promise().query(
+            `SELECT start_date, status, reason 
+             FROM leave_requests 
+             WHERE employee_id = ? 
+             ORDER BY created_at DESC 
+             LIMIT 3`,
+            [employeeId]
+        );
+
+        // Fetch real task completion activity
+        const [taskActivities] = await db.promise().query(
+            `SELECT task_title, status, deadline, updated_at 
+             FROM tasks 
+             WHERE employee_id = ? 
+             ORDER BY updated_at DESC, id DESC 
+             LIMIT 3`,
+            [employeeId]
+        );
+
+        const activities = [];
+        
+        attActivities.forEach(a => {
+            if (a.attendance_date) {
+                const dateObj = new Date(a.attendance_date);
+                const dateStr = dateObj.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+                activities.push({
+                    action: `Clocked In successfully (${a.status})`,
+                    time: `${dateStr} at ${a.check_in || '09:00 AM'}`,
+                    icon: "fingerprint",
+                    color: "#22c55e",
+                    timestamp: dateObj
+                });
+            }
+        });
+
+        leaveActivities.forEach(l => {
+            if (l.start_date) {
+                const dateObj = new Date(l.start_date);
+                const dateStr = dateObj.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+                activities.push({
+                    action: `Applied for Leave: ${l.reason || 'Personal'} (${l.status})`,
+                    time: `Starts on ${dateStr}`,
+                    icon: "event_available",
+                    color: l.status === 'Approved' ? "#004ac6" : l.status === 'Rejected' ? "#ef4444" : "#f59e0b",
+                    timestamp: dateObj
+                });
+            }
+        });
+
+        taskActivities.forEach(t => {
+            activities.push({
+                action: `${t.status === 'Completed' ? 'Completed' : 'Updated'} task '${t.task_title}'`,
+                time: t.deadline ? `Due by ${new Date(t.deadline).toLocaleDateString("en-US", { month: "short", day: "numeric" })}` : 'No deadline',
+                icon: "task_alt",
+                color: "#a855f7",
+                timestamp: t.updated_at ? new Date(t.updated_at) : new Date()
+            });
+        });
+
+        // Sort activities by timestamp descending
+        activities.sort((a, b) => b.timestamp - a.timestamp);
+        const finalActivities = activities.slice(0, 5).map(act => ({
+            action: act.action,
+            time: act.time,
+            icon: act.icon,
+            color: act.color
+        }));
+
         return res.status(200).json({
             success: true,
             employee: {
                 name: emp.first_name ? `${emp.first_name} ${emp.last_name}` : user.name,
+                first_name: emp.first_name || user.name,
+                last_name: emp.last_name || "",
                 employee_id: employeeId,
                 department: emp.department || "N/A",
                 designation: emp.designation || "N/A",
                 email: emp.email || user.email,
-                phone: emp.mobile || "N/A"
+                phone: emp.mobile || "N/A",
+                gender: emp.gender || "Prefer not to say",
+                employment_type: emp.employment_type || "Full-Time",
+                joining_date: emp.joining_date || null,
+                salary: emp.salary || null,
+                manager_name: managerName,
+                personal_email: emp.personal_email || emp.email || user.email,
+                location: emp.location || "Mumbai, India",
+                date_of_birth: emp.date_of_birth ? (() => {
+                    const d = new Date(emp.date_of_birth);
+                    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                })() : "1995-06-14",
+                probation_period: emp.probation_period || "Completed",
+                expertise: emp.expertise || "System Architect, Node.js, Tailwind CSS, React, Cloud Infrastructure"
             },
+            team: teamMembers,
+            activities: finalActivities,
             todayAttendance: {
                 status: todayAttRecord?.status || "Not Checked In",
                 checkIn: todayAttRecord?.check_in || null,

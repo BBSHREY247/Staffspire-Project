@@ -410,6 +410,43 @@ function EmployeeDetails() {
                                 </div>
                             )}
 
+                            {/* Date of Birth — Admin only */}
+                            {isAdmin && (
+                                <div style={fieldGroupStyle}>
+                                    <label style={labelStyle}>Date of Birth</label>
+                                    <input
+                                        style={inputStyle}
+                                        type="date"
+                                        value={employee.date_of_birth ? (() => {
+                                            if (typeof employee.date_of_birth === "string" && employee.date_of_birth.includes("T")) {
+                                                return employee.date_of_birth.split("T")[0];
+                                            }
+                                            if (employee.date_of_birth instanceof Date || !isNaN(Date.parse(employee.date_of_birth))) {
+                                                const d = new Date(employee.date_of_birth);
+                                                return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                                            }
+                                            return employee.date_of_birth || "";
+                                        })() : ""}
+                                        onChange={(e) => setEmployee({ ...employee, date_of_birth: e.target.value })}
+                                    />
+                                </div>
+                            )}
+
+                            {/* Probation Period — Admin only */}
+                            {isAdmin && (
+                                <div style={fieldGroupStyle}>
+                                    <label style={labelStyle}>Probation Period</label>
+                                    <select
+                                        style={inputStyle}
+                                        value={employee.probation_period || "Ongoing"}
+                                        onChange={(e) => setEmployee({ ...employee, probation_period: e.target.value })}
+                                    >
+                                        <option value="Ongoing">Ongoing</option>
+                                        <option value="Completed">Completed</option>
+                                    </select>
+                                </div>
+                            )}
+
                             {/* Action buttons */}
                             <div style={{ gridColumn: "1 / -1", display: "flex", gap: "12px", justifyContent: "flex-end", marginTop: "4px" }}>
                                 <button
@@ -450,6 +487,19 @@ function EmployeeDetails() {
                                     {isAdmin && (
                                         <InfoRow icon={<FaMoneyBillAlt />} label="Salary" value={employee.salary ? `₹${Number(employee.salary).toLocaleString()}` : "—"} />
                                     )}
+                                    <InfoRow 
+                                        icon={<FaCalendarAlt />} 
+                                        label="Date of Birth" 
+                                        value={employee.date_of_birth ? (() => {
+                                            const parts = String(employee.date_of_birth).split("T")[0].split("-");
+                                            if (parts.length === 3) {
+                                                const d = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+                                                return d.toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric", timeZone: "UTC" });
+                                            }
+                                            return new Date(employee.date_of_birth).toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
+                                        })() : "—"} 
+                                    />
+                                    <InfoRow icon={<FaBriefcase />} label="Probation Period" value={employee.probation_period || "Ongoing"} />
                             </div>
 
                                 {/* Password reveal (Admin only) */}
