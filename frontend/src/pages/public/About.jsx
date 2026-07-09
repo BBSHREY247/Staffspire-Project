@@ -1,5 +1,4 @@
 import Navbar from "../../components/public/Navbar";
-import CTASection from "../../components/public/CTASection";
 import Footer from "../../components/public/Footer";
 
 function About() {
@@ -12,19 +11,19 @@ function About() {
 
     const timeline = [
         {
-            date: "Q3 2025",
+            date: "Q3 2026",
             title: "Staffspire Core Launch",
-            desc: "Shipped core modules: employee listings, multi-step additions, password reveal mechanics, and department assignments."
+            desc: "Shipped core modules including employees, departments, and password security."
         },
         {
-            date: "Q1 2026",
-            title: "Advanced Analytics & Reporting Suite",
-            desc: "Added detailed department lists, PDF/Excel/CSV exports, real-time KPI card counts, and inline alert architectures."
+            date: "Q1 2027",
+            title: "Analytics & Reporting Suite",
+            desc: "Added analytics dashboard, detailed department details, and data export formats."
         },
         {
-            date: "Q3 2026 (Roadmap)",
+            date: "Q2 2027",
             title: "GPS Attendance & Mobile Companion",
-            desc: "Integrating geofenced check-in rules, biometric locks, and dedicated Android/iOS employee interfaces."
+            desc: "Integrating geofenced check-in rules and mobile application capabilities."
         }
     ];
 
@@ -51,18 +50,18 @@ function About() {
                     <div className="pub-about-block">
                         <h2 className="pub-about-block-title">Our Mission</h2>
                         <p className="pub-about-block-text">
-                            To empower companies by replacing messy spreadsheets with a central truth repository, making employee, leave, task, and attendance management transparent and effortless.
+                            To replace spreadsheets with a central system, making workforce operations transparent and effortless.
                         </p>
                     </div>
                     <div className="pub-about-block">
                         <h2 className="pub-about-block-title">Our Vision</h2>
                         <p className="pub-about-block-text">
-                            To build a fully integrated, scalable workforce management experience that utilizes smart analytics to optimize company resources and administrative processes.
+                            To build a scalable workforce platform that uses smart metrics to optimize organizational processes.
                         </p>
                     </div>
                 </div>
 
-                {/* Tech Stack */}
+                {/* Tech Stack
                 <div style={{ marginTop: "60px", textAlign: "center" }}>
                     <span className="pub-section-tag">Architecture</span>
                     <h2 className="pub-section-title">The Technology Stack</h2>
@@ -74,7 +73,7 @@ function About() {
                             </div>
                         ))}
                     </div>
-                </div>
+                </div> */}
 
                 {/* Timeline / Future Roadmap */}
                 <div style={{ marginTop: "100px" }}>
@@ -95,7 +94,6 @@ function About() {
                 </div>
             </div>
 
-            <CTASection />
             <Footer />
         </div>
     );

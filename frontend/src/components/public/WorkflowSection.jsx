@@ -1,12 +1,9 @@
 function WorkflowSection() {
     const nodes = [
-        { label: "Admin", icon: "shield_person" },
-        { label: "Departments", icon: "domain" },
-        { label: "Employees", icon: "group" },
-        { label: "Attendance", icon: "fingerprint" },
-        { label: "Tasks", icon: "assignment" },
-        { label: "Leave Approval", icon: "rule" },
-        { label: "Reports", icon: "analytics" }
+        { label: "Admin Setup", icon: "shield_person" },
+        { label: "Onboard Employees", icon: "group" },
+        { label: "Track Operations", icon: "fingerprint" },
+        { label: "Export Reports", icon: "analytics" }
     ];
 
     return (

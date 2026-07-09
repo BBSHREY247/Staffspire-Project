@@ -13,7 +13,7 @@ function Hero() {
                     Smart Workforce <span style={{ color: "var(--pub-primary)" }}>Management</span> for Modern Organizations.
                 </h1>
                 <p className="pub-hero-subtitle">
-                    Staffspire is an enterprise-grade Human Resource Information System that helps organizations manage employees, attendance, leave, tasks, reports, and departmental operations from one centralized platform.
+                    Staffspire is a centralized HRIS designed to streamline employee management, attendance, leaves, tasks, and reports.
                 </p>
                 <div className="pub-hero-btns">
                     <Link to="/login" className="pub-btn pub-btn-primary" style={{ padding: "14px 28px" }}>
@@ -22,13 +22,6 @@ function Hero() {
                     <Link to="/features" className="pub-btn pub-btn-outline" style={{ padding: "14px 28px" }}>
                         View Features
                     </Link>
-                </div>
-
-                <div className="pub-trust-badges">
-                    <span className="pub-trust-badge">Enterprise Certified</span>
-                    <span className="pub-trust-badge">99.9% Uptime</span>
-                    <span className="pub-trust-badge">ISO 27001</span>
-                    <span className="pub-trust-badge">GDPR Ready</span>
                 </div>
             </div>
 

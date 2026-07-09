@@ -1,5 +1,4 @@
 import Navbar from "../../components/public/Navbar";
-import CTASection from "../../components/public/CTASection";
 import Footer from "../../components/public/Footer";
 
 function Solutions() {
@@ -73,7 +72,6 @@ function Solutions() {
                 ))}
             </div>
 
-            <CTASection />
             <Footer />
         </div>
     );

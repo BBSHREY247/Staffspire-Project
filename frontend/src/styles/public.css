@@ -296,7 +296,7 @@
 
 /* Stats Section */
 .pub-stats-section {
-    padding: 60px 8%;
+    padding: 10px 8%;
     background: #ffffff;
     border-top: 1px solid var(--pub-card-border);
     border-bottom: 1px solid var(--pub-card-border);
@@ -331,7 +331,7 @@
 
 /* Workflow Section */
 .pub-workflow-section {
-    padding: 100px 8%;
+    padding: -5px 8%;
     text-align: center;
 }
 
@@ -695,14 +695,26 @@
 
 .pub-info-text-title {
     font-size: 0.8rem;
-    color: #94a3b8;
     text-transform: uppercase;
     font-weight: 700;
 }
 
-.pub-info-text-value {
+.zpub-info-text-value {
+    color: green;
     font-weight: 600;
-    color: var(--pub-text-primary);
+    text-decoration: none;
+}
+
+.ypub-info-text-value {
+    color: red;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.xpub-info-text-value {
+    color: blue;
+    font-weight: 600;
+    text-decoration: none;
 }
 
 /* CTA Section */

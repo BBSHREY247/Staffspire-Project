@@ -126,19 +126,10 @@ function Contact() {
                         </div>
                         <div>
                             <div className="pub-info-text-title">Email</div>
-                            <div className="pub-info-text-value">shreyash.sofspiresolutions@gmail.com</div>
+                            <div className="ypub-info-text-value">shreyash.sofspiresolutions@gmail.com</div>
                         </div>
                     </div>  
-
-                    <div className="pub-info-item">
-                        <div className="pub-info-icon" style={{ background: "rgba(6, 182, 212, 0.1)", color: "var(--pub-cyan)" }}>
-                            <span className="material-symbols-outlined">link</span>
-                        </div>
-                        <div>
-                            <div className="pub-info-text-title">GitHub</div>
-                            <div className="pub-info-text-value">github.com/Softspire</div>
-                        </div>
-                    </div>
+                    <br />
 
                     <div className="pub-info-item">
                         <div className="pub-info-icon">
@@ -146,9 +137,10 @@ function Contact() {
                         </div>
                         <div>
                             <div className="pub-info-text-title">LinkedIn</div>
-                            <div className="pub-info-text-value">https://www.linkedin.com/company/softspire-solutions/posts/?feedView=allv</div>
+                            <a target="_blank" className="xpub-info-text-value" href="https://www.linkedin.com/company/softspire-solutions/posts/?feedView=allv">Linkedin Profile</a>
                         </div>
                     </div>
+                    <br /> 
 
                     <div className="pub-info-item" style={{ background: "rgba(255,255,255,0.01)", borderTop: "1px solid var(--pub-card-border)", paddingTop: "20px" }}>
                         <div className="pub-info-icon" style={{ background: "rgba(99, 102, 241, 0.1)", color: "var(--pub-primary)" }}>
@@ -156,7 +148,7 @@ function Contact() {
                         </div>
                         <div>
                             <div className="pub-info-text-title">Location</div>
-                            <div className="pub-info-text-value">Ahilyanagar, Maharashtra, India</div>
+                            <div className="zpub-info-text-value">Ahilyanagar, Maharashtra, India</div>
                         </div>
                     </div>
                 </div>

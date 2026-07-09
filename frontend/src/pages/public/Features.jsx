@@ -1,6 +1,5 @@
 import Navbar from "../../components/public/Navbar";
 import FeaturesSection from "../../components/public/FeaturesSection";
-import CTASection from "../../components/public/CTASection";
 import Footer from "../../components/public/Footer";
 
 function Features() {
@@ -22,7 +21,6 @@ function Features() {
             </section>
 
             <FeaturesSection />
-            <CTASection />
             <Footer />
         </div>
     );

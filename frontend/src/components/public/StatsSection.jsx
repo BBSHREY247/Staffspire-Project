@@ -3,12 +3,12 @@ import { useEffect, useState } from "react";
 function StatsSection() {
     return (
         <section className="pub-stats-section">
-            <div className="pub-stats-grid">
+            {/* <div className="pub-stats-grid">
                 <StatCard endValue={1240} label="Clients" prefix="" suffix="+" isDotFormat />
                 <StatCard endValue={85200} label="Users" prefix="" suffix="+" isDotFormat />
                 <StatCard endValue={4.8} label="Reports" prefix="" suffix="M+" />
                 <StatCard endValue={98.9} label="Retention" prefix="" suffix="%" />
-            </div>
+            </div> */}
         </section>
     );
 }
