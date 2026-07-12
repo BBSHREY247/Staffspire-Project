@@ -92,10 +92,62 @@ const autoCheckOutExpiredRecords = async () => {
     }
 };
 
+// Helper: Automatically mark all active employees as absent at 8:45 AM or later
+const autoMarkAbsents = async () => {
+    try {
+        const now = new Date();
+        const dayOfWeek = now.getDay();
+        // Saturday & Sunday are holidays, do not mark absent
+        if (dayOfWeek === 0 || dayOfWeek === 6) return;
+
+        const checkInTime = now.toTimeString().split(" ")[0]; // HH:MM:SS
+        // The check-in starts at 8:45. So we only auto-mark absent if current time is past 08:45:00.
+        if (checkInTime < "08:45:00") return;
+
+        const localDate = now.toLocaleDateString('sv'); // YYYY-MM-DD
+
+        // Select all active employees
+        const [employees] = await db.promise().query(
+            "SELECT employee_id FROM employees WHERE status = 'Active'"
+        );
+
+        for (const employee of employees) {
+            // Check if they already have an attendance record for today (of any status)
+            const [existing] = await db.promise().query(
+                "SELECT id FROM attendance WHERE employee_id = ? AND attendance_date = ?",
+                [employee.employee_id, localDate]
+            );
+
+            if (existing.length === 0) {
+                // Check if they are on approved or pending cancellation leave today.
+                // If they are on approved leave, we don't mark them as absent.
+                const [leaveRecords] = await db.promise().query(
+                    `SELECT id FROM leave_requests 
+                     WHERE employee_id = ? 
+                       AND status IN ('Approved', 'Pending Cancellation') 
+                       AND ? BETWEEN start_date AND end_date`,
+                    [employee.employee_id, localDate]
+                );
+
+                if (leaveRecords.length === 0) {
+                    await db.promise().query(
+                        `INSERT INTO attendance (employee_id, attendance_date, status)
+                         VALUES (?, ?, 'Absent')`,
+                        [employee.employee_id, localDate]
+                    );
+                }
+            }
+        }
+    } catch (err) {
+        console.error("Error in autoMarkAbsents helper:", err);
+    }
+};
+
 // 1. POST /api/attendance/check-in
 const checkIn = async (req, res) => {
     try {
         await autoCheckOutExpiredRecords();
+        await autoMarkAbsents();
         const employeeId = await getEmployeeIdFromUser(req.user.id);
         if (!employeeId) {
             return res.status(404).json({
@@ -152,15 +204,17 @@ const checkIn = async (req, res) => {
 
         // Check if already checked in today
         const [existing] = await db.promise().query(
-            "SELECT id FROM attendance WHERE employee_id = ? AND attendance_date = ?",
+            "SELECT id, status FROM attendance WHERE employee_id = ? AND attendance_date = ?",
             [employeeId, localDate]
         );
 
         if (existing.length > 0) {
-            return res.status(400).json({
-                success: false,
-                message: "Attendance already marked for today."
-            });
+            if (existing[0].status !== 'Absent') {
+                return res.status(400).json({
+                    success: false,
+                    message: "Attendance already marked for today."
+                });
+            }
         }
 
         // ── GEOFENCE CALCULATION TEMPORARILY DISABLED ───────────────────────
@@ -179,11 +233,18 @@ const checkIn = async (req, res) => {
             status = "Late";
         }
 
-        await db.promise().query(
-            `INSERT INTO attendance (employee_id, attendance_date, check_in, status)
-             VALUES (?, ?, ?, ?)`,
-            [employeeId, localDate, checkInTime, status]
-        );
+        if (existing.length > 0 && existing[0].status === 'Absent') {
+            await db.promise().query(
+                `UPDATE attendance SET check_in = ?, status = ? WHERE id = ?`,
+                [checkInTime, status, existing[0].id]
+            );
+        } else {
+            await db.promise().query(
+                `INSERT INTO attendance (employee_id, attendance_date, check_in, status)
+                 VALUES (?, ?, ?, ?)`,
+                [employeeId, localDate, checkInTime, status]
+            );
+        }
 
         return res.status(200).json({
             success: true,
@@ -241,7 +302,7 @@ const checkOut = async (req, res) => {
             [employeeId, localDate]
         );
 
-        if (rows.length === 0) {
+        if (rows.length === 0 || !rows[0].check_in) {
             return res.status(400).json({
                 success: false,
                 message: "Please check in first."
@@ -320,6 +381,7 @@ const checkOut = async (req, res) => {
 const getTodayStatus = async (req, res) => {
     try {
         await autoCheckOutExpiredRecords();
+        await autoMarkAbsents();
         const employeeId = await getEmployeeIdFromUser(req.user.id);
         if (!employeeId) {
             return res.status(404).json({
@@ -343,7 +405,7 @@ const getTodayStatus = async (req, res) => {
         const now = new Date();
         const dayOfWeek = now.getDay(); // 0 is Sunday, 6 is Saturday
 
-        if (attendanceRecord) {
+        if (attendanceRecord && attendanceRecord.status !== 'Absent') {
             isCheckInAllowed = false;
             checkInBlockReason = "You have already checked in today.";
         } else if (dayOfWeek === 0 || dayOfWeek === 6) {
@@ -373,7 +435,7 @@ const getTodayStatus = async (req, res) => {
 
         const checkOutTime = new Date().toTimeString().split(" ")[0]; // HH:MM:SS
 
-        if (!attendanceRecord) {
+        if (!attendanceRecord || !attendanceRecord.check_in) {
             isCheckOutAllowed = false;
             checkOutBlockReason = "Please check in first.";
         } else if (attendanceRecord.check_out) {
@@ -426,6 +488,7 @@ const getTodayStatus = async (req, res) => {
 const getEmployeeHistory = async (req, res) => {
     try {
         await autoCheckOutExpiredRecords();
+        await autoMarkAbsents();
         const employeeId = await getEmployeeIdFromUser(req.user.id);
         if (!employeeId) {
             return res.status(404).json({
@@ -463,6 +526,7 @@ const getManagerDepartment = async (userId) => {
 const getAllAttendance = async (req, res) => {
     try {
         await autoCheckOutExpiredRecords();
+        await autoMarkAbsents();
         const role = req.user.role;
         let query = `
             SELECT a.*, e.first_name, e.last_name, e.email, e.department, e.designation 
@@ -500,6 +564,7 @@ const getAllAttendance = async (req, res) => {
 const getEmployeeAttendance = async (req, res) => {
     try {
         await autoCheckOutExpiredRecords();
+        await autoMarkAbsents();
         const { employeeId } = req.params;
         const role = req.user.role;
 
@@ -629,5 +694,6 @@ module.exports = {
     getEmployeeHistory,
     getAllAttendance,
     getEmployeeAttendance,
-    adminCheckOut
+    adminCheckOut,
+    autoMarkAbsents
 };

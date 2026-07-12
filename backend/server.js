@@ -68,6 +68,15 @@ app.use("/api/reports", reportRoutes);
 const notificationRoutes = require("./routes/notificationRoutes");
 app.use("/api/notifications", notificationRoutes);
 
+const cron = require("node-cron");
+const { autoMarkAbsents } = require("./controllers/attendanceController");
+
+// Schedule auto-marking of absents at 8:45 AM daily
+cron.schedule("45 8 * * *", () => {
+    console.log("Running scheduled autoMarkAbsents task...");
+    autoMarkAbsents();
+});
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
