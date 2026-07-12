@@ -3,6 +3,7 @@ import Navbar from "../../components/public/Navbar";
 import Footer from "../../components/public/Footer";
 import InlineAlert from "../../components/InlineAlert";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
+import axios from "axios";
 
 function Contact() {
     useScrollReveal();
@@ -15,20 +16,39 @@ function Contact() {
     const [formAlertType, setFormAlertType] = useState("success");
     const [submitting, setSubmitting] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
         setFormAlert("");
 
-        setTimeout(() => {
-            setFormAlert("Message received successfully! We will get back to you shortly.");
-            setFormAlertType("success");
-            setName("");
-            setEmail("");
-            setSubject("");
-            setMessage("");
+        try {
+            const response = await axios.post("http://localhost:5000/api/auth/contact", {
+                name,
+                email,
+                subject,
+                message
+            });
+
+            if (response.data.success) {
+                setFormAlert("Message sent successfully! We will get back to you shortly.");
+                setFormAlertType("success");
+                setName("");
+                setEmail("");
+                setSubject("");
+                setMessage("");
+            } else {
+                setFormAlert(response.data.message || "Failed to send message.");
+                setFormAlertType("error");
+            }
+        } catch (error) {
+            console.error("Error sending contact message:", error);
+            setFormAlert(
+                error.response?.data?.message || "An error occurred while sending your message. Please try again."
+            );
+            setFormAlertType("error");
+        } finally {
             setSubmitting(false);
-        }, 1200);
+        }
     };
 
     return (
