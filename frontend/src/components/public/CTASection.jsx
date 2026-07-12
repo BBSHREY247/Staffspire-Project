@@ -4,7 +4,7 @@ function CTASection() {
     return (
         <section className="pub-cta-section">
             <div className="pub-glow-bg-right" style={{ top: "0" }}></div>
-            <div className="pub-cta-box">
+            <div className="pub-cta-box reveal-zoom-in">
                 <h2 className="pub-cta-title">Ready to modernize your workforce?</h2>
                 <p className="pub-cta-desc">
                     Get started with Staffspire today and streamline employee attendance, tasks, leaves, and departmental reports under one cohesive workspace.

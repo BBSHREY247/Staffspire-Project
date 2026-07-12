@@ -2,8 +2,11 @@ import { useState } from "react";
 import Navbar from "../../components/public/Navbar";
 import Footer from "../../components/public/Footer";
 import InlineAlert from "../../components/InlineAlert";
+import { useScrollReveal } from "../../hooks/useScrollReveal";
 
 function Contact() {
+    useScrollReveal();
+
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [subject, setSubject] = useState("");
@@ -34,7 +37,7 @@ function Contact() {
 
             <section style={{ padding: "80px 8% 20px", position: "relative", zIndex: 1 }}>
                 <div className="pub-glow-bg"></div>
-                <div className="pub-section-header" style={{ marginBottom: "40px" }}>
+                <div className="pub-section-header reveal-fade-in" style={{ marginBottom: "40px" }}>
                     <span className="pub-section-tag">Get In Touch</span>
                     <h1 className="pub-section-title" style={{ fontSize: "3rem", marginBottom: "16px" }}>
                         Contact our sales &amp; support
@@ -47,7 +50,7 @@ function Contact() {
 
             <div className="pub-contact-grid">
                 {/* Form Card */}
-                <div className="pub-contact-form-card">
+                <div className="pub-contact-form-card reveal-slide-left">
                     <InlineAlert
                         type={formAlertType}
                         message={formAlert}
@@ -117,7 +120,7 @@ function Contact() {
                 </div>
 
                 {/* Info Card */}
-                <div className="pub-info-card">
+                <div className="pub-info-card reveal-slide-right">
                     <h3 style={{ margin: 0, fontSize: "1.3rem", fontWeight: 800 }}>Contact Channels</h3>
 
                     <div className="pub-info-item">

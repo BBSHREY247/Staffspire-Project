@@ -4,8 +4,11 @@ import StatsSection from "../../components/public/StatsSection";
 import WorkflowSection from "../../components/public/WorkflowSection";
 import CTASection from "../../components/public/CTASection";
 import Footer from "../../components/public/Footer";
+import { useScrollReveal } from "../../hooks/useScrollReveal";
 
 function Home() {
+    useScrollReveal();
+
     return (
         <div className="public-body-wrap">
             <Navbar />

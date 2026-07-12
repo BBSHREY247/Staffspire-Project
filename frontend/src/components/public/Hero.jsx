@@ -4,7 +4,7 @@ function Hero() {
     return (
         <section className="pub-hero-section">
             <div className="pub-glow-bg"></div>
-            <div className="pub-hero-content">
+            <div className="pub-hero-content reveal-slide-left">
                 <div className="pub-hero-tag">
                     <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>verified</span>
                     Version 1.0 Live
@@ -25,7 +25,7 @@ function Hero() {
                 </div>
             </div>
 
-            <div className="pub-hero-media">
+            <div className="pub-hero-media reveal-slide-right">
                 {/* Redesigned Mockup Card matching user's design image */}
                 <div className="pub-dashboard-preview">
                     {/* Window Controls */}

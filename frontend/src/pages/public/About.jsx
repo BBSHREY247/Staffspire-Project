@@ -1,7 +1,10 @@
 import Navbar from "../../components/public/Navbar";
 import Footer from "../../components/public/Footer";
+import { useScrollReveal } from "../../hooks/useScrollReveal";
 
 function About() {
+    useScrollReveal();
+
     const tech = [
         { name: "React", desc: "Interactive Frontend Engine" },
         { name: "Node.js", desc: "Scalable Event-Driven Backend" },
@@ -33,7 +36,7 @@ function About() {
 
             <section style={{ padding: "80px 8% 20px", position: "relative", zIndex: 1 }}>
                 <div className="pub-glow-bg-right"></div>
-                <div className="pub-section-header" style={{ marginBottom: "40px" }}>
+                <div className="pub-section-header reveal-fade-in" style={{ marginBottom: "40px" }}>
                     <span className="pub-section-tag">About Softspire</span>
                     <h1 className="pub-section-title" style={{ fontSize: "3rem", marginBottom: "16px" }}>
                         Our Background &amp; Vision
@@ -47,13 +50,13 @@ function About() {
             <div className="pub-about-container">
                 {/* Mission and Vision */}
                 <div className="pub-about-split">
-                    <div className="pub-about-block">
+                    <div className="pub-about-block reveal-slide-left">
                         <h2 className="pub-about-block-title">Our Mission</h2>
                         <p className="pub-about-block-text">
                             To replace spreadsheets with a central system, making workforce operations transparent and effortless.
                         </p>
                     </div>
-                    <div className="pub-about-block">
+                    <div className="pub-about-block reveal-slide-right">
                         <h2 className="pub-about-block-title">Our Vision</h2>
                         <p className="pub-about-block-text">
                             To build a scalable workforce platform that uses smart metrics to optimize organizational processes.
@@ -79,12 +82,12 @@ function About() {
                 <div style={{ marginTop: "100px" }}>
                     <div style={{ textAlign: "center" }}>
                         <span className="pub-section-tag">Roadmap</span>
-                        <h2 className="pub-section-title">Timeline &amp; Evolution</h2>
+                        <h2 className="pub-section-title reveal-fade-in">Timeline &amp; Evolution</h2>
                     </div>
 
                     <div className="pub-timeline">
                         {timeline.map((item, idx) => (
-                            <div key={idx} className="pub-timeline-item">
+                            <div key={idx} className={`pub-timeline-item reveal-zoom-in delay-${(idx + 1) * 100}`}>
                                 <div className="pub-timeline-date">{item.date}</div>
                                 <h3 className="pub-timeline-title">{item.title}</h3>
                                 <p style={{ color: "var(--pub-text-secondary)", margin: 0, lineHeight: 1.6 }}>{item.desc}</p>

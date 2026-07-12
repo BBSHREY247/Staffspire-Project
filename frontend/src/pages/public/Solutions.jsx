@@ -1,7 +1,10 @@
 import Navbar from "../../components/public/Navbar";
 import Footer from "../../components/public/Footer";
+import { useScrollReveal } from "../../hooks/useScrollReveal";
 
 function Solutions() {
+    useScrollReveal();
+
     const solutions = [
         {
             title: "Small Businesses",
@@ -41,7 +44,7 @@ function Solutions() {
 
             <section style={{ padding: "80px 8% 20px", position: "relative", zIndex: 1 }}>
                 <div className="pub-glow-bg"></div>
-                <div className="pub-section-header" style={{ marginBottom: "40px" }}>
+                <div className="pub-section-header reveal-fade-in" style={{ marginBottom: "40px" }}>
                     <span className="pub-section-tag">Tailored Scenarios</span>
                     <h1 className="pub-section-title" style={{ fontSize: "3rem", marginBottom: "16px" }}>
                         Built for all organizational structures
@@ -54,7 +57,7 @@ function Solutions() {
 
             <div className="pub-solutions-grid">
                 {solutions.map((sol, idx) => (
-                    <div key={idx} className="pub-solution-card">
+                    <div key={idx} className={`pub-solution-card reveal-zoom-in delay-${((idx % 3) + 1) * 100}`}>
                         <span className="pub-solution-badge">{sol.badge}</span>
                         <h3 className="pub-solution-title">{sol.title}</h3>
 

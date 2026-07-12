@@ -66,7 +66,7 @@ function FeaturesSection() {
     return (
         <div className="pub-features-grid" style={{ marginTop: "40px" }}>
             {features.map((feature, idx) => (
-                <div key={idx} className="pub-feature-card">
+                <div key={idx} className={`pub-feature-card reveal-zoom-in delay-${((idx % 3) + 1) * 100}`}>
                     {feature.badge && (
                         <span className="pub-soon-badge">{feature.badge}</span>
                     )}

@@ -1,15 +1,18 @@
 import Navbar from "../../components/public/Navbar";
 import FeaturesSection from "../../components/public/FeaturesSection";
 import Footer from "../../components/public/Footer";
+import { useScrollReveal } from "../../hooks/useScrollReveal";
 
 function Features() {
+    useScrollReveal();
+
     return (
         <div className="public-body-wrap">
             <Navbar />
 
             <section style={{ padding: "80px 8% 20px", position: "relative", zIndex: 1 }}>
                 <div className="pub-glow-bg-right"></div>
-                <div className="pub-section-header" style={{ marginBottom: "40px" }}>
+                <div className="pub-section-header reveal-fade-in" style={{ marginBottom: "40px" }}>
                     <span className="pub-section-tag">System Capabilities</span>
                     <h1 className="pub-section-title" style={{ fontSize: "3rem", marginBottom: "16px" }}>
                         Powerful Features for modern HR teams
