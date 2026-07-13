@@ -2,58 +2,63 @@ import { Link } from "react-router-dom";
 
 function Footer() {
     return (
-        <footer className="pub-footer">
-            <div className="pub-footer-grid">
-                <div className="pub-footer-logo-desc">
-                    <Link to="/" className="pub-logo-text" style={{ textDecoration: "none" }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: "24px", color: "var(--pub-primary)" }}>
-                            rocket_launch
-                        </span>
-                        Softspire
+        <footer className="ss-footer">
+            <div className="ss-footer-main">
+                {/* Brand */}
+                <div className="ss-footer-brand">
+                    <Link to="/" className="ss-footer-logo">
+                        <span className="material-symbols-outlined ss-footer-logo-icon">corporate_fare</span>
+                        <span className="ss-footer-logo-text">StaffSpire</span>
                     </Link>
-                    <p style={{ color: "var(--pub-text-secondary)", fontSize: "0.9rem", lineHeight: "1.6", margin: "10px 0 0" }}>
-                        Next-generation HRIS platform simplifying enterprise personnel, attendance, and department workflows with modern analytical precision.
+                    <p className="ss-footer-brand-desc">
+                        Empowering organizations with intelligent HR tools to build better teams and faster workflows.
                     </p>
+                    <div className="ss-footer-socials">
+                        <a href="#" className="ss-footer-social">
+                            <span className="material-symbols-outlined">language</span>
+                        </a>
+                        <a href="#" className="ss-footer-social">
+                            <span className="material-symbols-outlined">share</span>
+                        </a>
+                        <a href="#" className="ss-footer-social">
+                            <span className="material-symbols-outlined">public</span>
+                        </a>
+                    </div>
                 </div>
 
-                <div>
-                    <h4 className="pub-footer-title">Company</h4>
-                    <ul className="pub-footer-links">
-                        <li className="pub-footer-link"><Link to="/about">About Us</Link></li>
-                        <li className="pub-footer-link"><Link to="/contact">Contact</Link></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 className="pub-footer-title">Product</h4>
-                    <ul className="pub-footer-links">
-                        <li className="pub-footer-link"><Link to="/features">Features</Link></li>
-                        <li className="pub-footer-link"><Link to="/solutions">Solutions</Link></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 className="pub-footer-title">Resources</h4>
-                    <ul className="pub-footer-links">
-                        <li className="pub-footer-link" style={{ color: "var(--pub-text-secondary)", fontSize: "0.9rem" }}>Docs (Coming Soon)</li>
-                        <li className="pub-footer-link" style={{ color: "var(--pub-text-secondary)", fontSize: "0.9rem" }}>API Reference</li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 className="pub-footer-title">Legal</h4>
-                    <ul className="pub-footer-links">
-                        <li className="pub-footer-link"><a href="#privacy">Privacy Policy</a></li>
-                        <li className="pub-footer-link"><a href="#terms">Terms of Service</a></li>
-                    </ul>
+                {/* Links */}
+                <div className="ss-footer-links-grid">
+                    <div className="ss-footer-col">
+                        <h5 className="ss-footer-col-title">Product</h5>
+                        <ul className="ss-footer-col-links">
+                            <li><Link to="/features">Features</Link></li>
+                            <li><a href="#">Pricing</a></li>
+                            <li><a href="#">Integrations</a></li>
+                            <li><a href="#">Enterprise</a></li>
+                        </ul>
+                    </div>
+                    <div className="ss-footer-col">
+                        <h5 className="ss-footer-col-title">Resources</h5>
+                        <ul className="ss-footer-col-links">
+                            <li><a href="#">Documentation</a></li>
+                            <li><a href="#">Guides</a></li>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">API Reference</a></li>
+                        </ul>
+                    </div>
+                    <div className="ss-footer-col">
+                        <h5 className="ss-footer-col-title">Legal</h5>
+                        <ul className="ss-footer-col-links">
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms of Service</a></li>
+                            <li><a href="#">Cookie Policy</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
-            <div className="pub-footer-bottom">
-                <div>© 2026 Softspire. All rights reserved.</div>
-                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                    Built with <span className="material-symbols-outlined" style={{ fontSize: "16px", color: "var(--pub-cyan)" }}>code</span> React + Node.js
-                </div>
+            <div className="ss-footer-bottom">
+                <span>© 2024 StaffSpire. All rights reserved.</span>
             </div>
         </footer>
     );

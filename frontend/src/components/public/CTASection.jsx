@@ -2,21 +2,38 @@ import { Link } from "react-router-dom";
 
 function CTASection() {
     return (
-        <section className="pub-cta-section">
-            <div className="pub-glow-bg-right" style={{ top: "0" }}></div>
-            <div className="pub-cta-box reveal-zoom-in">
-                <h2 className="pub-cta-title">Ready to modernize your workforce?</h2>
-                <p className="pub-cta-desc">
-                    Get started with Staffspire today and streamline employee attendance, tasks, leaves, and departmental reports under one cohesive workspace.
-                </p>
-                <div className="pub-cta-btns">
-                    <Link to="/login" className="pub-btn pub-btn-primary" style={{ padding: "14px 32px" }}>
-                        Get Started
-                    </Link>
-                    <Link to="/login" className="pub-btn pub-btn-outline" style={{ padding: "14px 32px" }}>
-                        Access Login
-                    </Link>
+        <section className="ss-cta-section">
+            <div className="ss-cta-box reveal-zoom-in">
+                {/* Text Side */}
+                <div className="ss-cta-content">
+                    <h2 className="ss-cta-title">Ready to modernize your workforce?</h2>
+                    <p className="ss-cta-desc">
+                        Join 500+ forward-thinking organizations that chose StaffSpire to streamline their HR operations.
+                    </p>
+                    <div className="ss-cta-btns">
+                        <Link to="/login" className="ss-cta-btn-solid">
+                            Get Started Free
+                        </Link>
+                        <Link to="/login" className="ss-cta-btn-outline">
+                            Book a Live Demo
+                        </Link>
+                    </div>
                 </div>
+
+                {/* Decorative rings */}
+                <div className="ss-cta-rings">
+                    <div className="ss-cta-ring ss-ring-outer">
+                        <div className="ss-cta-ring ss-ring-mid">
+                            <div className="ss-cta-ring ss-ring-inner">
+                                <span className="material-symbols-outlined ss-cta-ring-icon">trending_up</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Decorative blobs */}
+                <div className="ss-cta-blob ss-cta-blob-br"></div>
+                <div className="ss-cta-blob ss-cta-blob-tl"></div>
             </div>
         </section>
     );

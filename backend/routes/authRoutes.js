@@ -35,7 +35,8 @@ router.put(
 const {
     forgotPassword,
     resetPassword,
-    verifyOTP
+    verifyOTP,
+    contactUs
 }
 =
 require("../controllers/authController");
@@ -53,6 +54,11 @@ router.put(
 router.post(
     "/verify-otp",
     verifyOTP
+);
+
+router.post(
+    "/contact",
+    contactUs
 );
 
 module.exports = router;

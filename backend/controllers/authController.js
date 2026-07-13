@@ -522,6 +522,48 @@ const registerAdmin = async (req, res) => {
   }
 };
 
+const { sendEmail } = require("../utils/emailHelper");
+
+const contactUs = async (req, res) => {
+  const { name, email, subject, message } = req.body;
+
+  if (!name || !email || !subject || !message) {
+    return res.status(400).json({
+      success: false,
+      message: "All fields are required."
+    });
+  }
+
+  try {
+    const emailBody = `
+      <h3>New Contact Message Received</h3>
+      <p><strong>Name:</strong> ${name}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Subject:</strong> ${subject}</p>
+      <p><strong>Message:</strong></p>
+      <p>${message.replace(/\n/g, "<br>")}</p>
+    `;
+
+    await sendEmail({
+      to: "shreyash.softspiresolutions@gmail.com",
+      subject: `Staffspire Contact Form: ${subject}`,
+      html: emailBody,
+      text: `New message from ${name} (${email}): ${message}`
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Message sent successfully"
+    });
+  } catch (error) {
+    console.error("Contact message error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to send message"
+    });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -531,5 +573,6 @@ module.exports = {
   resetPassword,
   verifyOTP,
   registerAdmin,
-  checkAdminExists
+  checkAdminExists,
+  contactUs
 };

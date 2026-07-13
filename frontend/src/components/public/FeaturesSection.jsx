@@ -1,90 +1,68 @@
-function FeaturesSection() {
-    const features = [
-        {
-            title: "Employee Management",
-            icon: "badge",
-            items: [
-                "Comprehensive Employee Profiles",
-                "Full Administrative CRUD Actions",
-                "Cross-Department Assignment",
-                "Secure Credentials Management"
-            ]
-        },
-        {
-            title: "Attendance & Time Tracking",
-            icon: "schedule",
-            items: [
-                "Self Service Check In & Check Out",
-                "Late & Half-Day Detection",
-                "Personal Attendance History Log",
-                "Monthly Attendance Reports"
-            ],
-            badge: "GPS Verification Coming Soon"
-        },
-        {
-            title: "Leave Management",
-            icon: "event_busy",
-            items: [
-                "Apply & Track Leave Requests",
-                "Automated Manager Approval Workflow",
-                "Structured Personal Leave History",
-                "Easy Cancellation Workflow"
-            ]
-        },
-        {
-            title: "Task Management",
-            icon: "checklist",
-            items: [
-                "Create & Assign Operational Tasks",
-                "Real-time Task Progress Tracking",
-                "Set Priority (High, Medium, Low)",
-                "Enforce Due Date Reminders"
-            ]
-        },
-        {
-            title: "Analytical Reporting",
-            icon: "bar_chart",
-            items: [
-                "Attendance & Leave Reports",
-                "Task & Performance Reports",
-                "Departmental Summary Reports",
-                "Export to PDF, Excel, and CSV"
-            ]
-        },
-        {
-            title: "Role-Based Access Control",
-            icon: "admin_panel_settings",
-            items: [
-                "Admin Control Panel Access",
-                "Manager Department Approvals",
-                "Employee Self-Service Area",
-                "Strict Endpoint Authentication Guard"
-            ]
-        }
-    ];
+const features = [
+    {
+        icon: "badge",
+        title: "Employee Management",
+        desc: "Centralized profiles for your entire workforce with custom fields and secure document storage.",
+        delay: "0ms",
+    },
+    {
+        icon: "fingerprint",
+        title: "Attendance Tracking",
+        desc: "Real-time attendance monitoring with geofencing, IP locking, and biometric integration.",
+        delay: "100ms",
+    },
+    {
+        icon: "event_busy",
+        title: "Leave Management",
+        desc: "Automated leave workflows, accrual calculations, and team-wide absence calendars.",
+        delay: "200ms",
+    },
+    {
+        icon: "checklist",
+        title: "Task Management",
+        desc: "Integrated task allocation, deadline tracking, and performance-based scoring.",
+        delay: "300ms",
+    },
+    {
+        icon: "query_stats",
+        title: "Analytics",
+        desc: "Predictive insights into turnover rates, productivity spikes, and recruitment needs.",
+        delay: "400ms",
+    },
+    {
+        icon: "verified_user",
+        title: "Enterprise Security",
+        desc: "SOC2 Type II compliant data encryption with role-based access control (RBAC).",
+        delay: "500ms",
+    },
+];
 
+function FeaturesSection() {
     return (
-        <div className="pub-features-grid" style={{ marginTop: "40px" }}>
-            {features.map((feature, idx) => (
-                <div key={idx} className={`pub-feature-card reveal-zoom-in delay-${((idx % 3) + 1) * 100}`}>
-                    {feature.badge && (
-                        <span className="pub-soon-badge">{feature.badge}</span>
-                    )}
-                    <div className="pub-feature-icon-wrapper">
-                        <span className="material-symbols-outlined">{feature.icon}</span>
+        <section className="ss-features-section">
+            <div className="ss-features-header reveal-fade-in">
+                <h2 className="ss-features-title">Elevate Your Human Capital</h2>
+                <p className="ss-features-subtitle">
+                    Everything you need to scale from a small team to a global enterprise with zero friction.
+                </p>
+            </div>
+
+            <div className="ss-features-grid">
+                {features.map((f, i) => (
+                    <div
+                        key={i}
+                        className="ss-feature-card reveal-fade-in"
+                        style={{ transitionDelay: f.delay }}
+                    >
+                        <div className="ss-feature-icon-box">
+                            <span className="material-symbols-outlined ss-feature-icon">{f.icon}</span>
+                        </div>
+                        <h4 className="ss-feature-card-title">{f.title}</h4>
+                        <p className="ss-feature-card-desc">{f.desc}</p>
                     </div>
-                    <h3 className="pub-feature-title">{feature.title}</h3>
-                    <ul className="pub-feature-list">
-                        {feature.items.map((item, index) => (
-                            <li key={index} className="pub-feature-item">
-                                <span className="material-symbols-outlined pub-feature-item-icon">check_circle</span>
-                                {item}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            ))}
-        </div>
+                ))}
+            </div>
+        </section>
     );
 }
 

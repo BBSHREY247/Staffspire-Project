@@ -2,89 +2,96 @@ import { Link } from "react-router-dom";
 
 function Hero() {
     return (
-        <section className="pub-hero-section">
-            <div className="pub-glow-bg"></div>
-            <div className="pub-hero-content reveal-slide-left">
-                <div className="pub-hero-tag">
-                    <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>verified</span>
-                    Version 1.0 Live
+        <section className="ss-hero-section">
+            {/* Hero Content */}
+            <div className="ss-hero-content reveal-slide-left">
+                <div className="ss-hero-badge">
+                    <span className="ss-hero-badge-dot"></span>
+                    <span>v4.0 Launching Now</span>
                 </div>
-                <h1 className="pub-hero-title">
-                    Smart Workforce <span style={{ color: "var(--pub-primary)" }}>Management</span> for Modern Organizations.
+
+                <h1 className="ss-hero-title">
+                    Smart Workforce Management for{" "}
+                    <span className="ss-hero-title-accent">Modern Organizations</span>
                 </h1>
-                <p className="pub-hero-subtitle">
-                    Staffspire is a centralized HRIS designed to streamline employee management, attendance, leaves, tasks, and reports.
+
+                <p className="ss-hero-subtitle">
+                    Manage employees, departments, attendance, leave requests, tasks, reports
+                    and analytics from one intelligent platform.
                 </p>
-                <div className="pub-hero-btns">
-                    <Link to="/login" className="pub-btn pub-btn-primary" style={{ padding: "14px 28px" }}>
-                        Get Started
+
+                <div className="ss-hero-btns">
+                    <Link to="/login" className="ss-btn-primary">
+                        Get Started Free
+                        <span className="material-symbols-outlined ss-btn-icon">arrow_forward</span>
                     </Link>
-                    <Link to="/features" className="pub-btn pub-btn-outline" style={{ padding: "14px 28px" }}>
-                        View Features
+                    <Link to="/features" className="ss-btn-ghost">
+                        <span className="material-symbols-outlined ss-btn-icon">play_circle</span>
+                        Watch Demo
                     </Link>
                 </div>
             </div>
 
-            <div className="pub-hero-media reveal-slide-right">
-                {/* Redesigned Mockup Card matching user's design image */}
-                <div className="pub-dashboard-preview">
-                    {/* Window Controls */}
-                    <div style={{ display: "flex", gap: "6px", marginBottom: "20px" }}>
-                        <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#ff5f56" }}></span>
-                        <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#ffbd2e" }}></span>
-                        <span style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#27c93f" }}></span>
-                    </div>
-
-                    {/* Dashboard Layout Mock */}
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1.3fr 1.3fr 1.3fr", gap: "14px", marginBottom: "20px" }}>
-                        {/* Sidebar Mock */}
-                        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                            <div style={{ height: "40px", width: "100%", background: "#eef2ff", borderRadius: "8px" }}></div>
-                            <div style={{ height: "12px", width: "80%", background: "#f1f5f9", borderRadius: "4px" }}></div>
-                            <div style={{ height: "12px", width: "90%", background: "#f1f5f9", borderRadius: "4px" }}></div>
-                            <div style={{ height: "12px", width: "70%", background: "#f1f5f9", borderRadius: "4px" }}></div>
+            {/* Floating Dashboard Mockup */}
+            <div className="ss-hero-media reveal-slide-right">
+                <div className="ss-dashboard-card">
+                    {/* Dashboard Header */}
+                    <div className="ss-dash-header">
+                        <div className="ss-dash-title-row">
+                            <div className="ss-dash-icon-box">
+                                <span className="material-symbols-outlined">dashboard</span>
+                            </div>
+                            <h3 className="ss-dash-title">Admin Dashboard</h3>
                         </div>
-
-                        {/* Card 1 */}
-                        <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "12px", padding: "14px", height: "90px" }}>
-                            <div style={{ width: "30px", height: "6px", background: "#cbd5e1", borderRadius: "3px", marginBottom: "8px" }}></div>
-                            <div style={{ width: "60px", height: "20px", background: "#e0e7ff", borderRadius: "6px" }}></div>
-                        </div>
-
-                        {/* Card 2 */}
-                        <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "12px", padding: "14px", height: "90px" }}>
-                            <div style={{ width: "40px", height: "6px", background: "#cbd5e1", borderRadius: "3px", marginBottom: "8px" }}></div>
-                            <div style={{ width: "50px", height: "20px", background: "#f3e8ff", borderRadius: "6px" }}></div>
-                        </div>
-
-                        {/* Card 3 */}
-                        <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "12px", padding: "14px", height: "90px" }}>
-                            <div style={{ width: "25px", height: "6px", background: "#cbd5e1", borderRadius: "3px", marginBottom: "8px" }}></div>
-                            <div style={{ width: "45px", height: "20px", background: "#dcfce7", borderRadius: "6px" }}></div>
+                        <div className="ss-dash-controls">
+                            <div className="ss-dash-ctrl-dot"></div>
+                            <div className="ss-dash-ctrl-dot ss-ctrl-blue"></div>
                         </div>
                     </div>
 
-                    {/* Chart Container Mock */}
-                    <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "14px", padding: "20px 24px", height: "180px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <div style={{ width: "120px", height: "8px", background: "#cbd5e1", borderRadius: "4px" }}></div>
-                            <div style={{ width: "40px", height: "8px", background: "#e2e8f0", borderRadius: "4px" }}></div>
+                    {/* Mini Stats */}
+                    <div className="ss-dash-mini-grid">
+                        <div className="ss-dash-mini-card">
+                            <span className="ss-dash-mini-label">Attendance Today</span>
+                            <div className="ss-dash-mini-value-row">
+                                <span className="ss-dash-mini-value">94%</span>
+                                <span className="ss-dash-mini-trend">
+                                    <span className="material-symbols-outlined">trending_up</span>+2.1%
+                                </span>
+                            </div>
                         </div>
-                        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "center", gap: "24px", height: "100px", paddingTop: "10px" }}>
-                            <div style={{ width: "20px", height: "45px", background: "#dbeafe", borderRadius: "4px 4px 0 0" }}></div>
-                            <div style={{ width: "20px", height: "65px", background: "#bfdbfe", borderRadius: "4px 4px 0 0" }}></div>
-                            <div style={{ width: "20px", height: "90px", background: "var(--pub-primary)", borderRadius: "4px 4px 0 0" }}></div>
-                            <div style={{ width: "20px", height: "70px", background: "#818cf8", borderRadius: "4px 4px 0 0" }}></div>
-                            <div style={{ width: "20px", height: "35px", background: "#c7d2fe", borderRadius: "4px 4px 0 0" }}></div>
+                        <div className="ss-dash-mini-card">
+                            <span className="ss-dash-mini-label">Tasks Completed</span>
+                            <div className="ss-dash-progress-bar">
+                                <div className="ss-dash-progress-fill"></div>
+                            </div>
+                            <span className="ss-dash-progress-label">75% Done</span>
                         </div>
                     </div>
 
-                    {/* Badge hanging off to the right */}
-                    <div className="pub-dashboard-badge">
-                        12k+
-                        <span>Active Users</span>
+                    {/* Bar Chart */}
+                    <div className="ss-dash-chart">
+                        <div className="ss-dash-bar" style={{ height: "40%" }}></div>
+                        <div className="ss-dash-bar" style={{ height: "60%", opacity: 0.7 }}></div>
+                        <div className="ss-dash-bar" style={{ height: "85%", opacity: 0.85 }}></div>
+                        <div className="ss-dash-bar" style={{ height: "100%" }}></div>
+                        <div className="ss-dash-bar" style={{ height: "70%", opacity: 0.8 }}></div>
+                        <div className="ss-dash-bar" style={{ height: "50%", opacity: 0.6 }}></div>
+                    </div>
+
+                    {/* Notification Float */}
+                    <div className="ss-dash-notif">
+                        <span className="material-symbols-outlined ss-notif-icon">notifications_active</span>
+                        <div>
+                            <p className="ss-notif-title">New Leave Request</p>
+                            <p className="ss-notif-sub">Sarah Miller - 3 Days</p>
+                        </div>
                     </div>
                 </div>
+
+                {/* Background blobs */}
+                <div className="ss-hero-blob-right"></div>
+                <div className="ss-hero-blob-left"></div>
             </div>
         </section>
     );
