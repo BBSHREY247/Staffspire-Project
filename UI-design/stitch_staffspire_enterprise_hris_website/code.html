@@ -3,546 +3,304 @@
 <html class="scroll-smooth" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Solutions | StaffSpire Enterprise HRIS</title>
-<meta content="Tailored HRIS solutions designed to scale with your ambition, from local startups to global enterprises." name="description"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(226, 232, 240, 0.8);
-        }
-        .reveal-on-scroll {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .reveal-on-scroll.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .bento-grid {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 24px;
-        }
-        @keyframes subtle-float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        .animate-float {
-            animation: subtle-float 6s ease-in-out infinite;
-        }
-    </style>
 <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "surface-tint": "#0054d6",
-                        "on-primary-fixed-variant": "#003fa4",
-                        "on-error-container": "#93000a",
-                        "on-secondary-fixed": "#131b2e",
-                        "surface-container-lowest": "#ffffff",
-                        "on-tertiary": "#ffffff",
-                        "on-secondary-fixed-variant": "#3f465c",
-                        "tertiary-fixed-dim": "#c4c7c9",
-                        "tertiary-fixed": "#e0e3e5",
-                        "inverse-on-surface": "#eaf1ff",
-                        "primary": "#0050cb",
-                        "error": "#ba1a1a",
-                        "surface-container-low": "#eff4ff",
-                        "on-tertiary-fixed-variant": "#444749",
-                        "surface-container-highest": "#d3e4fe",
-                        "surface-variant": "#d3e4fe",
-                        "secondary-fixed-dim": "#bec6e0",
-                        "on-tertiary-container": "#f6f8fa",
-                        "secondary-fixed": "#dae2fd",
-                        "outline": "#727687",
-                        "on-primary-container": "#f8f7ff",
-                        "inverse-primary": "#b3c5ff",
-                        "primary-fixed": "#dae1ff",
-                        "primary-container": "#0066ff",
-                        "on-secondary": "#ffffff",
-                        "inverse-surface": "#213145",
-                        "surface-container-high": "#dce9ff",
-                        "secondary-container": "#dae2fd",
-                        "secondary": "#565e74",
-                        "on-background": "#0b1c30",
-                        "on-error": "#ffffff",
-                        "surface-dim": "#cbdbf5",
-                        "on-primary-fixed": "#001849",
-                        "on-primary": "#ffffff",
-                        "primary-fixed-dim": "#b3c5ff",
-                        "tertiary": "#565a5b",
-                        "surface-container": "#e5eeff",
-                        "surface-bright": "#f8f9ff",
-                        "outline-variant": "#c2c6d8",
-                        "on-secondary-container": "#5c647a",
-                        "error-container": "#ffdad6",
-                        "background": "#f8f9ff",
-                        "on-surface-variant": "#424656",
-                        "on-surface": "#0b1c30",
-                        "on-tertiary-fixed": "#191c1e",
-                        "tertiary-container": "#6f7274",
-                        "surface": "#f8f9ff"
+        try {
+            tailwind.config = {
+                darkMode: "class",
+                theme: {
+                    extend: {
+                        "colors": {
+                            "on-surface": "#0b1c30",
+                            "on-background": "#0b1c30",
+                            "inverse-primary": "#b3c5ff",
+                            "on-primary-container": "#f8f7ff",
+                            "secondary": "#565e74",
+                            "surface-variant": "#d3e4fe",
+                            "surface-container-high": "#dce9ff",
+                            "on-tertiary-container": "#f6f8fa",
+                            "on-error-container": "#93000a",
+                            "surface-container": "#e5eeff",
+                            "error-container": "#ffdad6",
+                            "on-secondary-fixed": "#131b2e",
+                            "on-primary-fixed-variant": "#003fa4",
+                            "primary": "#0050cb",
+                            "background": "#f8f9ff",
+                            "primary-fixed": "#dae1ff",
+                            "surface-container-highest": "#d3e4fe",
+                            "primary-container": "#0066ff",
+                            "on-secondary": "#ffffff",
+                            "tertiary": "#565a5b",
+                            "surface-tint": "#0054d6",
+                            "tertiary-fixed": "#e0e3e5",
+                            "on-tertiary": "#ffffff",
+                            "on-error": "#ffffff",
+                            "surface-container-lowest": "#ffffff",
+                            "secondary-container": "#dae2fd",
+                            "on-tertiary-fixed": "#191c1e",
+                            "on-tertiary-fixed-variant": "#444749",
+                            "outline-variant": "#c2c6d8",
+                            "inverse-surface": "#213145",
+                            "tertiary-container": "#6f7274",
+                            "tertiary-fixed-dim": "#c4c7c9",
+                            "secondary-fixed": "#dae2fd",
+                            "error": "#ba1a1a",
+                            "surface-container-low": "#eff4ff",
+                            "secondary-fixed-dim": "#bec6e0",
+                            "on-secondary-container": "#5c647a",
+                            "outline": "#727687",
+                            "surface": "#f8f9ff",
+                            "on-secondary-fixed-variant": "#3f465c",
+                            "primary-fixed-dim": "#b3c5ff",
+                            "inverse-on-surface": "#eaf1ff",
+                            "surface-bright": "#f8f9ff",
+                            "surface-dim": "#cbdbf5",
+                            "on-primary-fixed": "#001849",
+                            "on-surface-variant": "#424656",
+                            "on-primary": "#ffffff"
+                        },
+                        "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                        },
+                        "spacing": {
+                            "margin-mobile": "16px",
+                            "unit": "4px",
+                            "margin-tablet": "24px",
+                            "margin-desktop": "40px",
+                            "container-max": "1440px",
+                            "gutter": "24px"
+                        },
+                        "fontFamily": {
+                            "headline-sm": ["Inter"],
+                            "display-lg": ["Inter"],
+                            "label-md": ["Inter"],
+                            "headline-md": ["Inter"],
+                            "display-lg-mobile": ["Inter"],
+                            "label-sm": ["Inter"],
+                            "body-md": ["Inter"],
+                            "body-lg": ["Inter"]
+                        },
+                        "fontSize": {
+                            "headline-sm": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                            "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                            "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                            "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                            "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                            "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                            "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400"}],
+                            "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400"}]
+                        }
                     },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "margin-tablet": "24px",
-                        "container-max": "1440px",
-                        "unit": "4px",
-                        "margin-mobile": "16px",
-                        "margin-desktop": "40px",
-                        "gutter": "24px"
-                    },
-                    "fontFamily": {
-                        "headline-sm": ["Inter"],
-                        "display-lg": ["Inter"],
-                        "body-md": ["Inter"],
-                        "body-lg": ["Inter"],
-                        "label-md": ["Inter"],
-                        "label-sm": ["Inter"],
-                        "headline-md": ["Inter"],
-                        "display-lg-mobile": ["Inter"]
-                    },
-                    "fontSize": {
-                        "headline-sm": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                        "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400"}],
-                        "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400"}],
-                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
-                        "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "600"}],
-                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                        "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
-                    }
                 },
-            },
-        }
+            }
+        } catch (_e) {}
     </script>
 </head>
-<body class="bg-background text-on-surface font-body-lg">
+<body class="bg-background text-on-background font-body-md selection:bg-primary-container selection:text-on-primary-container">
 <!-- TopNavBar -->
-<header class="bg-surface/80 dark:bg-surface/80 backdrop-blur-xl docked full-width top-0 sticky z-50 shadow-[0px_20px_40px_rgba(11,28,48,0.04)] h-20 flex items-center">
-<div class="flex justify-between items-center w-full px-margin-desktop max-w-container-max mx-auto">
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm transition-all duration-300 ease-in-out">
+<div class="max-w-container-max mx-auto px-margin-desktop flex justify-between items-center h-16">
 <div class="flex items-center gap-3">
-<img alt="StaffSpire Logo" class="h-10 w-auto" src="https://lh3.googleusercontent.com/aida/AP1WRLuZrPXJ9giX2AcJTngIx_ATT6hgV2jX-piXp8Tu7ppPlL6al9OBxkujFZ5cjCdxvfXBQI1sNP38gjnBkm9QwtloYMoVA_8vN9OYETQaIiADvQTeALifqMF7P1ZTQRJfLjQCgTdM6BjKjUVfuEEjbykqCCwfzjVom-DCGOCZydwpCq0akshFu0kxzewQHAFqQuEwNIizQHIBC4iu5Dun30Tz-uSn0UUrbXV1BozMQ4haalVfA2ifcdvTVbc"/>
-<span class="text-headline-md font-headline-md text-primary">StaffSpire</span>
+<img alt="SoftSpire Solutions Logo" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLuErPwzHDh-bTbPDl0fbl7922PKdccrTb4Ldz64cpaHrC1nS51WYmodatxJ22thTDFImS7b4J-LMSuJWkfbZZKVS8P_ix2M9zsVHZvZO4FSx7kz8X6GVaWt5eMsbbcknatLRg4jHxN1TiM4IA65f4SdtQBL4AachnLuu23VgWbsFHu-ah-gmoW8GL96rt4kNWjudj0nAop1FHQGqO7-7s-gW0y7dRTBR5QLXA1aTS_Ybfhw3wsb6akJqs0"/>
+<span class="font-headline-md text-headline-md font-bold text-primary">SoftSpire Solutions</span>
 </div>
-<nav class="hidden md:flex gap-8 items-center">
-<a class="text-on-surface-variant font-body-lg hover:text-primary transition-colors duration-200" href="#">Home</a>
-<a class="text-on-surface-variant font-body-lg hover:text-primary transition-colors duration-200" href="#">Features</a>
-<a class="text-primary border-b-2 border-primary pb-1 font-body-lg" href="#">Solutions</a>
-<a class="text-on-surface-variant font-body-lg hover:text-primary transition-colors duration-200" href="#">About</a>
-<a class="text-on-surface-variant font-body-lg hover:text-primary transition-colors duration-200" href="#">Contact</a>
+<nav class="hidden md:flex items-center gap-8">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Product</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Solutions</a>
+<a class="font-body-md text-body-md text-primary font-semibold border-b-2 border-primary pb-1" href="#">About</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Pricing</a>
 </nav>
 <div class="flex items-center gap-4">
-<button class="hidden lg:block text-primary font-label-md px-4 py-2 active:scale-95 transition-transform">Login</button>
-<button class="bg-primary text-on-primary px-6 py-3 rounded-xl font-label-md active:scale-95 transition-transform shadow-lg shadow-primary/20">Get Started</button>
+<button class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors">Sign In</button>
+<button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-lg font-semibold hover:bg-primary transition-all">Get Started</button>
 </div>
 </div>
 </header>
-<main>
+<main class="pt-16">
 <!-- Hero Section -->
-<section class="relative pt-24 pb-20 overflow-hidden">
-<div class="absolute top-0 right-0 -z-10 w-1/2 h-full opacity-10">
-
+<section class="relative overflow-hidden bg-surface-container-lowest py-24 lg:py-32">
+<div class="max-w-container-max mx-auto px-margin-desktop grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+<div class="space-y-8 animate-in fade-in slide-in-from-left duration-700">
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface">Scaling IT Potential &amp; Human Growth</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">At SoftSpire Solutions, we empower growth by combining world-class training, technical innovation, and strategic consulting. We guide students and professionals from learning to career success while helping businesses scale with cutting-edge technology.</p>
+<div class="flex flex-wrap gap-4">
+<button class="bg-primary text-on-primary px-8 py-4 rounded-xl font-semibold hover:scale-105 transition-transform">Read Our Story</button>
+<button class="border border-outline px-8 py-4 rounded-xl font-semibold text-primary hover:bg-surface-container transition-colors">View Mission</button>
 </div>
-<div class="max-w-container-max mx-auto px-margin-desktop text-center md:text-left">
-<div class="max-w-3xl">
-<span class="inline-block py-1 px-3 rounded-full bg-primary/10 text-primary font-label-sm uppercase tracking-wider mb-6">Enterprise Excellence</span>
-<h1 class="font-display-lg text-display-lg mb-6 leading-tight">Built for Every <span class="text-primary">Organization</span></h1>
-<p class="text-on-surface-variant text-body-lg mb-10 leading-relaxed">
-                        Tailored HRIS solutions designed to scale with your ambition, from local startups to global enterprises. StaffSpire bridges the gap between potential and performance.
-                    </p>
-<div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-<button class="bg-primary text-on-primary px-8 py-4 rounded-xl font-headline-sm shadow-xl shadow-primary/25 hover:bg-on-primary-fixed-variant transition-colors">Start Your Transformation</button>
-<button class="flex items-center justify-center gap-2 px-8 py-4 rounded-xl border border-outline-variant hover:bg-surface-container-low transition-colors font-headline-sm">
-<span class="material-symbols-outlined">play_circle</span>
-                            Watch Demo
-                        </button>
+</div>
+<div class="relative animate-in fade-in slide-in-from-right duration-700">
+<div class="rounded-3xl overflow-hidden shadow-2xl border border-outline-variant/30">
+<img alt="SoftSpire Team Collaboration" class="w-full h-auto" src="https://lh3.googleusercontent.com/aida/AP1WRLtyek5BZN-v-T0rMKiAy1FS_tc8M4AmWLjojq6hK6AWTpU5iAna1YcxTDy0QiiE1mcU64aPNmjiCr8gl33NycylgAjMjtv3W4d01g3UYH5uMsDn5s9fAMvr32ptFcSkYlY-r7g_0DCh4DE76CljKWGkUSg31YGf95X_5zvr67BN2hEKduFHiOGOdiANjLRVfPKKrg-m5aBb8mEqqCN-bgSa9kPovUzF-ysblZLWkKpdpPVL0WZj3mg51nQ"/>
 </div>
 </div>
 </div>
 </section>
-<!-- Industry Solution Cards (Bento/Asymmetric Style) -->
-<section class="py-24 bg-surface-container-lowest">
+<!-- Company Story -->
+<section class="py-24 bg-surface">
 <div class="max-w-container-max mx-auto px-margin-desktop">
-<div class="grid grid-cols-1 md:grid-cols-12 gap-8">
-<!-- 1. Small Businesses (Left Large) -->
-<div class="md:col-span-7 glass-card rounded-3xl p-10 flex flex-col justify-between group hover:shadow-2xl transition-all duration-500 reveal-on-scroll">
-<div>
-<div class="flex justify-between items-start mb-10">
-<div>
-<h3 class="text-headline-md font-headline-md mb-2">Small Businesses</h3>
-<p class="text-on-surface-variant text-body-md max-w-sm">From startup chaos to structured operational excellence.</p>
-</div>
-<span class="p-4 rounded-2xl bg-primary/5 text-primary">
-<span class="material-symbols-outlined text-4xl">rocket_launch</span>
-</span>
-</div>
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-24 items-start">
 <div class="space-y-6">
-<div>
-<h4 class="text-label-sm font-label-sm text-error uppercase mb-2">The Problem</h4>
-<p class="text-body-lg">Fragmented Data trapped in emails, paper files, and scattered spreadsheets leads to slow growth and costly hiring errors.</p>
+<span class="text-primary font-bold tracking-widest uppercase text-label-sm">The SoftSpire Story</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Innovating at the intersection of Education and Technology.</h2>
 </div>
-<div class="space-y-3">
-<h4 class="text-label-sm font-label-sm text-primary uppercase">StaffSpire Solution</h4>
-<ul class="space-y-2">
-<li class="flex items-center gap-3 text-body-md">
-<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                                                Centralized Employee Hub
-                                            </li>
-<li class="flex items-center gap-3 text-body-md">
-<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                                                Instant Accuracy for Payroll
-                                            </li>
-<li class="flex items-center gap-3 text-body-md">
-<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                                                Rapid Onboarding Workflows
-                                            </li>
-</ul>
-</div>
-</div>
-<div class="relative min-h-[240px] rounded-2xl overflow-hidden shadow-inner bg-surface-container-high group-hover:scale-105 transition-transform duration-500">
-<img class="w-full h-full object-cover" data-alt="A clean, minimalist 3D isometric illustration of a vibrant office space for a small business. Bright, professional blue accents, soft shadows, and high-tech digital nodes connecting small workstations. The aesthetic is modern SaaS, light mode, and evokes speed and organized growth." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIHC7ZrVtRUfnvIoz1ASqf0kNEqiG6cuOhXe4zqA-tqo-BzOwfNFylIsES0Kwb4mjwsDDx4W675Y6VROoGF4zAv_KT7PFNbprXR7tLwau41-7CUMpYGnP7_gctPBRLpNQyUjOIOf9b0x2PwMbmYnvjJzZJ2GEy1P8T44qYcyUm5Y-xLZHo--5pJyYeMn97Aeq8o65qBaa_4PoXiIxoxSi9uC-hpTGusMDe9MFnCVM8bP0rypfJ4OZxrPddHcRburBoNQCToQ6XQUM"/>
-</div>
-</div>
-</div>
-<div class="mt-10 flex items-center justify-between">
-<div class="flex gap-4">
-<span class="px-4 py-1.5 rounded-full bg-surface-container-high text-on-surface-variant text-label-md font-label-md">Speed</span>
-<span class="px-4 py-1.5 rounded-full bg-surface-container-high text-on-surface-variant text-label-md font-label-md">Accuracy</span>
-<span class="px-4 py-1.5 rounded-full bg-surface-container-high text-on-surface-variant text-label-md font-label-md">Growth</span>
-</div>
-<button class="text-primary font-headline-sm flex items-center gap-1 group-hover:translate-x-2 transition-transform">
-                                Learn More <span class="material-symbols-outlined">arrow_forward</span>
-</button>
-</div>
-</div>
-<!-- 2. Medium Enterprises (Right Tall) -->
-<div class="md:col-span-5 glass-card rounded-3xl p-10 flex flex-col group hover:shadow-2xl transition-all duration-500 reveal-on-scroll" style="transition-delay: 100ms;">
-<div class="mb-8">
-<span class="p-4 rounded-2xl bg-secondary/5 text-secondary inline-block mb-6">
-<span class="material-symbols-outlined text-4xl">domain_add</span>
-</span>
-<h3 class="text-headline-md font-headline-md mb-2">Medium Enterprises</h3>
-<p class="text-on-surface-variant text-body-md mb-8">Breaking through the complexity barrier of rapid scaling.</p>
-<div class="mb-8">
-<h4 class="text-label-sm font-label-sm text-error uppercase mb-2">The Problem</h4>
-<p class="text-body-lg mb-6">Scalability Walls: Legacy systems break as headcount increases, causing cultural friction and manual bottlenecks.</p>
-<img class="w-full h-48 object-cover rounded-2xl mb-6" data-alt="A futuristic 3D abstract visualization of a geometric structure expanding outward into a cohesive network. Glowing blue and silver lines represent seamless expansion and unified culture. High-fidelity rendering with professional studio lighting and clean minimalist aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZjJ4jdC4FpA9IDt-Ir42wwlZBJvvcMuWcPhdRhcwlDtcsgCpaUY8VGSDZu_7XSylmVcPDFFGGz6ezbg_rLexh9_oYf7aSKzBw6fBfTz_0vct37jx960NW2bxrFuvFx-K1jh5LHVS0_QU2wkRCWtSI0Hnkp0T6dXP_If4XmC4xz5YSKzJHCPSKg_cd6StCVPJrKMHdzbwnS92GMBW1tQ2ITOlhmtFQfmc5OQy5h4y2s8MlTwZ9f_BkWnoYJ2kdnJk0iFGhDlY6j9s"/>
-<div class="space-y-4">
-<h4 class="text-label-sm font-label-sm text-primary uppercase">Benefits</h4>
-<div class="grid grid-cols-1 gap-3">
-<div class="p-4 rounded-xl bg-surface-container border border-outline-variant/30 flex items-center gap-4">
-<span class="material-symbols-outlined text-primary">auto_mode</span>
-<span class="text-body-md font-medium">Enterprise Automation</span>
-</div>
-<div class="p-4 rounded-xl bg-surface-container border border-outline-variant/30 flex items-center gap-4">
-<span class="material-symbols-outlined text-primary">hub</span>
-<span class="text-body-md font-medium">Unified Culture Tools</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-<button class="mt-auto w-full py-4 rounded-xl border border-primary text-primary font-headline-sm hover:bg-primary hover:text-on-primary transition-all">Explore Enterprise</button>
-</div>
-<!-- 3. Educational Institutions (Full Width Overlay Style) -->
-<div class="md:col-span-12 glass-card rounded-3xl overflow-hidden group hover:shadow-2xl transition-all duration-500 reveal-on-scroll">
-<div class="grid grid-cols-1 md:grid-cols-2">
-<div class="p-10 md:p-16 flex flex-col justify-center">
-<div class="flex items-center gap-4 mb-6">
-<span class="p-3 rounded-xl bg-tertiary/10 text-tertiary">
-<span class="material-symbols-outlined text-3xl">school</span>
-</span>
-<h3 class="text-headline-md font-headline-md">Educational Institutions</h3>
-</div>
-<h4 class="text-label-sm font-label-sm text-error uppercase mb-4">Faculty Overload</h4>
-<p class="text-body-lg mb-8 leading-relaxed">Modernize academic administration with automated faculty tracking and resource management that lets educators focus on teaching.</p>
-<div class="grid grid-cols-2 gap-8 mb-10">
-<div>
-<p class="text-headline-sm font-headline-sm text-primary">99.9%</p>
-<p class="text-label-md text-on-surface-variant">Compliance Accuracy</p>
-</div>
-<div>
-<p class="text-headline-sm font-headline-sm text-primary">40%</p>
-<p class="text-label-md text-on-surface-variant">Reduced Admin Time</p>
-</div>
-</div>
-<button class="w-fit px-8 py-4 rounded-xl bg-primary text-on-primary font-label-md active:scale-95 transition-transform">View Education Package</button>
-</div>
-<div class="relative min-h-[400px] overflow-hidden">
-<img class="w-full h-full object-cover" data-alt="A professional photograph of a modern university administration office. Natural light pouring through large windows, clean white desks, and digital screens showing StaffSpire dashboard. The scene is calm, organized, and high-tech, emphasizing resource allocation and administrative peace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD61dziCGr2Fh3mv2pRvgsOT00vpLxRX3h3UTc5LEgyMx8Pkzq-O4XQLDNFwLnLeCe4Neo3CI7iUqyddOv4MVcayLk_nRqyzMiNKykZxIY7NKuoz_gat7xiwwu6nTTP8yu8gOt1bLZGD_7C8CxGkDD3CUsWSMPshLsXwt3fbhRvKpDulCH2O2uNyJS1RaHGUMbFm9wLcShN-Rw8Se9-uJdcDSYdG9ackQ_3SotifOthXlMqqk10yM9ha9B4uX74G4eDnWxc8DG0dR0"/>
-<div class="absolute inset-0 bg-gradient-to-r from-background via-transparent to-transparent hidden md:block"></div>
-</div>
-</div>
-</div>
-<!-- 4. Corporate Organizations -->
-<div class="md:col-span-6 glass-card rounded-3xl p-10 flex flex-col group hover:shadow-2xl transition-all duration-500 reveal-on-scroll">
-<div class="mb-10 relative h-64 rounded-2xl overflow-hidden">
-<img class="w-full h-full object-cover" data-alt="A high-end corporate digital twin concept. A glowing holographic globe surrounded by intricate data streams and security shields. Represents global fragmentation moving toward one source of truth. Professional navy and vibrant blue color palette, premium glassmorphic style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkq1i17rVvIIw7rhXr9J8PuvoTQtggidv-5CkbtTi2xkp3UfCa8m8c5quoLMePpbJJ0A8Tt5C-nwDcDOCwahIjKR1t6Vusvrwx530PUY5EbMxlwAbWZbRJEejbyeg2WAWuWwbbxGIGXYhLUb5drauGbbcWY0yZMhXDGNoMkx2Rof7Fh6eQ_tALytZ8x9FWAfDSUh_KBP8xBoGPawebOuOxlHRPPmRxSHPAPtn5sdSmJ67kugfXTHL89T5m1-MzQTXsRjbQ2PNaqXc"/>
-<div class="absolute top-4 left-4 p-3 rounded-xl bg-white/90 backdrop-blur-md shadow-lg">
-<span class="material-symbols-outlined text-primary text-3xl">public</span>
-</div>
-</div>
-<h3 class="text-headline-md font-headline-md mb-4">Corporate Organizations</h3>
-<p class="text-on-surface-variant text-body-md mb-6"><strong class="text-error">The Problem:</strong> Global Fragmentation with localized siloes making high-level strategic decisions impossible.</p>
-<div class="bg-surface-container-low p-6 rounded-2xl mb-8">
-<p class="text-body-md italic text-on-surface-variant">"StaffSpire became our <strong>One Source of Truth</strong> across 14 countries in less than 6 months."</p>
-</div>
-<ul class="space-y-4 mb-10">
-<li class="flex gap-4 items-start">
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">insights</span>
-<div>
-<p class="font-bold">High-level Insights</p>
-<p class="text-label-md text-on-surface-variant">Predictive AI for workforce planning.</p>
-</div>
-</li>
-<li class="flex gap-4 items-start">
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">admin_panel_settings</span>
-<div>
-<p class="font-bold">Advanced Security</p>
-<p class="text-label-md text-on-surface-variant">Zero-trust HR data architecture.</p>
-</div>
-</li>
-</ul>
-<button class="mt-auto flex items-center justify-center gap-2 py-4 rounded-xl bg-on-background text-white font-label-md hover:bg-black transition-colors">Connect with Sales</button>
-</div>
-<!-- 5. Healthcare -->
-<div class="md:col-span-6 glass-card rounded-3xl p-10 flex flex-col group hover:shadow-2xl transition-all duration-500 reveal-on-scroll">
-<div class="flex gap-6 mb-10">
-<span class="flex-shrink-0 w-20 h-20 flex items-center justify-center rounded-full bg-error/5 text-error">
-<span class="material-symbols-outlined text-5xl">medical_services</span>
-</span>
-<div>
-<h3 class="text-headline-md font-headline-md mb-2">Healthcare</h3>
-<p class="text-body-md text-on-surface-variant">Automated governance for high-stakes environments.</p>
-</div>
-</div>
-<div class="space-y-8 mb-10">
-<div class="p-6 rounded-2xl border-l-4 border-error bg-error/5">
-<h4 class="font-bold mb-2">Compliance Risks</h4>
-<p class="text-body-md">Manual tracking of certifications and shifts in healthcare leads to catastrophic legal and operational failures.</p>
-</div>
-<div class="p-6 rounded-2xl border-l-4 border-primary bg-primary/5">
-<h4 class="font-bold text-primary mb-2">StaffSpire Automated Governance</h4>
-<p class="text-body-md">Real-time audit readiness and dynamic shift management designed for complex medical staffing.</p>
-</div>
-</div>
-<div class="space-y-4 mb-10">
-<div class="flex items-center gap-4 text-body-md">
-<span class="material-symbols-outlined text-primary">event_available</span>
-<span>Dynamic 24/7 Shift Scheduling</span>
-</div>
-<div class="flex items-center gap-4 text-body-md">
-<span class="material-symbols-outlined text-primary">verified_user</span>
-<span>Automatic Credential Verification</span>
-</div>
-</div>
-<button class="mt-auto w-full py-4 rounded-xl border border-outline-variant font-label-md hover:bg-surface-container-high transition-colors">Download Healthcare Whitepaper</button>
+<div class="space-y-6 text-on-surface-variant font-body-lg">
+<p>Founded in 2025, SoftSpire Solutions was born from a vision to bridge the critical gap between academic learning and industry demands. With a dedicated team of 11-50 experts, we provide high-impact IT Services and Consulting to help organizations thrive in the digital age.</p>
+<p>Beyond services, we are the creators of <strong>StaffSpire</strong>, our flagship HRIS product designed to revolutionize human resource management through AI-driven insights. Our ecosystem fosters an environment where aspiring tech professionals and established enterprises converge to turn technological challenges into competitive advantages.</p>
 </div>
 </div>
 </div>
 </section>
-<!-- Comparison Section -->
-<section class="py-32 bg-on-background text-white relative overflow-hidden">
-<!-- Animated Background -->
-
-<div class="max-w-container-max mx-auto px-margin-desktop relative z-10">
-<div class="text-center mb-24 reveal-on-scroll">
-<h2 class="text-display-lg font-display-lg mb-6">The Evolution of Human Resources</h2>
-<p class="text-white/60 text-body-lg max-w-2xl mx-auto">Witness the transition from legacy limitations to the future of workforce intelligence.</p>
+<!-- Mission & Vision -->
+<section class="py-24 bg-surface-container-low">
+<div class="max-w-container-max mx-auto px-margin-desktop grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Mission Card -->
+<div class="bg-surface-container-lowest p-12 rounded-3xl border border-outline-variant/30 shadow-sm space-y-6">
+<div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+<span class="material-symbols-outlined !text-4xl">rocket_launch</span>
 </div>
-<div class="relative grid grid-cols-1 md:grid-cols-2 gap-px bg-white/10 rounded-3xl overflow-hidden">
-<!-- Traditional HR -->
-<div class="p-10 md:p-16 bg-on-background grayscale opacity-60 hover:opacity-80 transition-all duration-700">
-<div class="flex items-center gap-4 mb-12">
-<span class="material-symbols-outlined text-4xl">history</span>
-<h3 class="text-headline-md font-headline-md">Traditional HR</h3>
+<h3 class="font-headline-md text-headline-md text-on-surface">Our Mission</h3>
+<p class="font-body-lg text-body-lg text-on-surface-variant">To empower students, freshers, and experienced professionals by guiding them from foundational learning to career success, while delivering scalable IT solutions that drive business growth.</p>
 </div>
-<div class="space-y-12">
-<div class="flex gap-8 group">
-<div class="flex-shrink-0 w-16 h-16 rounded-full border border-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-<span class="material-symbols-outlined text-2xl">description</span>
+<!-- Vision Card -->
+<div class="bg-primary text-on-primary p-12 rounded-3xl space-y-6 shadow-xl shadow-primary/20">
+<div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+<span class="material-symbols-outlined !text-4xl">visibility</span>
 </div>
-<div>
-<h4 class="font-bold text-headline-sm mb-2">Paper Attendance</h4>
-<p class="text-white/40 text-body-md">Manual punch-cards and handwritten logs prone to tampering and error.</p>
+<h3 class="font-headline-md text-headline-md">Our Vision</h3>
+<p class="font-body-lg text-body-lg opacity-90">From Training to Tech – We Inspire</p>
 </div>
 </div>
-<div class="flex gap-8 group">
-<div class="flex-shrink-0 w-16 h-16 rounded-full border border-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-<span class="material-symbols-outlined text-2xl">table_chart</span>
+</section>
+<!-- Expertise & Services -->
+<section class="py-24 bg-surface">
+<div class="max-w-container-max mx-auto px-margin-desktop">
+<div class="text-center mb-16 space-y-4">
+<h2 class="font-headline-md text-headline-md text-on-surface">Core Specializations</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto">We provide end-to-end expertise across the most critical domains of modern technology.</p>
 </div>
-<div>
-<h4 class="font-bold text-headline-sm mb-2">Excel Spreadsheets</h4>
-<p class="text-white/40 text-body-md">Disconnected data siloes with no real-time cross-functional visibility.</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="p-8 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 hover:border-primary transition-all">
+<h4 class="font-headline-sm text-headline-sm mb-2">Full-Stack Development</h4>
+<p class="text-on-surface-variant">Expertise in Java and Web technologies to build robust, enterprise-grade applications.</p>
 </div>
+<div class="p-8 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 hover:border-primary transition-all">
+<h4 class="font-headline-sm text-headline-sm mb-2">AI Technologies</h4>
+<p class="text-on-surface-variant">Integrating advanced artificial intelligence to automate processes and provide predictive insights.</p>
 </div>
-<div class="flex gap-8 group">
-<div class="flex-shrink-0 w-16 h-16 rounded-full border border-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-<span class="material-symbols-outlined text-2xl">timer_off</span>
+<div class="p-8 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 hover:border-primary transition-all">
+<h4 class="font-headline-sm text-headline-sm mb-2">Mobile App Development</h4>
+<p class="text-on-surface-variant">Creating seamless, high-performance mobile experiences for iOS and Android platforms.</p>
 </div>
-<div>
-<h4 class="font-bold text-headline-sm mb-2">Manual Leave Tracking</h4>
-<p class="text-white/40 text-body-md">Slow approval cycles and lack of self-service portals.</p>
+<div class="p-8 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 hover:border-primary transition-all">
+<h4 class="font-headline-sm text-headline-sm mb-2">Software Testing</h4>
+<p class="text-on-surface-variant">Rigorous QA and automated testing frameworks to ensure zero-defect software delivery.</p>
 </div>
+<div class="p-8 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 hover:border-primary transition-all">
+<h4 class="font-headline-sm text-headline-sm mb-2">Digital Marketing</h4>
+<p class="text-on-surface-variant">Strategic growth marketing to build brand presence and drive high-intent user traffic.</p>
 </div>
-</div>
-</div>
-<!-- StaffSpire HR -->
-<div class="p-10 md:p-16 bg-primary/10 backdrop-blur-xl relative group">
-<!-- Vertical Timeline Sparkle Line -->
-<div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-transparent hidden md:block"></div>
-<div class="flex items-center gap-4 mb-12">
-<span class="material-symbols-outlined text-4xl text-primary animate-pulse" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
-<h3 class="text-headline-md font-headline-md text-white">StaffSpire Intelligence</h3>
-</div>
-<div class="space-y-12">
-<div class="flex gap-8 group">
-<div class="flex-shrink-0 w-16 h-16 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/40 group-hover:scale-110 transition-transform">
-<span class="material-symbols-outlined text-2xl text-white" style="font-variation-settings: 'FILL' 1;">bolt</span>
-</div>
-<div>
-<h4 class="font-bold text-headline-sm mb-2">Full Automation</h4>
-<p class="text-white/80 text-body-md">Workflow engines that handle the heavy lifting while you focus on people.</p>
-</div>
-</div>
-<div class="flex gap-8 group">
-<div class="flex-shrink-0 w-16 h-16 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/40 group-hover:scale-110 transition-transform">
-<span class="material-symbols-outlined text-2xl text-white" style="font-variation-settings: 'FILL' 1;">query_stats</span>
-</div>
-<div>
-<h4 class="font-bold text-headline-sm mb-2">Predictive Analytics</h4>
-<p class="text-white/80 text-body-md">Identify attrition risks and high-potential talent before they emerge.</p>
-</div>
-</div>
-<div class="flex gap-8 group">
-<div class="flex-shrink-0 w-16 h-16 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/40 group-hover:scale-110 transition-transform">
-<span class="material-symbols-outlined text-2xl text-white" style="font-variation-settings: 'FILL' 1;">dashboard</span>
-</div>
-<div>
-<h4 class="font-bold text-headline-sm mb-2">Real-time Dashboard</h4>
-<p class="text-white/80 text-body-md">Single-pane-of-glass visibility into the health of your entire organization.</p>
+<div class="p-8 rounded-2xl bg-surface-container-lowest border border-outline-variant/30 hover:border-primary transition-all">
+<h4 class="font-headline-sm text-headline-sm mb-2">MERN Stack</h4>
+<p class="text-on-surface-variant">Modern, scalable web solutions leveraging MongoDB, Express, React, and Node.js.</p>
 </div>
 </div>
 </div>
-<!-- Floating Floating Element -->
-<div class="absolute -right-8 top-1/2 transform -translate-y-1/2 w-32 h-32 bg-primary/20 rounded-full blur-3xl animate-float"></div>
+</section>
+<!-- Training & Internships -->
+<section class="py-24 bg-surface-container-high">
+<div class="max-w-container-max mx-auto px-margin-desktop grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+<div class="order-2 lg:order-1">
+<div class="rounded-3xl overflow-hidden shadow-xl">
+<img alt="SoftSpire Tech Stack" class="w-full h-auto" src="https://lh3.googleusercontent.com/aida/AP1WRLsRTOIkw8WWpU2PvdSx2XYW4JOZdP8k4gSqfxYKQR0OsgrN7fdReqCIVLCLzlu4Pj0pFEf6nE2dF1fNBN0mt31H-6iPech6quuXlr9pudsnuiFt5zbDLaZmEwC2_PW8HDouQt4Ws-WwzsQmLbEfqj55FJ1WeSFlBX9QkB5bqcja3CsRsOngaCi-0HLuFQ8X3aNw7yywyIa8aims_vhtF1Lriy_MWcM8tpkO1pWsf6oRIJVonuhcYXvExA"/>
 </div>
+</div>
+<div class="space-y-8 order-1 lg:order-2">
+<h2 class="font-headline-md text-headline-md text-on-surface">Bridging the Skill Gap</h2>
+<p class="text-body-lg text-on-surface-variant">Our intensive internship and training programs are designed to build practical, industry-ready skills. We don't just teach code; we mentor professionals on how to solve real-world problems using the latest technology stacks.</p>
+<ul class="space-y-4">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary">check_circle</span>
+<span class="font-body-md">Practical, project-based learning modules</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary">check_circle</span>
+<span class="font-body-md">Mentorship from seasoned industry experts</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary">check_circle</span>
+<span class="font-body-md">Internship opportunities with real product exposure</span>
+</li>
+</ul>
+<button class="bg-primary text-on-primary px-8 py-3 rounded-xl font-semibold hover:bg-primary-container hover:text-on-primary-container transition-all">Explore Programs</button>
 </div>
 </div>
 </section>
 <!-- CTA Section -->
-<section class="py-24 bg-surface-container-high">
-<div class="max-w-container-max mx-auto px-margin-desktop text-center">
-<div class="glass-card p-16 rounded-3xl relative overflow-hidden">
-<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent"></div>
-<h2 class="text-display-lg font-display-lg mb-6">Ready to Scale with Confidence?</h2>
-<p class="text-on-surface-variant text-body-lg mb-10 max-w-xl mx-auto">Join thousands of organizations using StaffSpire to unlock their full human potential.</p>
-<div class="flex flex-col sm:flex-row gap-4 justify-center">
-<button class="bg-primary text-on-primary px-10 py-5 rounded-xl font-headline-sm shadow-xl shadow-primary/20 active:scale-95 transition-all">Schedule a Strategic Call</button>
-<button class="bg-white text-on-surface px-10 py-5 rounded-xl font-headline-sm border border-outline-variant hover:bg-surface-bright active:scale-95 transition-all">Download Solutions Brochure</button>
-</div>
+<section class="py-24 relative overflow-hidden">
+<div class="absolute inset-0 bg-primary -z-10"></div>
+<div class="max-w-container-max mx-auto px-margin-desktop text-center text-on-primary">
+<h2 class="font-display-lg text-display-lg-mobile md:text-display-lg mb-8">Join the SoftSpire journey.</h2>
+<p class="font-body-lg text-body-lg mb-12 opacity-80 max-w-2xl mx-auto">Experience the future of IT services and professional growth. Let's scale your potential together.</p>
+<div class="flex flex-col sm:flex-row justify-center gap-4">
+<button class="bg-white text-primary px-10 py-4 rounded-xl font-bold hover:bg-surface-container-lowest transition-colors shadow-xl">Get Started Now</button>
+<button class="border border-white/30 text-white px-10 py-4 rounded-xl font-bold hover:bg-white/10 transition-colors">Contact Us</button>
 </div>
 </div>
 </section>
 </main>
 <!-- Footer -->
-<footer class="bg-surface-container-lowest dark:bg-surface-dim border-t border-outline-variant">
-<div class="w-full px-margin-desktop py-16 max-w-container-max mx-auto grid grid-cols-2 md:grid-cols-5 gap-gutter">
-<div class="col-span-2 md:col-span-1">
-<div class="flex items-center gap-2 mb-6">
-<img alt="StaffSpire" class="h-8 w-auto" src="https://lh3.googleusercontent.com/aida/AP1WRLuZrPXJ9giX2AcJTngIx_ATT6hgV2jX-piXp8Tu7ppPlL6al9OBxkujFZ5cjCdxvfXBQI1sNP38gjnBkm9QwtloYMoVA_8vN9OYETQaIiADvQTeALifqMF7P1ZTQRJfLjQCgTdM6BjKjUVfuEEjbykqCCwfzjVom-DCGOCZydwpCq0akshFu0kxzewQHAFqQuEwNIizQHIBC4iu5Dun30Tz-uSn0UUrbXV1BozMQ4haalVfA2ifcdvTVbc"/>
-<span class="text-headline-sm font-headline-sm text-primary">StaffSpire</span>
+<footer class="w-full py-12 bg-surface-container-lowest border-t border-outline-variant/20">
+<div class="max-w-container-max mx-auto px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex flex-col items-center md:items-start gap-4">
+<div class="flex items-center gap-2">
+<img alt="SoftSpire Logo" class="h-8 w-auto" src="https://lh3.googleusercontent.com/aida/AP1WRLuErPwzHDh-bTbPDl0fbl7922PKdccrTb4Ldz64cpaHrC1nS51WYmodatxJ22thTDFImS7b4J-LMSuJWkfbZZKVS8P_ix2M9zsVHZvZO4FSx7kz8X6GVaWt5eMsbbcknatLRg4jHxN1TiM4IA65f4SdtQBL4AachnLuu23VgWbsFHu-ah-gmoW8GL96rt4kNWjudj0nAop1FHQGqO7-7s-gW0y7dRTBR5QLXA1aTS_Ybfhw3wsb6akJqs0"/>
+<span class="font-headline-sm text-headline-sm font-black text-primary">SoftSpire Solutions</span>
 </div>
-<p class="text-on-surface-variant font-body-md mb-6">Empowering organizations with the next generation of HR intelligence.</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">© 2025 SoftSpire Solutions. All rights reserved.</p>
+</div>
+<nav class="flex flex-wrap justify-center gap-8">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-opacity" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-opacity" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-opacity" href="#">Security</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-opacity" href="#">Contact</a>
+</nav>
 <div class="flex gap-4">
-<a class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all" href="#"><span class="material-symbols-outlined text-lg">share</span></a>
-<a class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all" href="#"><span class="material-symbols-outlined text-lg">public</span></a>
-</div>
-</div>
-<div class="flex flex-col gap-4">
-<h4 class="font-bold text-on-surface mb-2">Company</h4>
-<a class="text-on-surface-variant font-body-md hover:text-primary underline decoration-2 underline-offset-4 transition-all duration-200" href="#">About Us</a>
-<a class="text-on-surface-variant font-body-md hover:text-primary underline decoration-2 underline-offset-4 transition-all duration-200" href="#">Careers</a>
-<a class="text-on-surface-variant font-body-md hover:text-primary underline decoration-2 underline-offset-4 transition-all duration-200" href="#">Partners</a>
-<a class="text-on-surface-variant font-body-md hover:text-primary underline decoration-2 underline-offset-4 transition-all duration-200" href="#">Press</a>
-</div>
-<div class="flex flex-col gap-4">
-<h4 class="font-bold text-on-surface mb-2">Product</h4>
-<a class="text-on-surface-variant font-body-md hover:text-primary underline decoration-2 underline-offset-4 transition-all duration-200" href="#">Features</a>
-<a class="text-primary font-body-md underline decoration-2 underline-offset-4" href="#">Solutions</a>
-<a class="text-on-surface-variant font-body-md hover:text-primary underline decoration-2 underline-offset-4 transition-all duration-200" href="#">Pricing</a>
-<a class="text-on-surface-variant font-body-md hover:text-primary underline decoration-2 underline-offset-4 transition-all duration-200" href="#">Roadmap</a>
-</div>
-<div class="flex flex-col gap-4">
-<h4 class="font-bold text-on-surface mb-2">Resources</h4>
-<a class="text-on-surface-variant font-body-md hover:text-primary underline decoration-2 underline-offset-4 transition-all duration-200" href="#">Documentation</a>
-<a class="text-on-surface-variant font-body-md hover:text-primary underline decoration-2 underline-offset-4 transition-all duration-200" href="#">API Reference</a>
-<a class="text-on-surface-variant font-body-md hover:text-primary underline decoration-2 underline-offset-4 transition-all duration-200" href="#">Help Center</a>
-<a class="text-on-surface-variant font-body-md hover:text-primary underline decoration-2 underline-offset-4 transition-all duration-200" href="#">Blog</a>
-</div>
-<div class="flex flex-col gap-4">
-<h4 class="font-bold text-on-surface mb-2">Legal</h4>
-<a class="text-on-surface-variant font-body-md hover:text-primary underline decoration-2 underline-offset-4 transition-all duration-200" href="#">Privacy Policy</a>
-<a class="text-on-surface-variant font-body-md hover:text-primary underline decoration-2 underline-offset-4 transition-all duration-200" href="#">Terms of Service</a>
-<a class="text-on-surface-variant font-body-md hover:text-primary underline decoration-2 underline-offset-4 transition-all duration-200" href="#">Security</a>
-<a class="text-on-surface-variant font-body-md hover:text-primary underline decoration-2 underline-offset-4 transition-all duration-200" href="#">GDPR</a>
-</div>
-</div>
-<div class="max-w-container-max mx-auto px-margin-desktop py-8 border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-4">
-<span class="text-on-surface-variant text-label-md">© 2024 StaffSpire HRIS Solutions. All rights reserved.</span>
-<div class="flex gap-8">
-<a class="text-label-md text-on-surface-variant hover:text-primary" href="#">Status</a>
-<a class="text-label-md text-on-surface-variant hover:text-primary" href="#">Feedback</a>
-<a class="text-label-md text-on-surface-variant hover:text-primary" href="#">Support</a>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">share</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">language</span>
 </div>
 </div>
 </footer>
 <script>
-        // Reveal on Scroll Logic
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
+    // Micro-interaction for Navbar Scroll
+    window.onscroll = function() {
+        const header = document.querySelector('header');
+        if (window.scrollY > 50) {
+            header.classList.add('py-2', 'bg-surface/95');
+            header.classList.remove('bg-surface/80');
+        } else {
+            header.classList.remove('py-2', 'bg-surface/95');
+            header.classList.add('bg-surface/80');
+        }
+    };
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
-
-        // Micro-interaction for cards
-        document.querySelectorAll('.glass-card').forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                card.style.setProperty('--mouse-x', `${x}px`);
-                card.style.setProperty('--mouse-y', `${y}px`);
-            });
+    // Simple Reveal Animation Observer
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('opacity-100', 'translate-y-0');
+                entry.target.classList.remove('opacity-0', 'translate-y-10');
+            }
         });
-    </script>
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('section > div').forEach(section => {
+        section.classList.add('transition-all', 'duration-1000', 'opacity-0', 'translate-y-10');
+        observer.observe(section);
+    });
+</script>
 </body></html>
