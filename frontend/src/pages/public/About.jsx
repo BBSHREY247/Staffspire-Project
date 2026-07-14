@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import Navbar from "../../components/public/Navbar";
 import Footer from "../../components/public/Footer";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
+import aboutHeroImg from "../../assets/image.png";
+import aboutBridgeImg from "../../assets/image copy.png";
 import "../../styles/about.css";
 
 const specializations = [
@@ -63,22 +65,10 @@ function About() {
                         </div>
                     </div>
 
-                    {/* Right: office image mockup */}
+                    {/* Right: office image */}
                     <div className="ab-hero-visual reveal-fade-in" style={{ transitionDelay: "150ms" }}>
                         <div className="ab-hero-img-wrap">
-                            <div className="ab-hero-img-inner">
-                                {/* Illustrated office scene */}
-                                <div className="ab-office-scene">
-                                    <div className="ab-office-bg"></div>
-                                    <div className="ab-office-figures">
-                                        <div className="ab-figure ab-figure-1"></div>
-                                        <div className="ab-figure ab-figure-2"></div>
-                                        <div className="ab-figure ab-figure-3"></div>
-                                    </div>
-                                    <div className="ab-office-screen"></div>
-                                    <div className="ab-office-glow"></div>
-                                </div>
-                            </div>
+                            <img src={aboutHeroImg} alt="SoftSpire Team Collaboration" className="ab-hero-img" />
                         </div>
                     </div>
                 </div>
@@ -174,22 +164,10 @@ function About() {
             {/* ── Bridging the Skill Gap ───────────────────────── */}
             <section className="ab-bridge-section">
                 <div className="ab-bridge-inner">
-                    {/* Left: illustration */}
+                    {/* Left: tech stack image */}
                     <div className="ab-bridge-visual reveal-slide-left">
-                        <div className="ab-tech-stack-art">
-                            {/* Isometric tech stack illustration */}
-                            <div className="ab-stack-layer ab-stack-bottom">
-                                <span className="material-symbols-outlined ab-stack-icon">storage</span>
-                            </div>
-                            <div className="ab-stack-layer ab-stack-mid">
-                                <span className="material-symbols-outlined ab-stack-icon">api</span>
-                            </div>
-                            <div className="ab-stack-layer ab-stack-top">
-                                <span className="material-symbols-outlined ab-stack-icon">web</span>
-                            </div>
-                            <div className="ab-stack-connector ab-stack-conn-1"></div>
-                            <div className="ab-stack-connector ab-stack-conn-2"></div>
-                            <div className="ab-stack-glow"></div>
+                        <div className="ab-bridge-img-wrap">
+                            <img src={aboutBridgeImg} alt="SoftSpire Tech Stack" className="ab-bridge-img" />
                         </div>
                     </div>
 
