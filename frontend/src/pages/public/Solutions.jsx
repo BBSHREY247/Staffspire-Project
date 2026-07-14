@@ -2,6 +2,10 @@ import { Link } from "react-router-dom";
 import Navbar from "../../components/public/Navbar";
 import Footer from "../../components/public/Footer";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
+import imgSmallBiz from "../../assets/image copy 2.png";
+import imgMediumEnt from "../../assets/image copy 3.png";
+import imgEducation from "../../assets/image copy 4.png";
+import imgCorporate from "../../assets/image copy 5.png";
 import "../../styles/solutions.css";
 
 function Solutions() {
@@ -78,18 +82,9 @@ function Solutions() {
                                     </div>
                                 </div>
 
-                                {/* Right: illustration placeholder */}
+                                {/* Right: real image */}
                                 <div className="sl-img-box">
-                                    <div className="sl-img-gradient"></div>
-                                    <div className="sl-img-mockup">
-                                        {/* Abstract office illustration */}
-                                        <div className="sl-office-grid">
-                                            {[...Array(6)].map((_, i) => (
-                                                <div key={i} className={`sl-office-node sl-office-node-${i}`}></div>
-                                            ))}
-                                            <div className="sl-office-center"></div>
-                                        </div>
-                                    </div>
+                                    <img src={imgSmallBiz} alt="Small Business Office space" className="sl-bento-img" />
                                 </div>
                             </div>
 
@@ -122,17 +117,9 @@ function Solutions() {
                                 </p>
                             </div>
 
-                            {/* Visual: network expansion mockup */}
-                            <div className="sl-network-visual">
-                                <div className="sl-network-core">
-                                    <span className="material-symbols-outlined" style={{ color: "var(--ss-primary)", fontSize: "28px" }}>hub</span>
-                                </div>
-                                <div className="sl-network-nodes">
-                                    {[...Array(5)].map((_, i) => (
-                                        <div key={i} className="sl-net-node"></div>
-                                    ))}
-                                </div>
-                                <div className="sl-network-glow"></div>
+                            {/* Visual: real image */}
+                            <div className="sl-me-img-wrap">
+                                <img src={imgMediumEnt} alt="Medium Enterprise scaling metrics" className="sl-bento-img" />
                             </div>
 
                             <div className="sl-benefits-list">
@@ -178,19 +165,9 @@ function Solutions() {
                                     <button className="sl-btn-primary sl-btn-sm">View Education Package</button>
                                 </div>
 
-                                {/* Photo / illustration panel */}
+                                {/* Photo panel */}
                                 <div className="sl-edu-photo">
-                                    <div className="sl-edu-photo-inner">
-                                        {/* Office photo mockup */}
-                                        <div className="sl-photo-placeholder">
-                                            <div className="sl-photo-desk">
-                                                <div className="sl-photo-screen"></div>
-                                                <div className="sl-photo-keyboard"></div>
-                                            </div>
-                                            <div className="sl-photo-label">HRIS Administration</div>
-                                        </div>
-                                        <div className="sl-edu-fade"></div>
-                                    </div>
+                                    <img src={imgEducation} alt="Educational Institutions office" className="sl-edu-img" />
                                 </div>
                             </div>
                         </div>
@@ -198,16 +175,7 @@ function Solutions() {
                         {/* 4. Corporate Organizations — 6/12 */}
                         <div className="sl-glass-card sl-card-6 reveal-fade-in">
                             <div className="sl-corp-visual">
-                                <div className="sl-globe-wrap">
-                                    <div className="sl-globe">
-                                        <span className="material-symbols-outlined sl-globe-icon">public</span>
-                                    </div>
-                                    <div className="sl-globe-ring sl-ring-1"></div>
-                                    <div className="sl-globe-ring sl-ring-2"></div>
-                                </div>
-                                <div className="sl-corp-badge">
-                                    <span className="material-symbols-outlined" style={{ color: "var(--ss-primary)", fontSize: "28px" }}>public</span>
-                                </div>
+                                <img src={imgCorporate} alt="Corporate Organizations global twin" className="sl-bento-img" />
                             </div>
 
                             <h3 className="sl-card-title" style={{ marginBottom: "12px" }}>Corporate Organizations</h3>

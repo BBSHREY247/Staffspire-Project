@@ -1104,3 +1104,27 @@
         padding: 28px 24px;
     }
 }
+
+/* ── Image Styles for Bento Grid ─────────────────────────────── */
+.sl-bento-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.sl-me-img-wrap {
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    border: 1px solid rgba(194, 198, 216, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.sl-edu-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
