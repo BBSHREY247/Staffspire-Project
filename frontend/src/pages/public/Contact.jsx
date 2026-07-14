@@ -4,7 +4,7 @@ import Footer from "../../components/public/Footer";
 import InlineAlert from "../../components/InlineAlert";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
 import axios from "axios";
-import contactMapImg from "../../assets/image copy 6.png";
+import contactMapImg from "../../assets/location.png";
 import "../../styles/contact.css";
 
 function Contact() {
@@ -163,14 +163,14 @@ function Contact() {
                                 <div className="ct-detail-row">
                                     <span className="material-symbols-outlined ct-detail-icon">map</span>
                                     <p className="ct-detail-text">
-                                        101 Skyline Towers, Silicon District<br />
-                                        San Francisco, CA 94105, United States
+                                        Ahilyanagar, Maharashtra, India<br />
+                                        
                                     </p>
                                 </div>
                                 <div className="ct-detail-row">
                                     <span className="material-symbols-outlined ct-detail-icon">mail</span>
                                     <a href="mailto:contact@staffspire.com" className="ct-detail-link">
-                                        contact@staffspire.com
+                                        shreyash.softspiresolutions.com
                                     </a>
                                 </div>
                                 <div className="ct-social-links">

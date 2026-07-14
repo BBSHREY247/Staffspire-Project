@@ -305,6 +305,7 @@
 
 /* Map Card */
 .ct-map-card {
+    width: 475px;
     height: 200px;
     border-radius: 20px;
     overflow: hidden;
@@ -313,9 +314,9 @@
 }
 
 .ct-map-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: 450px;
+    height: 175px;
+    align-items: center;
     display: block;
     transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -333,8 +334,8 @@
 
 .ct-map-badge {
     position: absolute;
-    bottom: 16px;
-    left: 16px;
+    bottom: 8px;
+    left: 8px;
     background: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
@@ -361,7 +362,7 @@
 }
 
 .ct-badge-text {
-    font-size: 0.75rem;
+    font-size: 0.60rem;
     font-weight: 700;
     color: var(--ss-on-surface);
 }

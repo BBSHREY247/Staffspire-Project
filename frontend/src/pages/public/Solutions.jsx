@@ -2,10 +2,10 @@ import { Link } from "react-router-dom";
 import Navbar from "../../components/public/Navbar";
 import Footer from "../../components/public/Footer";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
-import imgSmallBiz from "../../assets/image copy 2.png";
-import imgMediumEnt from "../../assets/image copy 3.png";
-import imgEducation from "../../assets/image copy 4.png";
-import imgCorporate from "../../assets/image copy 5.png";
+import imgSmallBiz from "../../assets/employees_working.png";
+import imgMediumEnt from "../../assets/dashboard.png";
+import imgEducation from "../../assets/staffspire_on_monitor.png";
+import imgCorporate from "../../assets/global_work.png";
 import "../../styles/solutions.css";
 
 function Solutions() {
@@ -119,7 +119,7 @@ function Solutions() {
 
                             {/* Visual: real image */}
                             <div className="sl-me-img-wrap">
-                                <img src={imgMediumEnt} alt="Medium Enterprise scaling metrics" className="sl-bento-img" />
+                                <img src={imgMediumEnt} alt="Medium Enterprise scaling metrics" className="sl-bento-imga" />
                             </div>
 
                             <div className="sl-benefits-list">
@@ -175,7 +175,7 @@ function Solutions() {
                         {/* 4. Corporate Organizations — 6/12 */}
                         <div className="sl-glass-card sl-card-6 reveal-fade-in">
                             <div className="sl-corp-visual">
-                                <img src={imgCorporate} alt="Corporate Organizations global twin" className="sl-bento-img" />
+                                <img src={imgCorporate} alt="Corporate Organizations global twin" className="sl-bento-imgb" />
                             </div>
 
                             <h3 className="sl-card-title" style={{ marginBottom: "12px" }}>Corporate Organizations</h3>

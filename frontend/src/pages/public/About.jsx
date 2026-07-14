@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import Navbar from "../../components/public/Navbar";
 import Footer from "../../components/public/Footer";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
-import aboutHeroImg from "../../assets/image.png";
-import aboutBridgeImg from "../../assets/image copy.png";
+import aboutHeroImg from "../../assets/meeting.png";
+import aboutBridgeImg from "../../assets/system_arch.png";
 import "../../styles/about.css";
 
 const specializations = [
