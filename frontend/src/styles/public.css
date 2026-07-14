@@ -95,6 +95,11 @@
     letter-spacing: -0.02em;
 }
 
+.logo_public {
+    width: 200px;
+    height: 70px;
+}
+
 .ss-nav-links {
     display: flex;
     align-items: center;

@@ -9,8 +9,7 @@ function Navbar() {
         <header className="ss-navbar">
             {/* Logo */}
             <Link to="/" className="ss-nav-logo">
-                <span className="material-symbols-outlined ss-nav-logo-icon">corporate_fare</span>
-                <span className="ss-nav-logo-text">StaffSpire</span>
+                <img className="logo_public" src="../src/assets/Softspire_Logo.jpeg" alt="" />
             </Link>
 
             {/* Nav Links */}
