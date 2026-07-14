@@ -4,13 +4,15 @@ import Footer from "../../components/public/Footer";
 import InlineAlert from "../../components/InlineAlert";
 import { useScrollReveal } from "../../hooks/useScrollReveal";
 import axios from "axios";
+import contactMapImg from "../../assets/image copy 6.png";
+import "../../styles/contact.css";
 
 function Contact() {
     useScrollReveal();
 
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
-    const [subject, setSubject] = useState("");
+    const [subject, setSubject] = useState("Enterprise Solutions Inquiry");
     const [message, setMessage] = useState("");
     const [formAlert, setFormAlert] = useState("");
     const [formAlertType, setFormAlertType] = useState("success");
@@ -34,7 +36,7 @@ function Contact() {
                 setFormAlertType("success");
                 setName("");
                 setEmail("");
-                setSubject("");
+                setSubject("Enterprise Solutions Inquiry");
                 setMessage("");
             } else {
                 setFormAlert(response.data.message || "Failed to send message.");
@@ -52,130 +54,201 @@ function Contact() {
     };
 
     return (
-        <div className="public-body-wrap">
+        <div className="ss-public-body">
             <Navbar />
 
-            <section style={{ padding: "80px 8% 20px", position: "relative", zIndex: 1 }}>
-                <div className="pub-glow-bg"></div>
-                <div className="pub-section-header reveal-fade-in" style={{ marginBottom: "40px" }}>
-                    <span className="pub-section-tag">Get In Touch</span>
-                    <h1 className="pub-section-title" style={{ fontSize: "3rem", marginBottom: "16px" }}>
-                        Contact our sales &amp; support
-                    </h1>
-                    <p style={{ color: "var(--pub-text-secondary)", fontSize: "1.1rem", maxWidth: "600px" }}>
-                        Have questions about setups, role models, features, or custom integrations? Send us a line.
+            <main className="ct-main reveal-fade-in">
+                {/* Background Atmospheric Effects */}
+                <div className="ct-ambient-glow-1"></div>
+                <div className="ct-ambient-glow-2"></div>
+
+                {/* Header */}
+                <div className="ct-header">
+                    <h1 className="ct-title">Let's Talk</h1>
+                    <p className="ct-subtitle">
+                        Have questions about scaling your global workforce? Our enterprise consultants are
+                        ready to help you architect the future of your HR operations.
                     </p>
                 </div>
-            </section>
 
-            <div className="pub-contact-grid">
-                {/* Form Card */}
-                <div className="pub-contact-form-card reveal-slide-left">
-                    <InlineAlert
-                        type={formAlertType}
-                        message={formAlert}
-                        onClose={() => setFormAlert("")}
-                    />
-
-                    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                                <label style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--pub-text-secondary)" }}>Name</label>
-                                <input
-                                    type="text"
-                                    required
-                                    className="pub-contact-input"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    placeholder="Enter your name"
-                                />
-                            </div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                                <label style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--pub-text-secondary)" }}>Email</label>
-                                <input
-                                    type="email"
-                                    required
-                                    className="pub-contact-input"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="your@email.com"
-                                />
-                            </div>
-                        </div>
-
-                        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                            <label style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--pub-text-secondary)" }}>Subject</label>
-                            <input
-                                type="text"
-                                required
-                                className="pub-contact-input"
-                                value={subject}
-                                onChange={(e) => setSubject(e.target.value)}
-                                placeholder="What is this regarding?"
+                {/* Content Grid */}
+                <div className="ct-grid">
+                    {/* Left Side: Contact Form */}
+                    <div className="ct-form-panel">
+                        {formAlert && (
+                            <InlineAlert
+                                type={formAlertType}
+                                message={formAlert}
+                                onClose={() => setFormAlert("")}
                             />
+                        )}
+
+                        <form onSubmit={handleSubmit} className="ct-form">
+                            <div className="ct-form-row">
+                                <div className="ct-form-group">
+                                    <label htmlFor="name" className="ct-label">Full Name</label>
+                                    <input
+                                        type="text"
+                                        id="name"
+                                        className="ct-input"
+                                        placeholder="John Doe"
+                                        required
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                    />
+                                </div>
+                                <div className="ct-form-group">
+                                    <label htmlFor="email" className="ct-label">Business Email</label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        className="ct-input"
+                                        placeholder="john@company.com"
+                                        required
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="ct-form-group">
+                                <label htmlFor="subject" className="ct-label">Subject</label>
+                                <select
+                                    id="subject"
+                                    className="ct-select"
+                                    value={subject}
+                                    onChange={(e) => setSubject(e.target.value)}
+                                >
+                                    <option value="Enterprise Solutions Inquiry">Enterprise Solutions Inquiry</option>
+                                    <option value="Technical Support">Technical Support</option>
+                                    <option value="Partnership Opportunities">Partnership Opportunities</option>
+                                    <option value="Billing & Accounts">Billing &amp; Accounts</option>
+                                </select>
+                            </div>
+
+                            <div className="ct-form-group">
+                                <label htmlFor="message" className="ct-label">Message</label>
+                                <textarea
+                                    id="message"
+                                    className="ct-textarea"
+                                    placeholder="How can our team support your growth?"
+                                    rows="6"
+                                    required
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
+                                ></textarea>
+                            </div>
+
+                            <div className="ct-form-actions">
+                                <button type="submit" className="ct-submit-btn" disabled={submitting}>
+                                    {submitting ? "Sending..." : "Send Message"}
+                                    <span className="material-symbols-outlined ct-send-icon">send</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    {/* Right Side: Info & Support */}
+                    <div className="ct-info-col">
+                        {/* Office Card */}
+                        <div className="ct-info-card ct-office-card">
+                            <div className="ct-card-decor">
+                                <span className="material-symbols-outlined ct-decor-icon">location_on</span>
+                            </div>
+                            <h3 className="ct-card-title">
+                                <span className="material-symbols-outlined ct-card-title-icon">corporate_fare</span>
+                                Global Headquarters
+                            </h3>
+                            <div className="ct-office-details">
+                                <div className="ct-detail-row">
+                                    <span className="material-symbols-outlined ct-detail-icon">map</span>
+                                    <p className="ct-detail-text">
+                                        101 Skyline Towers, Silicon District<br />
+                                        San Francisco, CA 94105, United States
+                                    </p>
+                                </div>
+                                <div className="ct-detail-row">
+                                    <span className="material-symbols-outlined ct-detail-icon">mail</span>
+                                    <a href="mailto:contact@staffspire.com" className="ct-detail-link">
+                                        contact@staffspire.com
+                                    </a>
+                                </div>
+                                <div className="ct-social-links">
+                                    <a href="#" className="ct-social-btn">
+                                        <svg className="ct-social-svg" viewBox="0 0 24 24">
+                                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.041-1.416-4.041-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path>
+                                        </svg>
+                                    </a>
+                                    <a href="#" className="ct-social-btn">
+                                        <svg className="ct-social-svg" viewBox="0 0 24 24">
+                                            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
 
-                        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                            <label style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--pub-text-secondary)" }}>Message</label>
-                            <textarea
-                                required
-                                className="pub-contact-input"
-                                rows={5}
-                                value={message}
-                                onChange={(e) => setMessage(e.target.value)}
-                                placeholder="Write your message here..."
-                                style={{ resize: "none" }}
+                        {/* Map Card */}
+                        <div className="ct-map-card">
+                            <img
+                                className="ct-map-img"
+                                alt="San Francisco Office Map illustration"
+                                src={contactMapImg}
                             />
+                            <div className="ct-map-overlay"></div>
+                            <div className="ct-map-badge">
+                                <span className="ct-badge-dot"></span>
+                                <span className="ct-badge-text">Live Office Operations</span>
+                            </div>
                         </div>
 
-                        <button
-                            type="submit"
-                            className="pub-btn pub-btn-primary"
-                            disabled={submitting}
-                            style={{ padding: "12px", width: "100%", marginTop: "8px" }}
-                        >
-                            {submitting ? "Sending message..." : "Send Message"}
-                        </button>
-                    </form>
-                </div>
-
-                {/* Info Card */}
-                <div className="pub-info-card reveal-slide-right">
-                    <h3 style={{ margin: 0, fontSize: "1.3rem", fontWeight: 800 }}>Contact Channels</h3>
-
-                    <div className="pub-info-item">
-                        <div className="pub-info-icon">
-                            <span className="material-symbols-outlined">mail</span>
+                        {/* Support Hours Card */}
+                        <div className="ct-info-card">
+                            <h3 className="ct-card-title">
+                                <span className="material-symbols-outlined ct-card-title-icon">schedule</span>
+                                Support Hours
+                            </h3>
+                            <div className="ct-hours-rows">
+                                <div className="ct-hours-row">
+                                    <span className="ct-hours-day">Mon — Fri</span>
+                                    <span className="ct-hours-time">24 Hours (Enterprise)</span>
+                                </div>
+                                <div className="ct-hours-row">
+                                    <span className="ct-hours-day">Sat — Sun</span>
+                                    <span className="ct-hours-time">Limited Availability</span>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <div className="pub-info-text-title">Email</div>
-                            <div className="ypub-info-text-value">shreyash.sofspiresolutions@gmail.com</div>
-                        </div>
-                    </div>  
-                    <br />
 
-                    <div className="pub-info-item">
-                        <div className="pub-info-icon">
-                            <span className="material-symbols-outlined">share</span>
-                        </div>
-                        <div>
-                            <div className="pub-info-text-title">LinkedIn</div>
-                            <a target="_blank" className="xpub-info-text-value" href="https://www.linkedin.com/company/softspire-solutions/posts/?feedView=allv">Linkedin Profile</a>
+                        {/* Common Questions */}
+                        <div className="ct-info-card">
+                            <h3 className="ct-card-title">Common Questions</h3>
+                            <div className="ct-faq-list">
+                                <details className="ct-faq-item">
+                                    <summary className="ct-faq-trigger">
+                                        How fast is your response time?
+                                        <span className="material-symbols-outlined ct-faq-arrow">expand_more</span>
+                                    </summary>
+                                    <p className="ct-faq-answer">
+                                        Enterprise clients receive a dedicated success manager with a guaranteed
+                                        2-hour response time during business hours.
+                                    </p>
+                                </details>
+                                <details className="ct-faq-item">
+                                    <summary className="ct-faq-trigger">
+                                        Do you offer global implementation?
+                                        <span className="material-symbols-outlined ct-faq-arrow">expand_more</span>
+                                    </summary>
+                                    <p className="ct-faq-answer">
+                                        Yes, we provide on-site implementation support for our Scale and Enterprise
+                                        tiers across 40+ countries.
+                                    </p>
+                                </details>
+                            </div>
                         </div>
                     </div>
-                    <br /> 
-
-                    <div className="pub-info-item" style={{ background: "rgba(255,255,255,0.01)", borderTop: "1px solid var(--pub-card-border)", paddingTop: "20px" }}>
-                        <div className="pub-info-icon" style={{ background: "rgba(99, 102, 241, 0.1)", color: "var(--pub-primary)" }}>
-                            <span className="material-symbols-outlined">location_on</span>
-                        </div>
-                        <div>
-                            <div className="pub-info-text-title">Location</div>
-                            <div className="zpub-info-text-value">Ahilyanagar, Maharashtra, India</div>
-                        </div>
-                    </div>
                 </div>
-            </div>
+            </main>
 
             <Footer />
         </div>
