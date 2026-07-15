@@ -58,7 +58,7 @@ function Footer() {
             </div>
 
             <div className="ss-footer-bottom">
-                <span>© 2024 StaffSpire. All rights reserved.</span>
+                <span>© 2026 Softspire. All rights reserved.</span>
             </div>
         </footer>
     );

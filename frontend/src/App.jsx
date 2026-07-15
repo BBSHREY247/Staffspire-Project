@@ -3,6 +3,7 @@ import {
     Routes,
     Route
 } from "react-router-dom";
+import ScrollToTop from "./components/ScrollToTop";
 
 import Login from "./auth/login";
 
@@ -42,6 +43,7 @@ import AlertsShowcase from "./pages/admin/AlertsShowcase";
 function App() {
     return (
         <BrowserRouter>
+            <ScrollToTop />
             <Routes>
 
                 <Route
