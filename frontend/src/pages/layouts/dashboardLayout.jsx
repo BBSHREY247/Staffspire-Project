@@ -15,6 +15,11 @@ function DashboardLayout({ children }) {
         }
     }, [location.pathname, navigate]);
 
+    useEffect(() => {
+        const storedTheme = localStorage.getItem("dashboard-theme") || "light";
+        document.documentElement.setAttribute("data-theme", storedTheme);
+    }, []);
+
     return (
         <div className="layout-container">
             <Header />

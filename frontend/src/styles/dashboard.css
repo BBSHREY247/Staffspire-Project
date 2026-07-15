@@ -8,7 +8,96 @@
     --primary: #4F7DF0;
     --sidebar-bg: #ffffff;
     --bg-color: #F4F7FC;
-    --card-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    --card-bg: #ffffff;
+    --card-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --header-bg: #ffffff;
+    --input-bg: #ffffff;
+}
+
+[data-theme="dark"] {
+    --sidebar-bg: #0f172a;
+    --bg-color: #020617;
+    --card-bg: #0f172a;
+    --card-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border-color: #1e293b;
+    --header-bg: #0f172a;
+    --input-bg: #1e293b;
+}
+
+/* Apply variables to layout */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+}
+
+.sidebar {
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color) !important;
+}
+
+.sidebar-menu li {
+    color: var(--text-secondary) !important;
+}
+
+.sidebar-menu li:hover {
+    color: var(--primary) !important;
+    background: rgba(79, 125, 240, 0.08) !important;
+}
+
+.header {
+    background: var(--header-bg) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+.header h3, .header span, .header div {
+    color: var(--text-primary);
+}
+
+.page-title {
+    color: var(--text-primary);
+}
+
+/* Card wrappers */
+.form-card, .employee-card, .stat-card, .card {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+    box-shadow: var(--card-shadow) !important;
+}
+
+/* Detail groups */
+.detail-label, .detail-group label, .form-group label {
+    color: var(--text-secondary) !important;
+}
+
+.detail-value, .detail-group input, .form-group input, .form-group select, .form-group textarea {
+    color: var(--text-primary) !important;
+}
+
+/* Form controls */
+.form-group input, .form-group select, .form-group textarea, .detail-group input {
+    background: var(--input-bg) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+/* Tables */
+.employee-table {
+    background: var(--card-bg) !important;
+    box-shadow: var(--card-shadow) !important;
+}
+
+.employee-table td {
+    color: var(--text-primary) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+.employee-table tr:hover {
+    background: rgba(79, 125, 240, 0.04) !important;
 }
 
 .layout-container {
