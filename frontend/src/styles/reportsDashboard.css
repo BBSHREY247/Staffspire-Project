@@ -493,3 +493,70 @@
 .status-pill-badge.in-progress .dot {
     background-color: #2563eb;
 }
+
+/* ═══════════════════════════════════════════
+   DARK MODE OVERRIDES
+   ═══════════════════════════════════════════ */
+[data-theme="dark"] .reports-container { background-color: var(--bg-color); }
+
+[data-theme="dark"] .reports-kpi-card {
+    background-color: var(--card-bg);
+    box-shadow: var(--card-shadow);
+}
+[data-theme="dark"] .kpi-title { color: var(--text-secondary); }
+[data-theme="dark"] .kpi-value { color: var(--text-primary); }
+[data-theme="dark"] .reports-header-count { background-color: var(--input-bg); color: var(--text-secondary); }
+
+[data-theme="dark"] .reports-tabs-bar {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+}
+[data-theme="dark"] .reports-tab-btn { color: var(--text-secondary); }
+[data-theme="dark"] .reports-tab-btn:hover { background-color: var(--input-bg); color: var(--text-primary); }
+
+[data-theme="dark"] .reports-filters-card {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    box-shadow: var(--card-shadow);
+}
+[data-theme="dark"] .filter-field label { color: var(--text-secondary); }
+[data-theme="dark"] .filter-input {
+    background-color: var(--input-bg);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+[data-theme="dark"] .filter-select {
+    background-color: var(--input-bg);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .reports-results-box {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    box-shadow: var(--card-shadow);
+}
+[data-theme="dark"] .results-action-bar {
+    background-color: rgba(30,30,46,0.5);
+    border-bottom-color: var(--border-color);
+}
+[data-theme="dark"] .results-action-bar h3 { color: var(--text-primary); }
+
+[data-theme="dark"] .results-mini-stats-grid { background-color: rgba(30,30,46,0.3); border-bottom-color: var(--border-color); }
+[data-theme="dark"] .results-mini-card {
+    background-color: var(--input-bg);
+    border-color: var(--border-color);
+}
+[data-theme="dark"] .mini-card-label { color: var(--text-secondary); }
+[data-theme="dark"] .mini-card-value { color: var(--text-primary); }
+
+[data-theme="dark"] .reports-data-table th {
+    background-color: var(--input-bg);
+    color: var(--text-secondary);
+}
+[data-theme="dark"] .reports-data-table td {
+    color: var(--text-primary);
+    border-bottom-color: var(--border-color);
+}
+[data-theme="dark"] .reports-data-table td.text-secondary { color: var(--text-secondary); }
+[data-theme="dark"] .reports-data-table tr:hover { background-color: rgba(79,125,240,0.06); }

@@ -29,10 +29,10 @@ function ReportSummaryCards() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "18px", marginBottom: "28px" }}>
                 {[1, 2, 3, 4, 5].map((i) => (
                     <div key={i} style={{
-                        height: "100px", background: "white", borderRadius: "14px",
-                        boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+                        height: "100px", background: "var(--card-bg)", borderRadius: "14px",
+                        boxShadow: "var(--card-shadow)",
                         animation: "shimmer 1.5s infinite linear",
-                        backgroundImage: "linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%)",
+                        backgroundImage: "linear-gradient(90deg, var(--input-bg) 25%, var(--border-color) 50%, var(--input-bg) 75%)",
                         backgroundSize: "200% 100%"
                     }} />
                 ))}

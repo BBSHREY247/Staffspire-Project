@@ -295,7 +295,7 @@ function MyProfile() {
                         {activeTab === "Payroll" && (
                             <div className="profile-bento-card" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                                 <h3 className="profile-section-title">Salary &amp; Payroll Summary</h3>
-                                <p style={{ color: "#5e6572", fontSize: "14px" }}>Confidential summary of monthly payouts, salary breakdown, and downloadable slips.</p>
+                                <p style={{ color: "var(--text-primary)", fontSize: "14px" }}>Confidential summary of monthly payouts, salary breakdown, and downloadable slips.</p>
                                 <div style={{ background: "#faf8ff", border: "1px solid rgba(195,198,215,0.2)", borderRadius: "12px", padding: "24px", marginTop: "8px" }}>
                                     <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(195,198,215,0.2)", paddingBottom: "16px" }}>
                                         <div>

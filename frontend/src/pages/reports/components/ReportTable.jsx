@@ -130,7 +130,7 @@ function ReportTable({ columns, keys, data = [] }) {
                     borderTop: "1px solid rgba(195, 198, 215, 0.3)",
                     background: "#faf8ff"
                 }}>
-                    <span style={{ fontSize: "13px", color: "#585f6c", fontWeight: "500" }}>
+                    <span style={{ fontSize: "13px", color: "var(--text-primary)", fontWeight: "500" }}>
                         Showing <strong>{startIndex + 1}</strong> to <strong>{Math.min(startIndex + rowsPerPage, data.length)}</strong> of <strong>{data.length}</strong> records
                     </span>
                     <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>

@@ -10,23 +10,23 @@
     --bg-color: #F4F7FC;
     --card-bg: #ffffff;
     --card-shadow: 0 6px 18px rgba(0,0,0,0.06);
-    --text-primary: #0f172a;
-    --text-secondary: #64748b;
+    --text-primary: #252525;
+    --text-secondary: #3a3939;
     --border-color: #e2e8f0;
     --header-bg: #ffffff;
     --input-bg: #ffffff;
 }
 
 [data-theme="dark"] {
-    --sidebar-bg: #0f172a;
-    --bg-color: #020617;
-    --card-bg: #0f172a;
-    --card-shadow: 0 10px 30px rgba(0,0,0,0.4);
-    --text-primary: #f8fafc;
+    --sidebar-bg: #171717;
+    --bg-color: #131313;
+    --card-bg: #292929;
+    --card-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    --text-primary: #e2e8f0;
     --text-secondary: #94a3b8;
-    --border-color: #1e293b;
-    --header-bg: #0f172a;
-    --input-bg: #1e293b;
+    --border-color: #232323;
+    --header-bg: #191919;
+    --input-bg: #1d1d1d;
 }
 
 /* Apply variables to layout */
@@ -85,10 +85,21 @@ body {
     border: 1px solid var(--border-color) !important;
 }
 
-/* Tables */
+/* Tables — theme-aware overrides */
+.table-container-custom {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
 .employee-table {
     background: var(--card-bg) !important;
-    box-shadow: var(--card-shadow) !important;
+    box-shadow: none !important;
+}
+
+.employee-table th {
+    background: var(--input-bg) !important;
+    color: var(--text-secondary) !important;
+    border-bottom: 2px solid var(--border-color) !important;
 }
 
 .employee-table td {
@@ -97,7 +108,65 @@ body {
 }
 
 .employee-table tr:hover {
-    background: rgba(79, 125, 240, 0.04) !important;
+    background: rgba(79, 125, 240, 0.06) !important;
+}
+
+/* Footer */
+.footer {
+    background: var(--header-bg) !important;
+    border-top: 1px solid var(--border-color) !important;
+    color: var(--text-secondary) !important;
+}
+
+/* Details card */
+.details-card {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Dropdowns (profile, notifications) */
+.dropdown-menu, .notifications-dropdown {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.dropdown-menu li, .notif-item {
+    color: var(--text-primary) !important;
+}
+
+.dropdown-menu li:hover, .notif-item:hover {
+    background: var(--input-bg) !important;
+}
+
+.dropdown-header-name, .dropdown-header-role {
+    color: var(--text-primary) !important;
+}
+
+/* Misc */
+.form-card select {
+    background: var(--input-bg) !important;
+    color: var(--text-primary) !important;
+    cursor: pointer;
+}
+
+.header-page-title {
+    color: var(--text-secondary) !important;
+}
+
+.header-title-divider {
+    background: var(--border-color) !important;
+}
+
+.table-action-btn {
+    background: var(--input-bg) !important;
+    color: var(--text-secondary) !important;
+}
+
+.table-action-btn:hover {
+    background: var(--border-color) !important;
+    color: var(--primary) !important;
 }
 
 .layout-container {
@@ -634,7 +703,7 @@ body {
     position: relative;
     padding: 8px;
     border-radius: 50%;
-    color: #64748b;
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -642,8 +711,8 @@ body {
 }
 
 .header-action-btn:hover {
-    background: #f1f5f9;
-    color: #1e293b;
+    background: var(--input-bg);
+    color: var(--text-primary);
 }
 
 .header-action-btn svg {
@@ -664,7 +733,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid white;
+    border: 2px solid var(--header-bg);
 }
 
 /* User Profile Widget */
@@ -675,21 +744,21 @@ body {
     cursor: pointer;
     padding: 6px 12px;
     border-radius: 30px;
-    border: 1px solid #e2e8f0;
-    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
     transition: all 0.2s ease;
     position: relative;
     user-select: none;
 }
 
 .profile-widget:hover {
-    background: #f1f5f9;
-    border-color: #cbd5e1;
+    background: var(--border-color);
+    border-color: var(--primary);
 }
 
 .profile-avatar {
     font-size: 24px;
-    color: #64748b;
+    color: var(--text-secondary);
 }
 
 .profile-info {
@@ -701,19 +770,19 @@ body {
 .profile-name {
     font-size: 13.5px;
     font-weight: 600;
-    color: #1e293b;
+    color: var(--text-primary);
     line-height: 1.2;
 }
 
 .profile-role {
     font-size: 11px;
-    color: #64748b;
+    color: var(--text-secondary);
     font-weight: 500;
 }
 
 .profile-chevron {
     font-size: 11px;
-    color: #64748b;
+    color: var(--text-secondary);
     transition: transform 0.2s ease;
 }
 
@@ -723,10 +792,10 @@ body {
     top: 100%;
     right: 0;
     margin-top: 8px;
-    background: white;
-    border: 1px solid #e2e8f0;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.15);
     width: 220px;
     z-index: 200;
     padding: 6px;
@@ -737,14 +806,14 @@ body {
     padding: 10px 14px 2px 14px;
     font-size: 14px;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--text-primary);
 }
 
 .dropdown-header-role {
     padding: 0 14px 10px 14px;
     font-size: 11px;
-    color: #64748b;
-    border-bottom: 1px solid #f1f5f9;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
     margin-bottom: 6px;
 }
 
@@ -752,7 +821,7 @@ body {
     list-style: none;
     padding: 10px 14px;
     font-size: 13.5px;
-    color: #4b5563;
+    color: var(--text-primary);
     font-weight: 500;
     border-radius: 8px;
     cursor: pointer;
@@ -763,18 +832,18 @@ body {
 }
 
 .dropdown-menu li:hover {
-    background: #f1f5f9;
-    color: #1e293b;
+    background: var(--input-bg);
+    color: var(--text-primary);
 }
 
 .dropdown-menu li svg {
     font-size: 16px;
-    color: #94a3b8;
+    color: var(--text-secondary);
 }
 
 .dropdown-divider {
     height: 1px;
-    background: #f1f5f9;
+    background: var(--border-color);
     margin: 6px 0;
 }
 
@@ -784,10 +853,10 @@ body {
     top: 100%;
     right: 0;
     margin-top: 8px;
-    background: white;
-    border: 1px solid #e2e8f0;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.15);
     width: 320px;
     z-index: 200;
     padding: 8px 0;
@@ -799,12 +868,12 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 6px 16px 12px 16px;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .notif-header h4 {
     font-size: 14px;
-    color: #1e293b;
+    color: var(--text-primary);
     font-weight: 700;
 }
 
@@ -827,26 +896,26 @@ body {
     padding: 12px 16px;
     cursor: pointer;
     transition: background 0.2s ease;
-    border-bottom: 1px solid #fafafa;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .notif-item:hover {
-    background: #f8fafc;
+    background: var(--input-bg);
 }
 
 .notif-item.unread {
-    background: #f0f4ff;
+    background: rgba(79, 125, 240, 0.06);
 }
 
 .notif-item.unread:hover {
-    background: #e5edff;
+    background: rgba(79, 125, 240, 0.1);
 }
 
 .notif-empty {
     padding: 24px;
     text-align: center;
     font-size: 13.5px;
-    color: #64748b;
+    color: var(--text-secondary);
     font-weight: 500;
 }
 
@@ -869,14 +938,14 @@ body {
 
 .notif-text {
     font-size: 13px;
-    color: #334155;
+    color: var(--text-primary);
     font-weight: 500;
     text-align: left;
 }
 
 .notif-time {
     font-size: 11px;
-    color: #94a3b8;
+    color: var(--text-secondary);
     text-align: left;
 }
 
@@ -893,11 +962,11 @@ body {
 
 /* Footer layout rules */
 .footer {
-    background: white;
+    background: var(--header-bg);
     padding: 20px 30px;
     text-align: center;
-    border-top: 1px solid #e2e8f0;
-    color: #64748b;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-secondary);
     font-size: 13.5px;
     font-weight: 500;
 }
@@ -955,11 +1024,11 @@ body {
 
 
 .details-card {
-    background: white;
+    background: var(--card-bg);
     border-radius: 12px;
     padding: 30px 20px;
     box-shadow: var(--card-shadow);
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     /* align-items: center; */
@@ -1144,9 +1213,9 @@ body {
 
 /* Responsive Table upgrades */
 .table-container-custom {
-    background: white;
+    background: var(--card-bg);
     border-radius: 12px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-color);
     box-shadow: var(--card-shadow);
     overflow: hidden;
     margin-top: 20px;
@@ -1158,26 +1227,26 @@ body {
 }
 
 .employee-table th {
-    background: #f8fafc !important;
-    color: #64748b !important;
+    background: var(--input-bg) !important;
+    color: var(--text-secondary) !important;
     font-size: 13px !important;
     text-transform: uppercase !important;
     letter-spacing: 0.5px !important;
     font-weight: 700 !important;
-    border-bottom: 2px solid #e2e8f0 !important;
+    border-bottom: 2px solid var(--border-color) !important;
     padding: 16px 20px !important;
 }
 
 .employee-table td {
     padding: 16px 20px !important;
     font-size: 14px !important;
-    color: #334155 !important;
-    border-bottom: 1px solid #f1f5f9 !important;
+    color: var(--text-primary) !important;
+    border-bottom: 1px solid var(--border-color) !important;
     vertical-align: middle !important;
 }
 
 .employee-table tr:hover {
-    background: #f8fafc !important;
+    background: rgba(79, 125, 240, 0.06) !important;
 }
 
 .employee-table tr:last-child td {
@@ -1659,7 +1728,8 @@ body {
 
 /* Leaves Modal/Select Specific Styles */
 .form-card select {
-    background: white;
+    background: var(--input-bg);
+    color: var(--text-primary);
     cursor: pointer;
 }
 

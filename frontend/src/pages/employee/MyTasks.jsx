@@ -101,12 +101,12 @@ function MyTasks() {
                 {/* Stats Grid */}
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "16px", marginBottom: "28px" }}>
                     {statCards.map(({ label, value, icon, color, bg }) => (
-                        <div key={label} style={{ background: "white", borderRadius: "14px", padding: "18px 16px", boxShadow: "0 2px 12px rgba(0,0,0,0.06)", display: "flex", flexDirection: "column", gap: "10px" }}>
+                        <div key={label} style={{ background: "var(--card-bg)", borderRadius: "14px", padding: "18px 16px", boxShadow: "var(--card-shadow)", display: "flex", flexDirection: "column", gap: "10px" }}>
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <span style={{ fontSize: "12px", color: "#64748b", fontWeight: "600" }}>{label}</span>
+                                <span style={{ fontSize: "12px", color: "var(--text-secondary)", fontWeight: "600" }}>{label}</span>
                                 <span style={{ background: bg, color, padding: "6px", borderRadius: "8px", fontSize: "14px", display: "flex" }}>{icon}</span>
                             </div>
-                            <div style={{ fontSize: "26px", fontWeight: "800", color: "#1e293b" }}>{value}</div>
+                            <div style={{ fontSize: "26px", fontWeight: "800", color: "var(--text-primary)" }}>{value}</div>
                         </div>
                     ))}
                 </div>
@@ -117,9 +117,9 @@ function MyTasks() {
                         <button key={key} onClick={() => setActiveTab(key)}
                             style={{
                                 padding: "8px 16px", borderRadius: "30px", border: "1.5px solid",
-                                borderColor: activeTab === key ? "#4f8cff" : "#e2e8f0",
-                                background: activeTab === key ? "#4f8cff" : "white",
-                                color: activeTab === key ? "white" : "#475569",
+                                borderColor: activeTab === key ? "#4f8cff" : "var(--border-color)",
+                                background: activeTab === key ? "#4f8cff" : "var(--card-bg)",
+                                color: activeTab === key ? "white" : "var(--text-secondary)",
                                 fontWeight: "600", fontSize: "13px", cursor: "pointer",
                                 display: "inline-flex", alignItems: "center", gap: "6px", transition: "all 0.15s"
                             }}>
@@ -150,8 +150,8 @@ function MyTasks() {
 
                             return (
                                 <div key={task.id} style={{
-                                    background: "white", borderRadius: "14px",
-                                    boxShadow: "0 2px 14px rgba(0,0,0,0.06)",
+                                    background: "var(--card-bg)", borderRadius: "14px",
+                                    boxShadow: "var(--card-shadow)",
                                     overflow: "hidden", transition: "transform 0.15s, box-shadow 0.15s",
                                     border: task.status === "Overdue" ? "2px solid #fecaca" : dueSoon ? "2px solid #fde68a" : "2px solid transparent",
                                 }}

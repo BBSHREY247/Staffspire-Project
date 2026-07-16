@@ -474,3 +474,59 @@
     align-items: center;
     justify-content: center;
 }
+
+/* ═══════════════════════════════════════════
+   DARK MODE OVERRIDES
+   ═══════════════════════════════════════════ */
+[data-theme="dark"] .admin-command-center {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .dashboard-page-title h2 { color: var(--text-primary); }
+[data-theme="dark"] .dashboard-page-title p { color: var(--text-secondary); }
+
+[data-theme="dark"] .btn-generate-report {
+    background-color: var(--input-bg);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+[data-theme="dark"] .btn-generate-report:hover { background-color: var(--border-color); }
+
+[data-theme="dark"] .kpi-card {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    box-shadow: var(--card-shadow);
+}
+[data-theme="dark"] .kpi-card:hover { box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+[data-theme="dark"] .kpi-card-label { color: var(--text-secondary); }
+[data-theme="dark"] .kpi-card-value { color: var(--text-primary); }
+
+[data-theme="dark"] .bento-card {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    box-shadow: var(--card-shadow);
+}
+[data-theme="dark"] .bento-card-title h3 { color: var(--text-primary); }
+[data-theme="dark"] .bento-card-title p { color: var(--text-secondary); }
+[data-theme="dark"] .btn-more-options { color: var(--text-secondary); }
+[data-theme="dark"] .btn-more-options:hover { background-color: var(--input-bg); }
+
+[data-theme="dark"] .pending-table th {
+    color: var(--text-secondary);
+    border-bottom-color: var(--border-color);
+}
+[data-theme="dark"] .pending-table td {
+    border-bottom-color: var(--border-color);
+}
+[data-theme="dark"] .pending-table tbody tr:hover { background-color: rgba(79,125,240,0.06); }
+[data-theme="dark"] .employee-name-text { color: var(--text-primary); }
+[data-theme="dark"] .employee-email-text { color: var(--text-secondary); }
+[data-theme="dark"] .table-text-body { color: var(--text-primary); }
+[data-theme="dark"] .table-text-secondary { color: var(--text-secondary); }
+
+[data-theme="dark"] .activity-timeline { border-left-color: var(--border-color); }
+[data-theme="dark"] .activity-timeline-dot { border-color: var(--card-bg); }
+[data-theme="dark"] .activity-item-title { color: var(--text-primary); }
+[data-theme="dark"] .activity-item-message { color: var(--text-secondary); }
+[data-theme="dark"] .activity-item-time { color: var(--text-secondary); }
