@@ -78,15 +78,15 @@ function ChangePassword() {
                     width: "100%", 
                     maxWidth: "500px", 
                     padding: "36px", 
-                    background: "var(--card-bg)", 
+                    background: "white", 
                     borderRadius: "16px",
-                    boxShadow: "var(--card-shadow)",
-                    border: "1px solid var(--border-color)"
+                    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02)",
+                    border: "1px solid #e2e8f0"
                 }}>
                     <h2 style={{ 
                         marginBottom: "30px", 
                         fontWeight: "700", 
-                        color: "var(--text-primary)", 
+                        color: "#0f172a", 
                         display: "flex", 
                         alignItems: "center", 
                         gap: "10px",

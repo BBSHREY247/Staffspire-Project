@@ -1107,8 +1107,8 @@
 
 /* ── Image Styles for Bento Grid ─────────────────────────────── */
 .sl-bento-img {
-    width: 122%;
-    height: 80%;
+    width: 100%;
+    height: 100%;
     object-fit: fill;
     display: block;
 }

@@ -553,13 +553,13 @@ function EmployeeDetails() {
                 }}>
                     <div style={{
                         width: "100%", maxWidth: "400px", padding: "30px",
-                        borderRadius: "12px", background: "var(--card-bg)",
-                        boxShadow: "var(--card-shadow)", border: "1px solid var(--border-color)"
+                        borderRadius: "12px", background: "white",
+                        boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1)", border: "1px solid #e2e8f0"
                     }}>
-                        <h3 style={{ margin: "0 0 12px 0", fontWeight: "700", display: "flex", alignItems: "center", gap: "8px", color: "var(--text-primary)" }}>
+                        <h3 style={{ margin: "0 0 12px 0", fontWeight: "700", display: "flex", alignItems: "center", gap: "8px", color: "#1e293b" }}>
                             <FaLock style={{ color: "#4f46e5" }} /> Verify Admin Identity
                         </h3>
-                        <p style={{ margin: "0 0 16px 0", fontSize: "13.5px", color: "var(--text-secondary)", lineHeight: "1.5" }}>
+                        <p style={{ margin: "0 0 16px 0", fontSize: "13.5px", color: "#64748b", lineHeight: "1.5" }}>
                             Enter your administrator password to reveal this employee's credentials.
                         </p>
 

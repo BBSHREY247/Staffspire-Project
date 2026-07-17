@@ -147,7 +147,7 @@ function TaskDetail() {
                 {message && <div className={`alert-banner alert-${message.type}`} style={{ marginBottom: "20px" }}>{message.text}</div>}
 
                 {/* Hero header card */}
-                <div style={{ background: "var(--card-bg)", borderRadius: "16px", padding: "28px 32px", boxShadow: "0 2px 16px rgba(0,0,0,0.06)", marginBottom: "24px" }}>
+                <div style={{ background: "white", borderRadius: "16px", padding: "28px 32px", boxShadow: "0 2px 16px rgba(0,0,0,0.06)", marginBottom: "24px" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "16px" }}>
                         <div style={{ flex: 1 }}>
                             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
@@ -187,7 +187,7 @@ function TaskDetail() {
                         { icon: <FaCalendarAlt />, label: "Completed On", value: task.completion_date ? formatDate(task.completion_date) : "Not yet" },
                         { icon: <FaIdBadge />, label: "Employee ID", value: task.employee_id },
                     ].map(({ icon, label, value }) => (
-                        <div key={label} style={{ background: "var(--card-bg)", borderRadius: "12px", padding: "18px 20px", boxShadow: "0 2px 10px rgba(0,0,0,0.05)", display: "flex", gap: "14px", alignItems: "flex-start" }}>
+                        <div key={label} style={{ background: "white", borderRadius: "12px", padding: "18px 20px", boxShadow: "0 2px 10px rgba(0,0,0,0.05)", display: "flex", gap: "14px", alignItems: "flex-start" }}>
                             <span style={{ color: "#4f8cff", fontSize: "16px", marginTop: "2px", flexShrink: 0 }}>{icon}</span>
                             <div>
                                 <p style={{ margin: 0, fontSize: "11px", color: "#94a3b8", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.5px" }}>{label}</p>
@@ -199,7 +199,7 @@ function TaskDetail() {
 
                 {/* Description */}
                 {task.description && (
-                    <div style={{ background: "var(--card-bg)", borderRadius: "12px", padding: "22px 24px", boxShadow: "0 2px 10px rgba(0,0,0,0.05)", marginBottom: "20px" }}>
+                    <div style={{ background: "white", borderRadius: "12px", padding: "22px 24px", boxShadow: "0 2px 10px rgba(0,0,0,0.05)", marginBottom: "20px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
                             <FaStickyNote style={{ color: "#4f8cff" }} />
                             <h3 style={{ margin: 0, fontSize: "15px", fontWeight: "700", color: "#1e293b" }}>Description</h3>
@@ -212,7 +212,7 @@ function TaskDetail() {
 
                 {/* Remarks */}
                 {task.remarks && !editing && (
-                    <div style={{ background: "var(--card-bg)", borderRadius: "12px", padding: "22px 24px", boxShadow: "0 2px 10px rgba(0,0,0,0.05)", marginBottom: "20px", borderLeft: "4px solid #f59e0b" }}>
+                    <div style={{ background: "white", borderRadius: "12px", padding: "22px 24px", boxShadow: "0 2px 10px rgba(0,0,0,0.05)", marginBottom: "20px", borderLeft: "4px solid #f59e0b" }}>
                         <h3 style={{ margin: "0 0 10px", fontSize: "15px", fontWeight: "700", color: "#92400e" }}>Remarks / Completion Notes</h3>
                         <p style={{ margin: 0, color: "#475569", lineHeight: "1.8" }}>{task.remarks}</p>
                     </div>
@@ -220,7 +220,7 @@ function TaskDetail() {
 
                 {/* ─── ADMIN / MANAGER EDIT FORM ─── */}
                 {isAdminOrManager && editing && (
-                    <div style={{ background: "var(--card-bg)", borderRadius: "16px", padding: "28px", boxShadow: "0 2px 16px rgba(0,0,0,0.08)", marginBottom: "20px" }}>
+                    <div style={{ background: "white", borderRadius: "16px", padding: "28px", boxShadow: "0 2px 16px rgba(0,0,0,0.08)", marginBottom: "20px" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
                             <h2 style={{ margin: 0, fontWeight: "700", fontSize: "18px" }}>Edit Task</h2>
                             <button onClick={() => setEditing(false)}
@@ -299,7 +299,7 @@ function TaskDetail() {
 
                 {/* ─── EMPLOYEE UPDATE FORM ─── */}
                 {isEmployee && task.status !== "Completed" && (
-                    <div style={{ background: "var(--card-bg)", borderRadius: "16px", padding: "28px", boxShadow: "0 2px 16px rgba(0,0,0,0.08)" }}>
+                    <div style={{ background: "white", borderRadius: "16px", padding: "28px", boxShadow: "0 2px 16px rgba(0,0,0,0.08)" }}>
                         <h2 style={{ margin: "0 0 20px", fontWeight: "700", fontSize: "18px" }}>Update My Progress</h2>
                         <form onSubmit={handleEmployeeUpdate} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                             <div className="form-group" style={{ margin: 0 }}>

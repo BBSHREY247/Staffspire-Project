@@ -193,12 +193,12 @@ function AdminTaskList() {
                 {/* Stats Grid */}
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "16px", marginBottom: "28px" }}>
                     {statCards.map(({ label, value, icon, color, bg }) => (
-                        <div key={label} style={{ background: "var(--card-bg)", borderRadius: "14px", padding: "20px 18px", boxShadow: "var(--card-shadow)", display: "flex", flexDirection: "column", gap: "10px" }}>
+                        <div key={label} style={{ background: "white", borderRadius: "14px", padding: "20px 18px", boxShadow: "0 2px 12px rgba(0,0,0,0.06)", display: "flex", flexDirection: "column", gap: "10px" }}>
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <span style={{ fontSize: "13px", color: "var(--text-secondary)", fontWeight: "600" }}>{label}</span>
+                                <span style={{ fontSize: "13px", color: "#64748b", fontWeight: "600" }}>{label}</span>
                                 <span style={{ background: bg, color, padding: "6px", borderRadius: "8px", fontSize: "14px", display: "flex" }}>{icon}</span>
                             </div>
-                            <div style={{ fontSize: "28px", fontWeight: "800", color: "var(--text-primary)" }}>{value}</div>
+                            <div style={{ fontSize: "28px", fontWeight: "800", color: "#1e293b" }}>{value}</div>
                         </div>
                     ))}
                 </div>
@@ -269,17 +269,17 @@ function AdminTaskList() {
                                             <button
                                                 onClick={() => navigate(`/admin/tasks/${task.id}`)}
                                                 title="View / Edit"
-                                                style={{ background: "transparent", color: "#4f8cff", border: "1.5px solid #4f8cff", width: "34px", height: "34px", borderRadius: "8px", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}
+                                                style={{ background: "#eff6ff", color: "#4f8cff", border: "1.5px solid #bfdbfe", width: "34px", height: "34px", borderRadius: "8px", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}
                                                 onMouseEnter={e => { e.currentTarget.style.background = "#4f8cff"; e.currentTarget.style.color = "white"; }}
-                                                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#4f8cff"; }}
+                                                onMouseLeave={e => { e.currentTarget.style.background = "#eff6ff"; e.currentTarget.style.color = "#4f8cff"; }}
                                             ><FaEye /></button>
                                             <button
                                                 onClick={() => handleDeleteClick(task.id, task.task_title)}
                                                 title="Delete"
 
-                                                style={{ background: "transparent", color: "#ef4444", border: "1.5px solid #ef4444", width: "34px", height: "34px", borderRadius: "8px", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}
+                                                style={{ background: "#fff5f5", color: "#ef4444", border: "1.5px solid #fecaca", width: "34px", height: "34px", borderRadius: "8px", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}
                                                 onMouseEnter={e => { e.currentTarget.style.background = "#ef4444"; e.currentTarget.style.color = "white"; }}
-                                                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#ef4444"; }}
+                                                onMouseLeave={e => { e.currentTarget.style.background = "#fff5f5"; e.currentTarget.style.color = "#ef4444"; }}
                                             ><FaTrashAlt /></button>
                                         </div>
                                     </td>

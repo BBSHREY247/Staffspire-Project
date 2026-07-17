@@ -20,16 +20,6 @@ function Settings() {
     const [saveLoading, setSaveLoading] = useState(false);
     const [message, setMessage] = useState(null);
 
-    // Theme state
-    const [theme, setTheme] = useState(localStorage.getItem("dashboard-theme") || "light");
-
-    const handleThemeChange = (newTheme) => {
-        setTheme(newTheme);
-        localStorage.setItem("dashboard-theme", newTheme);
-        document.documentElement.setAttribute("data-theme", newTheme);
-        showNotification("success", `Theme changed to ${newTheme === "dark" ? "Dark" : "Light"} mode.`);
-    };
-
     const showNotification = (type, text) => {
         setMessage({ type, text });
         setTimeout(() => setMessage(null), 5000);
@@ -103,15 +93,15 @@ function Settings() {
                     width: "100%", 
                     maxWidth: "600px", 
                     padding: "36px", 
-                    background: "var(--card-bg)", 
+                    background: "white", 
                     borderRadius: "16px",
-                    boxShadow: "var(--card-shadow)",
-                    border: "1px solid var(--border-color)"
+                    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02)",
+                    border: "1px solid #e2e8f0"
                 }}>
                     <h2 style={{ 
                         marginBottom: "30px", 
                         fontWeight: "700", 
-                        color: "var(--text-primary)", 
+                        color: "#0f172a", 
                         display: "flex", 
                         alignItems: "center", 
                         gap: "10px",
@@ -130,14 +120,14 @@ function Settings() {
                                 justifyContent: "space-between",
                                 alignItems: "center", 
                                 padding: "20px", 
-                                background: "var(--input-bg)", 
-                                border: "1px solid var(--border-color)", 
+                                background: "#f8fafc", 
+                                border: "1px solid #e2e8f0", 
                                 borderRadius: "12px", 
                                 cursor: "pointer",
                                 transition: "all 0.2s ease"
                             }}
-                            onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.borderColor = "var(--primary)"; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.borderColor = "var(--border-color)"; }}
+                            onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.borderColor = "#cbd5e1"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.borderColor = "#e2e8f0"; }}
                         >
                             <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                                 <div style={{ 
@@ -154,8 +144,8 @@ function Settings() {
                                     <FaKey />
                                 </div>
                                 <div style={{ textAlign: "left" }}>
-                                    <h4 style={{ margin: 0, fontSize: "15px", fontWeight: "700", color: "var(--text-primary)" }}>Change Password</h4>
-                                    <p style={{ margin: "2px 0 0 0", fontSize: "12.5px", color: "var(--text-secondary)" }}>Update your password to keep your account secure.</p>
+                                    <h4 style={{ margin: 0, fontSize: "15px", fontWeight: "700", color: "#1e293b" }}>Change Password</h4>
+                                    <p style={{ margin: "2px 0 0 0", fontSize: "12.5px", color: "#64748b" }}>Update your password to keep your account secure.</p>
                                 </div>
                             </div>
                             <FaChevronRight style={{ color: "#94a3b8" }} />
@@ -168,8 +158,8 @@ function Settings() {
                                 justifyContent: "space-between",
                                 alignItems: "center", 
                                 padding: "20px", 
-                                background: "var(--input-bg)", 
-                                border: "1px solid var(--border-color)", 
+                                background: "#f8fafc", 
+                                border: "1px solid #e2e8f0", 
                                 borderRadius: "12px", 
                                 opacity: 0.6,
                                 cursor: "not-allowed"
@@ -190,24 +180,25 @@ function Settings() {
                                     <FaBell />
                                 </div>
                                 <div style={{ textAlign: "left" }}>
-                                    <h4 style={{ margin: 0, fontSize: "15px", fontWeight: "700", color: "var(--text-primary)" }}>Notifications</h4>
-                                    <p style={{ margin: "2px 0 0 0", fontSize: "12.5px", color: "var(--text-secondary)" }}>Configure email alert preferences.</p>
+                                    <h4 style={{ margin: 0, fontSize: "15px", fontWeight: "700", color: "#1e293b" }}>Notifications</h4>
+                                    <p style={{ margin: "2px 0 0 0", fontSize: "12.5px", color: "#64748b" }}>Configure email alert preferences.</p>
                                 </div>
                             </div>
-                            <span style={{ fontSize: "11px", fontWeight: "700", background: "var(--border-color)", color: "var(--text-secondary)", padding: "4px 8px", borderRadius: "12px" }}>Coming Soon</span>
+                            <span style={{ fontSize: "11px", fontWeight: "700", background: "#cbd5e1", color: "#475569", padding: "4px 8px", borderRadius: "12px" }}>Coming Soon</span>
                         </div>
 
-                        {/* Settings Item 3: Theme Toggle */}
+                        {/* Settings Item 3: Theme (Mock) */}
                         <div 
                             style={{ 
                                 display: "flex", 
                                 justifyContent: "space-between",
                                 alignItems: "center", 
                                 padding: "20px", 
-                                background: "var(--input-bg)", 
-                                border: "1px solid var(--border-color)", 
+                                background: "#f8fafc", 
+                                border: "1px solid #e2e8f0", 
                                 borderRadius: "12px", 
-                                transition: "all 0.2s ease"
+                                opacity: 0.6,
+                                cursor: "not-allowed"
                             }}
                         >
                             <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
@@ -225,28 +216,11 @@ function Settings() {
                                     <FaPalette />
                                 </div>
                                 <div style={{ textAlign: "left" }}>
-                                    <h4 style={{ margin: 0, fontSize: "15px", fontWeight: "700", color: "var(--text-primary)" }}>Theme</h4>
-                                    <p style={{ margin: "2px 0 0 0", fontSize: "12.5px", color: "var(--text-secondary)" }}>Choose between Light and Dark Mode dashboard themes.</p>
+                                    <h4 style={{ margin: 0, fontSize: "15px", fontWeight: "700", color: "#1e293b" }}>Theme</h4>
+                                    <p style={{ margin: "2px 0 0 0", fontSize: "12.5px", color: "#64748b" }}>Toggle light mode and dark mode preferences.</p>
                                 </div>
                             </div>
-                            <select 
-                                value={theme} 
-                                onChange={(e) => handleThemeChange(e.target.value)}
-                                style={{
-                                    padding: "8px 12px",
-                                    borderRadius: "8px",
-                                    border: "1px solid var(--border-color)",
-                                    background: "var(--card-bg)",
-                                    color: "var(--text-primary)",
-                                    fontWeight: "600",
-                                    fontSize: "13px",
-                                    outline: "none",
-                                    cursor: "pointer"
-                                }}
-                            >
-                                <option value="light">Light Mode</option>
-                                <option value="dark">Dark Mode</option>
-                            </select>
+                            <span style={{ fontSize: "11px", fontWeight: "700", background: "#cbd5e1", color: "#475569", padding: "4px 8px", borderRadius: "12px" }}>Coming Soon</span>
                         </div>
 
                     </div>

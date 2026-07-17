@@ -114,7 +114,7 @@ function LeaveRequestDetail() {
                     <>
                         {/* Header card */}
                         <div style={{
-                            background: "var(--card-bg)", borderRadius: "16px", padding: "32px",
+                            background: "white", borderRadius: "16px", padding: "32px",
                             boxShadow: "0 2px 16px rgba(0,0,0,0.06)", marginBottom: "24px",
                             display: "flex", alignItems: "center", justifyContent: "space-between",
                             flexWrap: "wrap", gap: "20px"
@@ -158,7 +158,7 @@ function LeaveRequestDetail() {
                                 { icon: <FaCalendarAlt />, label: "Applied On", value: formatDate(request.created_at) },
                             ].map(({ icon, label, value }) => (
                                 <div key={label} style={{
-                                    background: "var(--card-bg)", borderRadius: "12px", padding: "20px 24px",
+                                    background: "white", borderRadius: "12px", padding: "20px 24px",
                                     boxShadow: "0 2px 12px rgba(0,0,0,0.05)", display: "flex", gap: "16px", alignItems: "flex-start"
                                 }}>
                                     <span style={{ color: "#4f8cff", fontSize: "18px", marginTop: "2px", flexShrink: 0 }}>{icon}</span>
@@ -172,7 +172,7 @@ function LeaveRequestDetail() {
 
                         {/* Reason card */}
                         <div style={{
-                            background: "var(--card-bg)", borderRadius: "12px", padding: "24px",
+                            background: "white", borderRadius: "12px", padding: "24px",
                             boxShadow: "0 2px 12px rgba(0,0,0,0.05)", marginBottom: "24px"
                         }}>
                             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
