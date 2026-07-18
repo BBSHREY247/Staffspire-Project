@@ -341,6 +341,46 @@ const updateEmployee = async (req, res) => {
             const isNewRoleManager = userRole === "Manager" || (userRole === undefined && currentUserRoleId === 2);
             const targetDept = department !== undefined ? department : employee.department;
 
+            if (targetDept !== employee.department) {
+                const { taskAction, reassignTo } = req.body;
+                
+                const [activeTasks] = await db.promise().query(
+                    `SELECT COUNT(*) as count FROM tasks WHERE employee_id = ? AND status NOT IN ('Completed', 'Cancelled')`,
+                    [employee.employee_id]
+                );
+                const activeCount = activeTasks[0].count;
+
+                const [completedTasks] = await db.promise().query(
+                    `SELECT COUNT(*) as count FROM tasks WHERE employee_id = ? AND status = 'Completed'`,
+                    [employee.employee_id]
+                );
+                const completedCount = completedTasks[0].count;
+
+                if (activeCount > 0) {
+                    if (!taskAction) {
+                        return res.status(409).json({
+                            success: false,
+                            requireTaskAction: true,
+                            employee: `${employee.first_name} ${employee.last_name}`,
+                            oldDepartment: employee.department,
+                            newDepartment: targetDept,
+                            activeTasks: activeCount,
+                            completedTasks: completedCount
+                        });
+                    }
+
+                    if (taskAction === "reassign") {
+                        if (!reassignTo) {
+                            return res.status(400).json({ success: false, message: "Please select an employee to reassign tasks to." });
+                        }
+                        await db.promise().query(
+                            `UPDATE tasks SET employee_id = ? WHERE employee_id = ? AND status NOT IN ('Completed', 'Cancelled')`,
+                            [reassignTo, employee.employee_id]
+                        );
+                    }
+                }
+            }
+
             if (isNewRoleManager) {
                 // Find if another employee is already a manager in the target department
                 const [managers] = await db.promise().query(

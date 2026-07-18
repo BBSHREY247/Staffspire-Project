@@ -20,6 +20,11 @@ function EmployeeDetails() {
     const [alertType, setAlertType] = useState("error");
     const [isSaving, setIsSaving] = useState(false);
     const [pwPromptAlert, setPwPromptAlert] = useState("");
+    const [showTaskTransferModal, setShowTaskTransferModal] = useState(false);
+    const [taskTransferData, setTaskTransferData] = useState(null);
+    const [taskAction, setTaskAction] = useState("keep");
+    const [reassignTo, setReassignTo] = useState("");
+    const [departmentEmployees, setDepartmentEmployees] = useState([]);
     const navigate = useNavigate();
 
     const loggedInUser = JSON.parse(localStorage.getItem("user")) || {};
@@ -93,16 +98,28 @@ function EmployeeDetails() {
         }
     };
 
-    const handleUpdate = async () => {
+    const handleUpdate = async (actionData = null) => {
         setIsSaving(true);
         try {
             const token = localStorage.getItem("token");
 
+            const payload = { ...employee };
+            if (actionData) {
+                payload.taskAction = actionData.taskAction;
+                if (actionData.reassignTo) {
+                    payload.reassignTo = actionData.reassignTo;
+                }
+            }
+
             const response = await axios.put(
                 `http://localhost:5000/api/employees/${id}`,
-                employee,
+                payload,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
+
+            if (showTaskTransferModal) {
+                setShowTaskTransferModal(false);
+            }
 
             showAlert(response.data.message || "Employee updated successfully.", "success");
             setEditing(false);
@@ -110,7 +127,25 @@ function EmployeeDetails() {
             await fetchEmployee();
         } catch (error) {
             console.error("[Update] Error:", error.response?.data || error.message);
-            showAlert(error.response?.data?.message || "Failed to update employee details.", "error");
+            if (error.response?.status === 409 && error.response?.data?.requireTaskAction) {
+                setTaskTransferData(error.response.data);
+                
+                // Fetch employees for reassignment dropdown
+                const token = localStorage.getItem("token");
+                axios.get("http://localhost:5000/api/employees", { headers: { Authorization: `Bearer ${token}` } })
+                    .then(res => {
+                        const emps = res.data.employees || [];
+                        const filtered = emps.filter(e => e.department === error.response.data.oldDepartment && e.id !== parseInt(id));
+                        setDepartmentEmployees(filtered);
+                        if (filtered.length > 0) {
+                            setReassignTo(filtered[0].employee_id);
+                        }
+                    }).catch(err => console.log(err));
+
+                setShowTaskTransferModal(true);
+            } else {
+                showAlert(error.response?.data?.message || "Failed to update employee details.", "error");
+            }
         } finally {
             setIsSaving(false);
         }
@@ -614,6 +649,84 @@ function EmployeeDetails() {
                 cancelText="Cancel"
                 type="danger"
             />
+            {showTaskTransferModal && taskTransferData && (
+                <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0,0,0,0.5)", zIndex: 1000, display: "flex", justifyContent: "center", alignItems: "center", padding: "20px" }}>
+                    <div style={{ width: "100%", maxWidth: "500px", padding: "0", borderRadius: "16px", background: "white", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)", border: "1px solid #e2e8f0", overflow: "hidden" }}>
+                        
+                        <div style={{ background: "#f8fafc", padding: "20px 24px", borderBottom: "1px solid #e2e8f0" }}>
+                            <h3 style={{ margin: 0, fontWeight: "700", fontSize: "18px", color: "#0f172a" }}>Employee Transfer</h3>
+                            <p style={{ margin: "6px 0 0", color: "#64748b", fontSize: "14px" }}>{taskTransferData.employee}</p>
+                        </div>
+
+                        <div style={{ padding: "24px" }}>
+                            <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
+                                <div style={{ flex: 1, padding: "12px", background: "#f1f5f9", borderRadius: "8px" }}>
+                                    <div style={{ fontSize: "12px", color: "#64748b", fontWeight: "600", textTransform: "uppercase" }}>Current Dept</div>
+                                    <div style={{ fontSize: "15px", fontWeight: "700", color: "#334155", marginTop: "4px" }}>{taskTransferData.oldDepartment}</div>
+                                </div>
+                                <div style={{ display: "flex", alignItems: "center", color: "#94a3b8" }}>➔</div>
+                                <div style={{ flex: 1, padding: "12px", background: "#eff6ff", borderRadius: "8px" }}>
+                                    <div style={{ fontSize: "12px", color: "#3b82f6", fontWeight: "600", textTransform: "uppercase" }}>New Dept</div>
+                                    <div style={{ fontSize: "15px", fontWeight: "700", color: "#1d4ed8", marginTop: "4px" }}>{taskTransferData.newDepartment}</div>
+                                </div>
+                            </div>
+
+                            <hr style={{ border: "none", borderTop: "1px dashed #cbd5e1", margin: "0 0 20px" }} />
+
+                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
+                                <div>
+                                    <span style={{ fontSize: "14px", color: "#475569" }}>Active Tasks:</span>
+                                    <span style={{ marginLeft: "8px", fontWeight: "700", fontSize: "15px", color: "#0f172a" }}>{taskTransferData.activeTasks}</span>
+                                </div>
+                                <div>
+                                    <span style={{ fontSize: "14px", color: "#475569" }}>Completed Tasks:</span>
+                                    <span style={{ marginLeft: "8px", fontWeight: "700", fontSize: "15px", color: "#0f172a" }}>{taskTransferData.completedTasks}</span>
+                                </div>
+                            </div>
+
+                            <hr style={{ border: "none", borderTop: "1px dashed #cbd5e1", margin: "0 0 24px" }} />
+
+                            <h4 style={{ margin: "0 0 16px", fontSize: "15px", color: "#1e293b", fontWeight: "600" }}>Choose how to handle active tasks</h4>
+
+                            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                                <label style={{ display: "flex", alignItems: "flex-start", gap: "12px", cursor: "pointer", padding: "12px", border: `1.5px solid ${taskAction === "keep" ? "#3b82f6" : "#e2e8f0"}`, borderRadius: "8px", background: taskAction === "keep" ? "#eff6ff" : "transparent" }}>
+                                    <input type="radio" name="taskAction" value="keep" checked={taskAction === "keep"} onChange={() => setTaskAction("keep")} style={{ marginTop: "3px" }} />
+                                    <div>
+                                        <div style={{ fontWeight: "600", color: "#0f172a", fontSize: "14px" }}>Keep assigned to {taskTransferData.employee.split(" ")[0]}</div>
+                                        <div style={{ fontSize: "13px", color: "#64748b", marginTop: "2px" }}>Tasks will remain owned by {taskTransferData.oldDepartment} but {taskTransferData.employee.split(" ")[0]} continues working on them.</div>
+                                    </div>
+                                </label>
+                                
+                                <label style={{ display: "flex", alignItems: "flex-start", gap: "12px", cursor: "pointer", padding: "12px", border: `1.5px solid ${taskAction === "reassign" ? "#3b82f6" : "#e2e8f0"}`, borderRadius: "8px", background: taskAction === "reassign" ? "#eff6ff" : "transparent" }}>
+                                    <input type="radio" name="taskAction" value="reassign" checked={taskAction === "reassign"} onChange={() => setTaskAction("reassign")} style={{ marginTop: "3px" }} />
+                                    <div style={{ width: "100%" }}>
+                                        <div style={{ fontWeight: "600", color: "#0f172a", fontSize: "14px" }}>Reassign active tasks</div>
+                                        {taskAction === "reassign" && (
+                                            <div style={{ marginTop: "12px" }}>
+                                                <select value={reassignTo} onChange={e => setReassignTo(e.target.value)} style={{ width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid #cbd5e1", fontSize: "14px", outline: "none" }}>
+                                                    <option value="" disabled>Select Employee</option>
+                                                    {departmentEmployees.map(e => (
+                                                        <option key={e.employee_id} value={e.employee_id}>{e.first_name} {e.last_name} ({e.employee_id})</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        )}
+                                    </div>
+                                </label>
+                            </div>
+
+                        </div>
+
+                        <div style={{ background: "#f8fafc", padding: "16px 24px", borderTop: "1px solid #e2e8f0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <button type="button" onClick={() => setShowTaskTransferModal(false)} style={{ background: "transparent", border: "none", color: "#64748b", fontWeight: "600", fontSize: "14px", cursor: "pointer", padding: "8px 12px", borderRadius: "6px" }} onMouseEnter={e => e.currentTarget.style.background="#f1f5f9"} onMouseLeave={e => e.currentTarget.style.background="transparent"}>Cancel Transfer</button>
+                            <button type="button" disabled={isSaving || (taskAction === "reassign" && !reassignTo)} onClick={() => handleUpdate({ taskAction, reassignTo })} style={{ background: "#4f46e5", color: "white", border: "none", padding: "10px 20px", borderRadius: "8px", fontWeight: "600", fontSize: "14px", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "8px", opacity: isSaving || (taskAction === "reassign" && !reassignTo) ? 0.7 : 1 }}>
+                                {isSaving ? "Saving..." : "Confirm Transfer"}
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            )}
         </DashboardLayout>
     );
 }
