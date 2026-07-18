@@ -244,7 +244,7 @@ function EmployeeDashboard() {
                                                 <td>
                                                     <div
                                                         className="emp-task-name"
-                                                        onClick={() => navigate("/employee/tasks")}
+                                                        onClick={() => navigate(`/employee/tasks/${task.id}`)}
                                                     >
                                                         {task.title}
                                                     </div>
@@ -263,7 +263,7 @@ function EmployeeDashboard() {
                                                 <td>
                                                     <button
                                                         className="emp-task-action-btn"
-                                                        onClick={() => navigate("/employee/tasks")}
+                                                        onClick={() => navigate(`/employee/tasks/${task.id}`)}
                                                         title="View task"
                                                     >
                                                         <FaEllipsisV size={14} />

@@ -23,6 +23,32 @@ const statusConfig = {
     "Overdue":     { color: "#7f1d1d", bg: "#fee2e2", border: "#fecaca", icon: "❌" },
 };
 
+function StatusBadge({ status }) {
+    const cfg = statusConfig[status] || statusConfig["Pending"];
+    return (
+        <span style={{
+            background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}`,
+            padding: "4px 10px", borderRadius: "20px", fontSize: "12px", fontWeight: "700",
+            whiteSpace: "nowrap"
+        }}>
+            {cfg.icon} {status}
+        </span>
+    );
+}
+
+function PriorityBadge({ priority }) {
+    const cfg = priorityConfig[priority] || priorityConfig["Medium"];
+    return (
+        <span style={{
+            background: cfg.bg, color: cfg.color,
+            padding: "3px 9px", borderRadius: "20px", fontSize: "12px", fontWeight: "700",
+            whiteSpace: "nowrap"
+        }}>
+            {cfg.dot} {priority}
+        </span>
+    );
+}
+
 function MyTasks() {
     const navigate = useNavigate();
     const [tasks, setTasks] = useState([]);
@@ -142,79 +168,49 @@ function MyTasks() {
                         <p style={{ color: "#64748b", fontWeight: "600", fontSize: "16px" }}>No tasks in this category.</p>
                     </div>
                 ) : (
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "18px" }}>
-                        {tasks.map(task => {
-                            const priCfg = priorityConfig[task.priority] || priorityConfig["Medium"];
-                            const stsCfg = statusConfig[task.status] || statusConfig["Pending"];
-                            const dueSoon = isDueSoon(task.deadline);
-
-                            return (
-                                <div key={task.id} style={{
-                                    background: "white", borderRadius: "14px",
-                                    boxShadow: "0 2px 14px rgba(0,0,0,0.06)",
-                                    overflow: "hidden", transition: "transform 0.15s, box-shadow 0.15s",
-                                    border: task.status === "Overdue" ? "2px solid #fecaca" : dueSoon ? "2px solid #fde68a" : "2px solid transparent",
-                                }}
-                                    onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.10)"; }}
-                                    onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "0 2px 14px rgba(0,0,0,0.06)"; }}>
-
-                                    {/* Card top bar */}
-                                    <div style={{ height: "4px", background: priCfg.color }} />
-
-                                    <div style={{ padding: "20px" }}>
-                                        {/* Priority + Status row */}
-                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", flexWrap: "wrap", gap: "6px" }}>
-                                            <span style={{ background: priCfg.bg, color: priCfg.color, padding: "3px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "700", whiteSpace: "nowrap" }}>
-                                                {priCfg.dot} {task.priority}
-                                            </span>
-                                            <span style={{ background: stsCfg.bg, color: stsCfg.color, border: `1px solid ${stsCfg.border}`, padding: "3px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "700" }}>
-                                                {stsCfg.icon} {task.status}
-                                            </span>
-                                        </div>
-
-                                        {/* Task ID + Title */}
-                                        <div style={{ marginBottom: "10px" }}>
-                                            <span style={{ fontFamily: "monospace", fontSize: "11px", color: "#4f8cff", fontWeight: "700" }}>{task.task_id || `#${task.id}`}</span>
-                                            <h3 style={{ margin: "4px 0 0", fontSize: "16px", fontWeight: "700", color: "#1e293b", lineHeight: "1.4" }}>
+                    <div className="table-container-custom">
+                        <table className="employee-table">
+                            <thead>
+                                <tr>
+                                    <th>Task ID</th>
+                                    <th>Title</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Due Date</th>
+                                    <th>Assigned By</th>
+                                    <th style={{ textAlign: "center" }}>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {tasks.map(task => (
+                                    <tr key={task.id}>
+                                        <td><span style={{ fontFamily: "monospace", fontWeight: "700", color: "#4f8cff", fontSize: "13px" }}>{task.task_id || `#${task.id}`}</span></td>
+                                        <td style={{ maxWidth: "200px" }}>
+                                            <span style={{ fontWeight: "600", color: "#1e293b", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                                                 {task.task_title}
-                                            </h3>
-                                        </div>
-
-                                        {/* Description snippet */}
-                                        {task.description && (
-                                            <p style={{ margin: "0 0 14px", fontSize: "13px", color: "#64748b", lineHeight: "1.6", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                                                {task.description}
-                                            </p>
-                                        )}
-
-                                        {/* Meta */}
-                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #f1f5f9", paddingTop: "12px", marginTop: "4px" }}>
-                                            <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: task.status === "Overdue" ? "#ef4444" : dueSoon ? "#d97706" : "#64748b", fontWeight: dueSoon || task.status === "Overdue" ? "700" : "500" }}>
-                                                <FaCalendarAlt style={{ fontSize: "11px" }} />
-                                                {formatDate(task.deadline)}
+                                            </span>
+                                        </td>
+                                        <td><PriorityBadge priority={task.priority} /></td>
+                                        <td><StatusBadge status={task.status} /></td>
+                                        <td style={{ whiteSpace: "nowrap", color: task.status === "Overdue" ? "#ef4444" : "#475569", fontWeight: task.status === "Overdue" ? "700" : "500" }}>
+                                            {formatDate(task.deadline)}
+                                        </td>
+                                        <td style={{ fontSize: "13px", color: "#64748b" }}>{task.assigned_by || "—"}</td>
+                                        <td style={{ textAlign: "center" }}>
+                                            <div style={{ display: "flex", gap: "6px", justifyContent: "center" }}>
+                                                <button
+                                                    onClick={() => navigate(`/employee/tasks/${task.id}`)}
+                                                    title="View / Edit"
+                                                    style={{ background: "#eff6ff", color: "#4f8cff", border: "1.5px solid #bfdbfe", width: "34px", height: "34px", borderRadius: "8px", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}
+                                                    onMouseEnter={e => { e.currentTarget.style.background = "#4f8cff"; e.currentTarget.style.color = "white"; }}
+                                                    onMouseLeave={e => { e.currentTarget.style.background = "#eff6ff"; e.currentTarget.style.color = "#4f8cff"; }}
+                                                ><FaEye /></button>
                                             </div>
-                                            <div style={{ fontSize: "12px", color: "#94a3b8" }}>
-                                                By: {task.assigned_by || "Admin"}
-                                            </div>
-                                        </div>
-
-                                        {/* View button */}
-                                        <button onClick={() => navigate(`/employee/tasks/${task.id}`)}
-                                            style={{
-                                                marginTop: "14px", width: "100%",
-                                                display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-                                                background: "#eff6ff", color: "#4f8cff", border: "1.5px solid #bfdbfe",
-                                                padding: "9px", borderRadius: "8px", cursor: "pointer",
-                                                fontWeight: "600", fontSize: "13px", transition: "all 0.15s"
-                                            }}
-                                            onMouseEnter={e => { e.currentTarget.style.background = "#4f8cff"; e.currentTarget.style.color = "white"; }}
-                                            onMouseLeave={e => { e.currentTarget.style.background = "#eff6ff"; e.currentTarget.style.color = "#4f8cff"; }}>
-                                            <FaEye /> View & Update
-                                        </button>
-                                    </div>
-                                </div>
-                            );
-                        })}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 )}
             </div>
