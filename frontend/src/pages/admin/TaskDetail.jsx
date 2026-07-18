@@ -101,6 +101,7 @@ function TaskDetail() {
             setActionLoading(true);
             await axios.put(`${API}/tasks/${id}`, { status: empStatus, remarks: empRemarks }, { headers });
             showNotification("success", "Task updated successfully.");
+            setEditing(false);
             fetchTask();
         } catch (err) {
             showNotification("error", err.response?.data?.message || "Update failed.");
@@ -165,7 +166,7 @@ function TaskDetail() {
                             <span style={{ background: stsCfg.bg, color: stsCfg.color, border: `1.5px solid ${stsCfg.border}`, padding: "8px 20px", borderRadius: "30px", fontWeight: "700", fontSize: "14px" }}>
                                 {task.status}
                             </span>
-                            {isAdminOrManager && !editing && (
+                            {(!editing && (isAdminOrManager || (isEmployee && task.status !== "Completed"))) && (
                                 <button onClick={() => setEditing(true)}
                                     style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "#4f8cff", color: "white", border: "none", padding: "10px 18px", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "13px" }}>
                                     <FaEdit /> Edit Task
@@ -298,9 +299,15 @@ function TaskDetail() {
                 )}
 
                 {/* ─── EMPLOYEE UPDATE FORM ─── */}
-                {isEmployee && task.status !== "Completed" && (
-                    <div style={{ background: "white", borderRadius: "16px", padding: "28px", boxShadow: "0 2px 16px rgba(0,0,0,0.08)" }}>
-                        <h2 style={{ margin: "0 0 20px", fontWeight: "700", fontSize: "18px" }}>Update My Progress</h2>
+                {isEmployee && editing && task.status !== "Completed" && (
+                    <div style={{ background: "white", borderRadius: "16px", padding: "28px", boxShadow: "0 2px 16px rgba(0,0,0,0.08)", marginBottom: "20px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+                            <h2 style={{ margin: 0, fontWeight: "700", fontSize: "18px" }}>Edit Task</h2>
+                            <button onClick={() => setEditing(false)}
+                                style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", fontSize: "18px" }}>
+                                <FaTimes />
+                            </button>
+                        </div>
                         <form onSubmit={handleEmployeeUpdate} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                             <div className="form-group" style={{ margin: 0 }}>
                                 <label>Update Status</label>
@@ -316,10 +323,16 @@ function TaskDetail() {
                                     rows="4"
                                     style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", resize: "none", fontSize: "14px" }} />
                             </div>
-                            <button type="submit" disabled={actionLoading}
-                                style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#22c55e", color: "white", border: "none", padding: "13px 28px", borderRadius: "10px", cursor: "pointer", fontWeight: "700", fontSize: "15px", width: "fit-content", opacity: actionLoading ? 0.6 : 1 }}>
-                                <FaCheck /> {actionLoading ? "Saving..." : "Update Task"}
-                            </button>
+                            <div style={{ display: "flex", gap: "12px" }}>
+                                <button type="submit" disabled={actionLoading}
+                                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#4f8cff", color: "white", border: "none", padding: "13px 28px", borderRadius: "10px", cursor: "pointer", fontWeight: "700", fontSize: "15px", opacity: actionLoading ? 0.6 : 1 }}>
+                                    <FaCheck /> {actionLoading ? "Saving..." : "Save Changes"}
+                                </button>
+                                <button type="button" onClick={() => setEditing(false)}
+                                    style={{ background: "#f1f5f9", color: "#475569", border: "none", padding: "13px 24px", borderRadius: "10px", cursor: "pointer", fontWeight: "600" }}>
+                                    Cancel
+                                </button>
+                            </div>
                         </form>
                     </div>
                 )}
