@@ -62,7 +62,7 @@ function Sidebar() {
         { name: "Team Leaves", path: "/admin/leaves", icon: <FaClipboardList /> },
         { name: "Tasks", path: "/admin/tasks", icon: <FaTasks /> },
         { name: "Reports", path: "/reports", icon: <FaChartBar /> },
-        { name: "Change Password", path: "/change-password", icon: <FaCog /> },
+        { name: "Settings", path: "/settings", icon: <FaCog /> },
     ];
 
 

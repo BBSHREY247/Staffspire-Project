@@ -100,6 +100,14 @@ function MyProfile() {
                         <span style={{ color: "#191b23", fontWeight: 600 }}>Profile Details</span>
                     </nav>
                     <div style={{ display: "flex", gap: "12px" }}>
+                        <button 
+                            className="profile-btn-print" 
+                            onClick={() => navigate('/change-password')}
+                            style={{ backgroundColor: "#4f46e5", color: "white", border: "none" }}
+                        >
+                            <span className="material-symbols-outlined" style={{ fontSize: "20px", color: "white" }}>lock</span>
+                            Change Password
+                        </button>
                         <button className="profile-btn-print" onClick={() => window.print()}>
                             <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>print</span>
                             Print
