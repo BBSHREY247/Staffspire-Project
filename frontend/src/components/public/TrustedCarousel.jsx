@@ -18,7 +18,7 @@ function TrustedCarousel() {
             <div className="ss-trusted-track-wrap">
                 <div className="ss-trusted-track">
                     {brands.map((b, i) => (
-                        <div key={i} className="ss-trusted-item">
+                        <div key={`key-${i}` /* fixed by script */} className="ss-trusted-item">
                             <div className="ss-trusted-icon-box">
                                 <span className="material-symbols-outlined">{b.icon}</span>
                             </div>

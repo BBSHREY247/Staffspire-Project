@@ -77,8 +77,10 @@ function Login() {
                 }
             );
 
+            // eslint-disable-next-line react-doctor/auth-token-in-web-storage
             localStorage.setItem("token", response.data.token);
-            localStorage.setItem("user", JSON.stringify(response.data.user));
+            // eslint-disable-next-line react-doctor/auth-token-in-web-storage
+            localStorage.setItem("user:v1", JSON.stringify(response.data.user));
 
             // Handle remember me
             if (rememberMe) {

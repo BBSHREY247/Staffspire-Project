@@ -3,7 +3,7 @@ import axios from "axios";
 
 function ExportButtons({ reportType, filters, onPrint }) {
     const [loadingType, setLoadingType] = useState(null);
-    const user = JSON.parse(localStorage.getItem("user")) || {};
+    const user = JSON.parse(localStorage.getItem("user:v1")) || {};
     const role = user.role || "Employee";
 
     const handleExport = async (format) => {
@@ -39,7 +39,7 @@ function ExportButtons({ reportType, filters, onPrint }) {
     if (role === "Employee") {
         return (
             <div className="export-buttons-group">
-                <button onClick={onPrint} className="btn-export-action">
+                <button type="button" onClick={onPrint} className="btn-export-action">
                     <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>print</span> Print Report
                 </button>
             </div>
@@ -55,7 +55,7 @@ function ExportButtons({ reportType, filters, onPrint }) {
     return (
         <div className="export-buttons-group">
             {exportBtns.map(({ format, label, icon }) => (
-                <button
+                <button type="button"
                     key={format}
                     disabled={loadingType !== null}
                     onClick={() => handleExport(format)}
@@ -69,7 +69,7 @@ function ExportButtons({ reportType, filters, onPrint }) {
                     {label}
                 </button>
             ))}
-            <button onClick={onPrint} className="btn-export-action">
+            <button type="button" onClick={onPrint} className="btn-export-action">
                 <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>print</span> Print
             </button>
         </div>

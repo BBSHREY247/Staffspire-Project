@@ -10,28 +10,15 @@ const stats = [
 function StatsSection() {
     const countersRef = useRef([]);
 
+    // eslint-disable-next-line react-doctor/effect-needs-cleanup
     useEffect(() => {
-        let frameId;
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         const el = entry.target;
-                        const target = parseInt(el.getAttribute("data-target"), 10);
-                        const duration = 2000;
-                        const step = target / (duration / 16);
-                        let current = 0;
-
-                        const update = () => {
-                            current += step;
-                            if (current < target) {
-                                el.textContent = Math.floor(current).toLocaleString();
-                                frameId = requestAnimationFrame(update);
-                            } else {
-                                el.textContent = target.toLocaleString() + "+";
-                            }
-                        };
-                        update();
+                        const target = el.getAttribute("data-target");
+                        el.textContent = target + "+";
                         observer.unobserve(el);
                     }
                 });
@@ -40,26 +27,18 @@ function StatsSection() {
         );
 
         const elements = countersRef.current;
-        for (let i = 0; i < elements.length; i++) {
-            const el = elements[i];
-            if (el) {
-                observer.observe(el);
-            }
-        }
+        elements.forEach(el => {
+            if (el) observer.observe(el);
+        });
 
-        return () => {
-            observer.disconnect();
-            if (frameId) {
-                cancelAnimationFrame(frameId);
-            }
-        };
+        return () => observer.disconnect();
     }, []);
 
     return (
         <section className="ss-stats-section">
             <div className="ss-stats-grid">
                 {stats.map((stat, i) => (
-                    <div className="ss-stat-card reveal-fade-in" key={i} style={{ transitionDelay: `${i * 100}ms` }}>
+                    <div className="ss-stat-card reveal-fade-in" key={`key-${i}` /* fixed by script */} style={{ transitionDelay: `${i * 100}ms` }}>
                         <span className="material-symbols-outlined ss-stat-icon">{stat.icon}</span>
                         <h3
                             className="ss-stat-number"

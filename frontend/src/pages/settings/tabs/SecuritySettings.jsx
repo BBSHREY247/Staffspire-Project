@@ -78,10 +78,10 @@ const SecuritySettings = ({ data, onChange }) => {
 
             <SettingsCard title="Monitoring" description="Audit logs and active sessions.">
                 <SettingRow label="Active Sessions" description="View currently logged in users.">
-                    <button style={buttonStyle}>View Sessions</button>
+                    <button type="button" style={buttonStyle}>View Sessions</button>
                 </SettingRow>
                 <SettingRow label="Audit Logs" description="Download security logs.">
-                    <button style={buttonStyle}>Download Logs</button>
+                    <button type="button" style={buttonStyle}>Download Logs</button>
                 </SettingRow>
             </SettingsCard>
         </div>

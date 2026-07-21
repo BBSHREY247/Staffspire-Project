@@ -27,8 +27,8 @@ function Solutions() {
                         global enterprises. StaffSpire bridges the gap between potential and performance.
                     </p>
                     <div className="sl-hero-btns">
-                        <button className="sl-btn-primary">Start Your Transformation</button>
-                        <button className="sl-btn-secondary">
+                        <button type="button" className="sl-btn-primary">Start Your Transformation</button>
+                        <button type="button" className="sl-btn-secondary">
                             <span className="material-symbols-outlined">play_circle</span>
                             Watch Demo
                         </button>
@@ -94,7 +94,7 @@ function Solutions() {
                                     <span className="sl-tag">Accuracy</span>
                                     <span className="sl-tag">Growth</span>
                                 </div>
-                                <button className="sl-learn-more">
+                                <button type="button" className="sl-learn-more">
                                     Learn More
                                     <span className="material-symbols-outlined sl-arrow">arrow_forward</span>
                                 </button>
@@ -134,7 +134,7 @@ function Solutions() {
                                 </div>
                             </div>
 
-                            <button className="sl-btn-outline sl-mt-auto">Explore Enterprise</button>
+                            <button type="button" className="sl-btn-outline sl-mt-auto">Explore Enterprise</button>
                         </div>
 
                         {/* 3. Educational Institutions — full width */}
@@ -162,7 +162,7 @@ function Solutions() {
                                             <span className="sl-stat-label">Reduced Admin Time</span>
                                         </div>
                                     </div>
-                                    <button className="sl-btn-primary sl-btn-sm">View Education Package</button>
+                                    <button type="button" className="sl-btn-primary sl-btn-sm">View Education Package</button>
                                 </div>
 
                                 {/* Photo panel */}
@@ -208,7 +208,7 @@ function Solutions() {
                                 </li>
                             </ul>
 
-                            <button className="sl-btn-dark sl-mt-auto">Connect with Sales</button>
+                            <button type="button" className="sl-btn-dark sl-mt-auto">Connect with Sales</button>
                         </div>
 
                         {/* 5. Healthcare — 6/12 */}
@@ -251,7 +251,7 @@ function Solutions() {
                                 </li>
                             </ul>
 
-                            <button className="sl-btn-outline sl-mt-auto">Download Healthcare Whitepaper</button>
+                            <button type="button" className="sl-btn-outline sl-mt-auto">Download Healthcare Whitepaper</button>
                         </div>
 
                     </div>
@@ -358,8 +358,8 @@ function Solutions() {
                             Join thousands of organizations using StaffSpire to unlock their full human potential.
                         </p>
                         <div className="sl-cta-btns">
-                            <button className="sl-btn-primary sl-btn-lg">Schedule a Strategic Call</button>
-                            <button className="sl-btn-white sl-btn-lg">Download Solutions Brochure</button>
+                            <button type="button" className="sl-btn-primary sl-btn-lg">Schedule a Strategic Call</button>
+                            <button type="button" className="sl-btn-white sl-btn-lg">Download Solutions Brochure</button>
                         </div>
                     </div>
                 </div>

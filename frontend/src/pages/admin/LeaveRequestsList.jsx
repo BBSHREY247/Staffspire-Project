@@ -5,6 +5,8 @@ import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { FaCheck, FaTimes, FaSearch, FaRegClock, FaExclamationCircle, FaEye } from "react-icons/fa";
 
+const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
 function LeaveRequestsList() {
     const navigate = useNavigate();
     const [requests, setRequests] = useState([]);
@@ -25,7 +27,7 @@ function LeaveRequestsList() {
         setTimeout(() => setMessage(null), 5000);
     };
 
-    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
     const { data: reqData, isLoading: reqLoading, mutate: mutateRequests } = useSWR("http://localhost:5000/api/leaves/admin/requests", fetcher);
     const { data: statsData, mutate: mutateStats } = useSWR("http://localhost:5000/api/leaves/admin/stats", fetcher);
 
@@ -248,13 +250,13 @@ function LeaveRequestsList() {
                                             </span>
                                         </td>
                                         <td style={{ textAlign: "center" }}>
-                                            <button
+                                            <button type="button"
                                                 aria-label="View Details"
                                                 onClick={() => navigate(`/admin/leaves/${record.id}`)}
                                                 title="View Details"
                                                 style={{
                                                     background: "#eff6ff",
-                                                    color: "#4f8cff",
+                                                    color: "#2563eb",
                                                     border: "1.5px solid #bfdbfe",
                                                     width: "36px",
                                                     height: "36px",
@@ -266,8 +268,8 @@ function LeaveRequestsList() {
                                                     fontSize: "15px",
                                                     transition: "all 0.2s"
                                                 }}
-                                                onMouseEnter={e => { e.currentTarget.style.background="#4f8cff"; e.currentTarget.style.color="white"; }}
-                                                onMouseLeave={e => { e.currentTarget.style.background="#eff6ff"; e.currentTarget.style.color="#4f8cff"; }}
+                                                onMouseEnter={e => { e.currentTarget.style.background="#2563eb"; e.currentTarget.style.color="white"; }}
+                                                onMouseLeave={e => { e.currentTarget.style.background="#eff6ff"; e.currentTarget.style.color="#2563eb"; }}
                                             >
                                                 <FaEye />
                                             </button>
@@ -283,7 +285,7 @@ function LeaveRequestsList() {
                 {showRejectModal && (
                     <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(15, 23, 42, 0.4)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <div className="form-card" style={{ width: "90%", maxWidth: "450px", margin: 0, position: "relative" }}>
-                            <button
+                            <button type="button"
                                                 aria-label="Close modal"
                                 onClick={() => setShowRejectModal(false)}
                                 style={{ position: "absolute", top: "20px", right: "20px", background: "none", border: "none", cursor: "pointer", fontSize: "18px", color: "#64748b" }}
@@ -307,13 +309,13 @@ function LeaveRequestsList() {
                             </div>
 
                             <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
-                                <button
+                                <button type="button"
                                     onClick={() => setShowRejectModal(false)}
                                     style={{ background: "#f1f5f9", color: "#475569", border: "none", padding: "10px 16px", borderRadius: "6px", cursor: "pointer", fontWeight: "600" }}
                                 >
                                     Cancel
                                 </button>
-                                <button
+                                <button type="button"
                                     onClick={() => handleAction(selectedRequestId, "Rejected", rejectionRemarks)}
                                     disabled={actionLoading}
                                     style={{ background: "#ef4444", color: "white", border: "none", padding: "10px 16px", borderRadius: "6px", cursor: "pointer", fontWeight: "600" }}

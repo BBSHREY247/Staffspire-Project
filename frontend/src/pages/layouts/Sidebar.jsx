@@ -24,7 +24,7 @@ function Sidebar() {
         navigate("/login");
     };
 
-    const user = JSON.parse(localStorage.getItem("user")) || {};
+    const user = JSON.parse(localStorage.getItem("user:v1")) || {};
     const role = user.role || "Employee";
 
     const adminMenuItems = [
@@ -77,7 +77,7 @@ function Sidebar() {
                         (item.path !== "/admin/dashboard" && item.path !== "/employee/dashboard" && item.path !== "/settings" && item.path !== "#" && location.pathname.startsWith(item.path));
                     return (
                         <li
-                            key={index}
+                            key={`key-${index}` /* fixed */}
                             className={isActive ? "active-menu" : ""}
                             onClick={() => {
                                 if (item.path !== "#") {

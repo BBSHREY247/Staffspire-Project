@@ -5,13 +5,15 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaPlus } from "react-icons/fa";
 
+const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
 function EmployeeList() {
     const [employees, setEmployees] = useState([]);
     const navigate = useNavigate();
-    const user = JSON.parse(localStorage.getItem("user")) || {};
+    const user = JSON.parse(localStorage.getItem("user:v1")) || {};
     const isAdmin = user.role === "Admin";
 
-    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
     const { data: empData } = useSWR("http://localhost:5000/api/employees", fetcher);
 
     useEffect(() => {
@@ -34,7 +36,7 @@ function EmployeeList() {
                     {user.role === "Manager" ? "View Team" : "Employee Directory"}
                 </h1>
                 {isAdmin && (
-                    <button
+                    <button type="button"
                         className="add-btn"
                         onClick={() => navigate("/admin/employees/add")}
                         style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontWeight: "600" }}
@@ -84,7 +86,7 @@ function EmployeeList() {
                                 </td>
                                 <td style={{ color: "#64748b", fontWeight: "500" }}>{employee.designation}</td>
                                 <td style={{ textAlign: "center" }}>
-                                    <button
+                                    <button type="button"
                                         className="table-action-btn"
                                         onClick={() => navigate(`/admin/employees/${employee.id}`)}
                                         title="View Details"

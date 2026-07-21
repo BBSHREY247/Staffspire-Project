@@ -11,7 +11,7 @@ import {
 function LeaveRequestDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const loggedInUser = JSON.parse(localStorage.getItem("user")) || {};
+    const loggedInUser = JSON.parse(localStorage.getItem("user:v1")) || {};
 
     const [request, setRequest] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -25,7 +25,7 @@ function LeaveRequestDetail() {
         setTimeout(() => setMessage(null), 5000);
     };
 
-    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
     const { data: reqData, isLoading: reqLoading, mutate: fetchRequest } = useSWR("http://localhost:5000/api/leaves/admin/requests", fetcher);
 
     useEffect(() => {
@@ -79,7 +79,7 @@ function LeaveRequestDetail() {
         <DashboardLayout>
             <div className="attendance-page-container">
                 {/* Back navigation */}
-                <button
+                <button type="button"
                     onClick={() => navigate("/admin/leaves")}
                     style={{
                         display: "inline-flex", alignItems: "center", gap: "8px",
@@ -193,12 +193,12 @@ function LeaveRequestDetail() {
                         {/* Action buttons — for Pending or Pending Cancellation */}
                         {(request.status === "Pending" || request.status === "Pending Cancellation") && (
                             request.email === loggedInUser.email ? (
-                                <div style={{ background: "#eff6ff", color: "#4f8cff", padding: "16px", borderRadius: "10px", fontWeight: "600", fontSize: "14px", border: "1.5px solid #bfdbfe", textAlign: "left" }}>
+                                <div style={{ background: "#eff6ff", color: "#2563eb", padding: "16px", borderRadius: "10px", fontWeight: "600", fontSize: "14px", border: "1.5px solid #bfdbfe", textAlign: "left" }}>
                                     This leave request was submitted by you. Self-approval is not allowed.
                                 </div>
                             ) : (
                                 <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-                                    <button
+                                    <button type="button"
                                         onClick={() => handleAction("Approved")}
                                         disabled={actionLoading}
                                         style={{
@@ -211,12 +211,12 @@ function LeaveRequestDetail() {
                                     >
                                         <FaCheck /> {request.status === "Pending Cancellation" ? "Approve Cancellation" : "Approve Leave"}
                                     </button>
-                                    <button
+                                    <button type="button"
                                         onClick={() => setShowRejectModal(true)}
                                         disabled={actionLoading}
                                         style={{
                                             display: "inline-flex", alignItems: "center", gap: "10px",
-                                            background: "#ef4444", color: "white", border: "none",
+                                            background: "#dc2626", color: "white", border: "none",
                                             padding: "14px 32px", borderRadius: "10px", cursor: "pointer",
                                             fontWeight: "700", fontSize: "15px", transition: "opacity 0.2s",
                                             opacity: actionLoading ? 0.6 : 1
@@ -239,7 +239,7 @@ function LeaveRequestDetail() {
                     display: "flex", alignItems: "center", justifyContent: "center"
                 }}>
                     <div className="form-card" style={{ width: "90%", maxWidth: "460px", margin: 0, position: "relative" }}>
-                        <button
+                        <button type="button"
                             aria-label="Close modal"
                             onClick={() => setShowRejectModal(false)}
                             style={{ position: "absolute", top: "20px", right: "20px", background: "none", border: "none", cursor: "pointer", fontSize: "18px", color: "#64748b" }}
@@ -247,7 +247,7 @@ function LeaveRequestDetail() {
                             <FaTimes />
                         </button>
 
-                        <h2 style={{ marginBottom: "6px", fontWeight: "700", fontSize: "20px", color: "#ef4444" }}>
+                        <h2 style={{ marginBottom: "6px", fontWeight: "700", fontSize: "20px", color: "#dc2626" }}>
                             {request.status === "Pending Cancellation" ? "Reject Leave Cancellation" : "Reject Leave Request"}
                         </h2>
                         <p style={{ margin: "0 0 20px", fontSize: "14px", color: "#64748b" }}>
@@ -269,16 +269,16 @@ function LeaveRequestDetail() {
                         </div>
 
                         <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
-                            <button
+                            <button type="button"
                                 onClick={() => setShowRejectModal(false)}
                                 style={{ background: "#f1f5f9", color: "#475569", border: "none", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", fontWeight: "600" }}
                             >
                                 Cancel
                             </button>
-                            <button
+                            <button type="button"
                                 onClick={() => handleAction("Rejected", rejectionRemarks)}
                                 disabled={actionLoading}
-                                style={{ background: "#ef4444", color: "white", border: "none", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", fontWeight: "700", opacity: actionLoading ? 0.6 : 1 }}
+                                style={{ background: "#dc2626", color: "white", border: "none", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", fontWeight: "700", opacity: actionLoading ? 0.6 : 1 }}
                             >
                                 {actionLoading ? "Processing..." : "Confirm Reject"}
                             </button>

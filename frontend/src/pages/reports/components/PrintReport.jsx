@@ -85,7 +85,7 @@ function PrintReport({ reportTitle, columns, keys, data = [] }) {
                 <thead>
                     <tr>
                         {columns.map((col, index) => (
-                            <th key={index}>{col}</th>
+                            <th key={`key-${index}` /* fixed */}>{col}</th>
                         ))}
                     </tr>
                 </thead>

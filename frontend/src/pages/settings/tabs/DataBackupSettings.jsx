@@ -33,19 +33,19 @@ const DataBackupSettings = () => {
             <SettingsCard title="Backup & Restore" description="Manually manage your data backups.">
                 
                 <SettingRow label="Manual Backup" description="Create a new backup immediately.">
-                    <button style={buttonStyle}>Run Backup Now</button>
+                    <button type="button" style={buttonStyle}>Run Backup Now</button>
                 </SettingRow>
 
                 <SettingRow label="Export Database" description="Download a copy of the database.">
-                    <button style={buttonStyle}>Export (.sql)</button>
+                    <button type="button" style={buttonStyle}>Export (.sql)</button>
                 </SettingRow>
 
                 <SettingRow label="Import Data" description="Restore data from a backup file.">
-                    <button style={{ ...buttonStyle, backgroundColor: "#fff", borderColor: "#e2e8f0" }}>Import Data</button>
+                    <button type="button" style={{ ...buttonStyle, backgroundColor: "#fff", borderColor: "#e2e8f0" }}>Import Data</button>
                 </SettingRow>
 
                 <SettingRow label="Reset Demo Data" description="Clear all data and reset to defaults.">
-                    <button style={{ ...buttonStyle, backgroundColor: "#fee2e2", color: "#ef4444", borderColor: "#fca5a5" }}>Reset Data</button>
+                    <button type="button" style={{ ...buttonStyle, backgroundColor: "#fee2e2", color: "#ef4444", borderColor: "#fca5a5" }}>Reset Data</button>
                 </SettingRow>
 
             </SettingsCard>

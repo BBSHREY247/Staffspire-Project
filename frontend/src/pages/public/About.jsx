@@ -60,8 +60,8 @@ function About() {
                             from learning to career success while helping businesses scale with cutting-edge technology.
                         </p>
                         <div className="ab-hero-btns">
-                            <button className="ab-btn-primary">Read Our Story</button>
-                            <button className="ab-btn-outline">View Mission</button>
+                            <button type="button" className="ab-btn-primary">Read Our Story</button>
+                            <button type="button" className="ab-btn-outline">View Mission</button>
                         </div>
                     </div>
 
@@ -193,7 +193,7 @@ function About() {
                                 Internship opportunities with real product exposure
                             </li>
                         </ul>
-                        <button className="ab-btn-primary">Explore Programs</button>
+                        <button type="button" className="ab-btn-primary">Explore Programs</button>
                     </div>
                 </div>
             </section>
@@ -206,8 +206,8 @@ function About() {
                         Experience the future of IT services and professional growth. Let's scale your potential together.
                     </p>
                     <div className="ab-cta-btns">
-                        <button className="ab-cta-btn-white">Get Started Now</button>
-                        <button className="ab-cta-btn-ghost">Contact Us</button>
+                        <button type="button" className="ab-cta-btn-white">Get Started Now</button>
+                        <button type="button" className="ab-cta-btn-ghost">Contact Us</button>
                     </div>
                 </div>
             </section>

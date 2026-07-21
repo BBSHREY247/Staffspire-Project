@@ -6,6 +6,8 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import { useNavigate } from "react-router-dom";
 import InlineAlert from "../../components/InlineAlert";
 
+const fetcher = (url) => axios.get(url).then(res => res.data);
+
 function Departments() {
     const navigate = useNavigate();
     const [departments, setDepartments] = useState([]);
@@ -15,7 +17,7 @@ function Departments() {
     const [modalAlertType, setModalAlertType] = useState("error");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const fetcher = (url) => axios.get(url).then(res => res.data);
+
     const { data: deptData, mutate: fetchDepartments } = useSWR("http://localhost:5000/api/departments", fetcher);
 
     useEffect(() => {
@@ -58,7 +60,7 @@ function Departments() {
             {/* Header section with add button */}
             <div className="employee-header" style={{ marginBottom: "24px" }}>
                 <h1 className="page-title" style={{ margin: 0 }}>Departments</h1>
-                <button
+                <button type="button"
                     className="add-btn"
                     onClick={() => setShowAddModal(true)}
                     style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontWeight: "600" }}
@@ -83,7 +85,7 @@ function Departments() {
                                 <td>#{dept.id}</td>
                                 <td style={{ fontWeight: "600" }}>{dept.department_name}</td>
                                 <td style={{ textAlign: "center" }}>
-                                    <button
+                                    <button type="button"
                                         className="table-action-btn"
                                         aria-label="View Department"
                                         onClick={() => navigate(`/admin/departments/${dept.id}`)}
@@ -129,7 +131,7 @@ function Departments() {
                         background: "white",
                         position: "relative"
                     }}>
-                        <button
+                        <button type="button"
                             onClick={() => { setShowAddModal(false); setDepartmentName(""); }}
                             aria-label="Close modal"
                             style={{

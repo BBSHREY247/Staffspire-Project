@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useReducer } from "react";
 import Navbar from "../../components/public/Navbar";
 import Footer from "../../components/public/Footer";
 import InlineAlert from "../../components/InlineAlert";
@@ -7,21 +7,29 @@ import axios from "axios";
 import contactMapImg from "../../assets/location.png";
 import "../../styles/contact.css";
 
+const contactReducer = (state, action) => {
+    switch (action.type) {
+        case "SET_FIELD": return { ...state, [action.field]: action.value };
+        case "SET_ALERT": return { ...state, formAlert: action.msg, formAlertType: action.alertType };
+        case "SET_SUBMITTING": return { ...state, submitting: action.value };
+        case "RESET_FORM": return { ...state, name: "", email: "", subject: "Enterprise Solutions Inquiry", message: "" };
+        default: return state;
+    }
+};
+
 function Contact() {
     useScrollReveal();
 
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [subject, setSubject] = useState("Enterprise Solutions Inquiry");
-    const [message, setMessage] = useState("");
-    const [formAlert, setFormAlert] = useState("");
-    const [formAlertType, setFormAlertType] = useState("success");
-    const [submitting, setSubmitting] = useState(false);
+    const [state, dispatch] = useReducer(contactReducer, {
+        name: "", email: "", subject: "Enterprise Solutions Inquiry", message: "",
+        formAlert: "", formAlertType: "success", submitting: false
+    });
+    const { name, email, subject, message, formAlert, formAlertType, submitting } = state;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setSubmitting(true);
-        setFormAlert("");
+        dispatch({ type: "SET_SUBMITTING", value: true });
+        dispatch({ type: "SET_ALERT", msg: "", alertType: "success" });
 
         try {
             const response = await axios.post("http://localhost:5000/api/auth/contact", {
@@ -32,24 +40,16 @@ function Contact() {
             });
 
             if (response.data.success) {
-                setFormAlert("Message sent successfully! We will get back to you shortly.");
-                setFormAlertType("success");
-                setName("");
-                setEmail("");
-                setSubject("Enterprise Solutions Inquiry");
-                setMessage("");
+                dispatch({ type: "SET_ALERT", msg: "Message sent successfully! We will get back to you shortly.", alertType: "success" });
+                dispatch({ type: "RESET_FORM" });
             } else {
-                setFormAlert(response.data.message || "Failed to send message.");
-                setFormAlertType("error");
+                dispatch({ type: "SET_ALERT", msg: response.data.message || "Failed to send message.", alertType: "error" });
             }
         } catch (error) {
             console.error("Error sending contact message:", error);
-            setFormAlert(
-                error.response?.data?.message || "An error occurred while sending your message. Please try again."
-            );
-            setFormAlertType("error");
+            dispatch({ type: "SET_ALERT", msg: error.response?.data?.message || "An error occurred while sending your message. Please try again.", alertType: "error" });
         } finally {
-            setSubmitting(false);
+            dispatch({ type: "SET_SUBMITTING", value: false });
         }
     };
 
@@ -79,7 +79,7 @@ function Contact() {
                             <InlineAlert
                                 type={formAlertType}
                                 message={formAlert}
-                                onClose={() => setFormAlert("")}
+                                onClose={() => dispatch({ type: "SET_ALERT", msg: "", alertType: "success" })}
                             />
                         )}
 
@@ -94,7 +94,7 @@ function Contact() {
                                         placeholder="John Doe"
                                         required
                                         value={name}
-                                        onChange={(e) => setName(e.target.value)}
+                                        onChange={(e) => dispatch({ type: "SET_FIELD", field: "name", value: e.target.value })}
                                     />
                                 </div>
                                 <div className="ct-form-group">
@@ -106,7 +106,7 @@ function Contact() {
                                         placeholder="john@company.com"
                                         required
                                         value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
+                                        onChange={(e) => dispatch({ type: "SET_FIELD", field: "email", value: e.target.value })}
                                     />
                                 </div>
                             </div>
@@ -117,7 +117,7 @@ function Contact() {
                                     id="subject"
                                     className="ct-select"
                                     value={subject}
-                                    onChange={(e) => setSubject(e.target.value)}
+                                    onChange={(e) => dispatch({ type: "SET_FIELD", field: "subject", value: e.target.value })}
                                 >
                                     <option value="Enterprise Solutions Inquiry">Enterprise Solutions Inquiry</option>
                                     <option value="Technical Support">Technical Support</option>
@@ -135,7 +135,7 @@ function Contact() {
                                     rows="6"
                                     required
                                     value={message}
-                                    onChange={(e) => setMessage(e.target.value)}
+                                    onChange={(e) => dispatch({ type: "SET_FIELD", field: "message", value: e.target.value })}
                                 ></textarea>
                             </div>
 

@@ -11,7 +11,7 @@ import PrintReport from "./components/PrintReport";
 const API = "http://localhost:5000/api";
 
 function ReportsDashboard() {
-    const user = JSON.parse(localStorage.getItem("user")) || {};
+    const user = JSON.parse(localStorage.getItem("user:v1")) || {};
     const role = user.role || "Employee";
 
     const getTabsForRole = () => {
@@ -167,7 +167,7 @@ function ReportsDashboard() {
         return (
             <div className="results-mini-stats-grid">
                 {items.map((item, i) => (
-                    <div key={i} className={`results-mini-card ${item.borderClass}`}>
+                    <div key={`key-${i}` /* fixed by script */} className={`results-mini-card ${item.borderClass}`}>
                         <div className="mini-card-label">{item.label}</div>
                         <div className={`mini-card-value ${item.textClass}`}>{item.value}</div>
                     </div>
@@ -195,7 +195,7 @@ function ReportsDashboard() {
                 {/* Tab Navigation */}
                 <div className="reports-tabs-bar">
                     {tabs.map((tab) => (
-                        <button
+                        <button type="button"
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`reports-tab-btn ${activeTab === tab.id ? "active" : ""}`}

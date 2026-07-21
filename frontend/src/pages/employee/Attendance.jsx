@@ -1,44 +1,58 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer } from "react";
 import axios from "axios";
 import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { FaClock, FaSignInAlt, FaSignOutAlt, FaCalendarCheck, FaHourglassHalf, FaCalendarDay } from "react-icons/fa";
 
+const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
+const attendanceReducer = (state, action) => {
+    switch (action.type) {
+        case "UPDATE_DATA": return { ...state, ...action.payload };
+        case "SET_LOADING": return { ...state, loading: action.value };
+        case "SET_ACTION_LOADING": return { ...state, actionLoading: action.value };
+        case "SET_MESSAGE": return { ...state, message: action.payload };
+        case "TICK_CLOCK": return { ...state, currentTime: action.value };
+        default: return state;
+    }
+};
+
 function Attendance() {
-    const [todayRecord, setTodayRecord] = useState(null);
-    const [history, setHistory] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [actionLoading, setActionLoading] = useState(false);
-    const [message, setMessage] = useState(null);
-    const [isCheckInAllowed, setIsCheckInAllowed] = useState(true);
-    const [isCheckOutAllowed, setIsCheckOutAllowed] = useState(false);
-    const [checkInBlockReason, setCheckInBlockReason] = useState("");
-    const [todayStatusLabel, setTodayStatusLabel] = useState("Absent");
-    const [currentTime, setCurrentTime] = useState(new Date());
+    const [state, dispatch] = useReducer(attendanceReducer, {
+        todayRecord: null, history: [], loading: true, actionLoading: false, message: null,
+        isCheckInAllowed: true, isCheckOutAllowed: false, checkInBlockReason: "",
+        todayStatusLabel: "Absent", currentTime: new Date()
+    });
+    const { todayRecord, history, loading, actionLoading, message, isCheckInAllowed, isCheckOutAllowed, checkInBlockReason, todayStatusLabel, currentTime } = state;
 
     // Live clock update
     useEffect(() => {
         const timer = setInterval(() => {
-            setCurrentTime(new Date());
+            dispatch({ type: "TICK_CLOCK", value: new Date() });
         }, 1000);
         return () => clearInterval(timer);
     }, []);
 
-    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
     const { data: todayData, isLoading: todayLoading, mutate: mutateToday } = useSWR("http://localhost:5000/api/attendance/today", fetcher);
     const { data: historyData, isLoading: historyLoading, mutate: mutateHistory } = useSWR("http://localhost:5000/api/attendance/history", fetcher);
 
     useEffect(() => {
-        setLoading((todayLoading && !todayData) || (historyLoading && !historyData));
+        dispatch({ type: "SET_LOADING", value: (todayLoading && !todayData) || (historyLoading && !historyData) });
         if (todayData) {
-            setTodayRecord(todayData.attendance);
-            setIsCheckInAllowed(todayData.isCheckInAllowed !== false);
-            setIsCheckOutAllowed(!!todayData.isCheckOutAllowed);
-            setCheckInBlockReason(todayData.checkInBlockReason || "");
-            setTodayStatusLabel(todayData.todayStatusLabel || "Absent");
+            dispatch({
+                type: "UPDATE_DATA",
+                payload: {
+                    todayRecord: todayData.attendance,
+                    isCheckInAllowed: todayData.isCheckInAllowed !== false,
+                    isCheckOutAllowed: !!todayData.isCheckOutAllowed,
+                    checkInBlockReason: todayData.checkInBlockReason || "",
+                    todayStatusLabel: todayData.todayStatusLabel || "Absent"
+                }
+            });
         }
         if (historyData) {
-            setHistory(historyData.history || []);
+            dispatch({ type: "UPDATE_DATA", payload: { history: historyData.history || [] } });
         }
     }, [todayData, historyData, todayLoading, historyLoading]);
 
@@ -48,8 +62,8 @@ function Attendance() {
     };
 
     const showNotification = (type, text) => {
-        setMessage({ type, text });
-        setTimeout(() => setMessage(null), 5000);
+        dispatch({ type: "SET_MESSAGE", payload: { type, text } });
+        setTimeout(() => dispatch({ type: "SET_MESSAGE", payload: null }), 5000);
     };
 
     // ── LIVE LOCATION TEMPORARILY DISABLED ──────────────────────────────────
@@ -86,11 +100,7 @@ function Attendance() {
 
     const handleCheckIn = async () => {
         try {
-            setActionLoading(true);
-            // ── LIVE LOCATION TEMPORARILY DISABLED ──────────────────────
-            // showNotification("neutral", "Retrieving GPS coordinates...");
-            // const coords = await getCoordinates();
-            // ────────────────────────────────────────────────────────────
+            dispatch({ type: "SET_ACTION_LOADING", value: true });
 
             const token = localStorage.getItem("token");
             const response = await axios.post(
@@ -108,17 +118,13 @@ function Attendance() {
                 error.response?.data?.message || "Check-in failed. Please try again."
             );
         } finally {
-            setActionLoading(false);
+            dispatch({ type: "SET_ACTION_LOADING", value: false });
         }
     };
 
     const handleCheckOut = async () => {
         try {
-            setActionLoading(true);
-            // ── LIVE LOCATION TEMPORARILY DISABLED ──────────────────────
-            // showNotification("neutral", "Retrieving GPS coordinates...");
-            // const coords = await getCoordinates();
-            // ────────────────────────────────────────────────────────────
+            dispatch({ type: "SET_ACTION_LOADING", value: true });
 
             const token = localStorage.getItem("token");
             const response = await axios.post(
@@ -136,7 +142,7 @@ function Attendance() {
                 error.response?.data?.message || "Check-out failed. Please try again."
             );
         } finally {
-            setActionLoading(false);
+            dispatch({ type: "SET_ACTION_LOADING", value: false });
         }
     };
 
@@ -216,7 +222,7 @@ function Attendance() {
 
                         <div className="action-buttons" style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%" }}>
                             <div style={{ display: "flex", gap: "16px", width: "100%" }}>
-                                <button
+                                <button type="button"
                                     className="check-btn check-in-btn"
                                     onClick={handleCheckIn}
                                     disabled={loading || actionLoading || !isCheckInAllowed}
@@ -224,7 +230,7 @@ function Attendance() {
                                 >
                                     <FaSignInAlt /> Check In
                                 </button>
-                                <button
+                                <button type="button"
                                     className="check-btn check-out-btn"
                                     onClick={handleCheckOut}
                                     disabled={loading || actionLoading || !isCheckOutAllowed}

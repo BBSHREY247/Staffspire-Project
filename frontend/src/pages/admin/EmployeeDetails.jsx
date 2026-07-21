@@ -7,6 +7,9 @@ import { FaUser, FaEnvelope, FaBuilding, FaIdBadge, FaEdit, FaTrash, FaCheck, Fa
 import CustomConfirmModal from "../../components/CustomConfirmModal";
 import InlineAlert from "../../components/InlineAlert";
 
+const fetcherAuth = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+const fetcher = (url) => axios.get(url).then(res => res.data);
+
 
 function EmployeeDetails() {
     const { id } = useParams();
@@ -21,6 +24,7 @@ function EmployeeDetails() {
     const [alertType, setAlertType] = useState("error");
     const [isSaving, setIsSaving] = useState(false);
     const [pwPromptAlert, setPwPromptAlert] = useState("");
+    const [isVerifying, setIsVerifying] = useState(false);
     const [showTaskTransferModal, setShowTaskTransferModal] = useState(false);
     const [taskTransferData, setTaskTransferData] = useState(null);
     const [taskAction, setTaskAction] = useState("keep");
@@ -28,7 +32,7 @@ function EmployeeDetails() {
     const [departmentEmployees, setDepartmentEmployees] = useState([]);
     const navigate = useNavigate();
 
-    const loggedInUser = JSON.parse(localStorage.getItem("user")) || {};
+    const loggedInUser = JSON.parse(localStorage.getItem("user:v1")) || {};
     const isAdmin = loggedInUser.role === "Admin";
     const isManager = loggedInUser.role === "Manager";
 
@@ -39,8 +43,8 @@ function EmployeeDetails() {
         setTimeout(() => setAlertMsg(""), 6000);
     };
 
-    const fetcherAuth = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
-    const fetcher = (url) => axios.get(url).then(res => res.data);
+
+
 
     const { data: empData, mutate: fetchEmployee } = useSWR(`http://localhost:5000/api/employees/${id}`, fetcherAuth);
     const { data: deptData } = useSWR("http://localhost:5000/api/departments", fetcher);
@@ -62,7 +66,9 @@ function EmployeeDetails() {
             setPwPromptAlert("Admin password is required");
             return;
         }
+        if (isVerifying) return;
         setPwPromptAlert("");
+        setIsVerifying(true);
         try {
             const token = localStorage.getItem("token");
             const response = await axios.post(
@@ -77,6 +83,8 @@ function EmployeeDetails() {
             }
         } catch (error) {
             setPwPromptAlert(error.response?.data?.message || "Failed to verify admin password");
+        } finally {
+            setIsVerifying(false);
         }
     };
 
@@ -209,7 +217,7 @@ function EmployeeDetails() {
             {/* Page Header */}
             <div className="employee-header" style={{ marginBottom: "20px" }}>
                 <h1 className="page-title" style={{ margin: 0 }}>Employee Profile</h1>
-                <button
+                <button type="button"
                     className="action-btn-custom action-btn-secondary"
                     onClick={() => navigate("/admin/employees")}
                 >
@@ -568,12 +576,12 @@ function EmployeeDetails() {
 
                             <div className="actions-container" style={{ marginTop: "24px" }}>
                                 {isAdmin && (
-                                        <button className="action-btn-custom action-btn-danger" onClick={handleDeleteClick}>
+                                        <button type="button" className="action-btn-custom action-btn-danger" onClick={handleDeleteClick}>
                                         <FaTrash /> Delete
                                     </button>
                                 )}
                                 {!(isManager && employee.email === loggedInUser.email) && (
-                                        <button className="action-btn-custom action-btn-primary" onClick={() => setEditing(true)}>
+                                        <button type="button" className="action-btn-custom action-btn-primary" onClick={() => setEditing(true)}>
                                         <FaEdit /> Edit Profile
                                     </button>
                                 )}
@@ -708,7 +716,7 @@ function EmployeeDetails() {
                                         <div style={{ fontWeight: "600", color: "#0f172a", fontSize: "14px" }}>Reassign active tasks</div>
                                         {taskAction === "reassign" && (
                                             <div style={{ marginTop: "12px" }}>
-                                                <select aria-label="Reassign to" value={reassignTo} onChange={e => setReassignTo(e.target.value)} style={{ width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid #cbd5e1", fontSize: "14px", outline: "none" }}>
+                                                <select aria-label="Reassign to" value={reassignTo} onChange={e => setReassignTo(e.target.value)} style={{ width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid #cbd5e1", fontSize: "14px" }}>
                                                     <option value="" disabled>Select Employee</option>
                                                     {departmentEmployees.map(e => (
                                                         <option key={e.employee_id} value={e.employee_id}>{e.first_name} {e.last_name} ({e.employee_id})</option>

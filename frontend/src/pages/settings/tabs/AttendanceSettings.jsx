@@ -68,6 +68,7 @@ const AttendanceSettings = ({ data, onChange }) => {
             <SettingsCard title="Geofencing & Tracking" description="Manage location-based attendance limits.">
                 <SettingRow label="Geofencing Office Name">
                     <input 
+                        aria-label="Geofencing Office Name"
                         type="text" 
                         value={data.officeName || ""} 
                         onChange={(e) => onChange("officeName", e.target.value)}
@@ -79,6 +80,7 @@ const AttendanceSettings = ({ data, onChange }) => {
                     <div style={{ flex: 1 }}>
                         <SettingRow label="Latitude">
                             <input 
+                                aria-label="Latitude"
                                 type="number" step="any"
                                 value={data.latitude || ""} 
                                 onChange={(e) => onChange("latitude", e.target.value)}
@@ -89,6 +91,7 @@ const AttendanceSettings = ({ data, onChange }) => {
                     <div style={{ flex: 1 }}>
                         <SettingRow label="Longitude">
                             <input 
+                                aria-label="Longitude"
                                 type="number" step="any"
                                 value={data.longitude || ""} 
                                 onChange={(e) => onChange("longitude", e.target.value)}
@@ -99,6 +102,7 @@ const AttendanceSettings = ({ data, onChange }) => {
                 </div>
                 <SettingRow label="GPS Radius (meters)" description="Allowed radius for check-in.">
                     <input 
+                        aria-label="GPS Radius"
                         type="number" 
                         value={data.attendance_radius || ""} 
                         onChange={(e) => onChange("attendance_radius", e.target.value)}

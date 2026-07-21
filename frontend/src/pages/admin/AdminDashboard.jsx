@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useReducer, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import useSWR from "swr";
@@ -24,37 +24,40 @@ import {
 // Register Chart.js components
 Chart.register(...registerables);
 
+const dashboardReducer = (state, action) => {
+    switch (action.type) {
+        case "DATA_LOADED":
+            return { ...state, ...action.payload, loading: false };
+        case "SET_LOADING":
+            return { ...state, loading: action.payload };
+        case "SET_MESSAGE":
+            return { ...state, actionMessage: action.payload };
+        default:
+            return state;
+    }
+};
+
 function AdminDashboard() {
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
 
-    const [stats, setStats] = useState({
-        totalEmployees: 0,
-        departmentsCount: 0,
-        presentToday: 0,
-        absentToday: 0,
-        lateToday: 0,
-        pendingLeaves: 0,
-        activeTasks: 0,
-        attendanceRate: 0
+    const [state, dispatch] = useReducer(dashboardReducer, {
+        stats: { totalEmployees: 0, departmentsCount: 0, presentToday: 0, absentToday: 0, lateToday: 0, pendingLeaves: 0, activeTasks: 0, attendanceRate: 0 },
+        deptDist: [],
+        leavesList: [],
+        activities: [],
+        attendanceTrend: { labels: [], data: [] },
+        loading: true,
+        actionMessage: ""
     });
-    const [deptDist, setDeptDist] = useState([]);
-    const [leavesList, setLeavesList] = useState([]);
-    const [activities, setActivities] = useState([]);
-    const [attendanceTrend, setAttendanceTrend] = useState({
-        labels: [],
-        data: []
-    });
-
-    const [loading, setLoading] = useState(true);
-    const [actionMessage, setActionMessage] = useState("");
+    const { stats, deptDist, leavesList, activities, attendanceTrend, loading, actionMessage } = state;
 
     const attendanceChartRef = useRef(null);
     const deptChartRef = useRef(null);
     const attendanceChartInstance = useRef(null);
     const deptChartInstance = useRef(null);
 
-    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${token}` } }).then(res => res.data);
+
     const { data: dashboardData, error: dashboardError, mutate: fetchStats } = useSWR(
         token ? "http://localhost:5000/api/admin/dashboard-stats" : null,
         fetcher
@@ -63,30 +66,7 @@ function AdminDashboard() {
     useEffect(() => {
         if (dashboardData && dashboardData.success) {
             const data = dashboardData;
-            setStats({
-                totalEmployees: data.stats.totalEmployees || 0,
-                departmentsCount: data.stats.departmentsCount || 0,
-                presentToday: data.stats.presentToday || 0,
-                absentToday: data.stats.absentToday !== undefined ? data.stats.absentToday : 0,
-                lateToday: data.stats.lateToday !== undefined ? data.stats.lateToday : 0,
-                pendingLeaves: data.stats.pendingLeaves !== undefined ? data.stats.pendingLeaves : 0,
-                activeTasks: data.stats.activeTasks !== undefined ? data.stats.activeTasks : 0,
-                attendanceRate: data.stats.attendanceRate || 0
-            });
-
-            setDeptDist(data.deptDist || []);
-
-            setLeavesList((data.leavesList || []).map(l => ({
-                id: l.id,
-                employee_name: l.employee_name,
-                email: l.email,
-                department: l.department,
-                leave_type: l.leave_type,
-                start_date: new Date(l.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                end_date: new Date(l.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                status: l.status
-            })));
-
+            
             const formattedActs = (data.recentActivities || []).map(act => {
                 let formattedTime = "Today";
                 if (act.created_at) {
@@ -103,21 +83,36 @@ function AdminDashboard() {
                         formattedTime = date.toLocaleDateString([], { month: 'short', day: 'numeric' });
                     }
                 }
-                return {
-                    title: act.title,
-                    message: act.message,
-                    time: formattedTime,
-                    type: act.type
-                };
+                return { title: act.title, message: act.message, time: formattedTime, type: act.type };
             });
-            setActivities(formattedActs);
 
-            setAttendanceTrend(data.attendanceTrend || { labels: [], data: [] });
-            setLoading(false);
+            dispatch({
+                type: "DATA_LOADED",
+                payload: {
+                    stats: {
+                        totalEmployees: data.stats.totalEmployees || 0,
+                        departmentsCount: data.stats.departmentsCount || 0,
+                        presentToday: data.stats.presentToday || 0,
+                        absentToday: data.stats.absentToday !== undefined ? data.stats.absentToday : 0,
+                        lateToday: data.stats.lateToday !== undefined ? data.stats.lateToday : 0,
+                        pendingLeaves: data.stats.pendingLeaves !== undefined ? data.stats.pendingLeaves : 0,
+                        activeTasks: data.stats.activeTasks !== undefined ? data.stats.activeTasks : 0,
+                        attendanceRate: data.stats.attendanceRate || 0
+                    },
+                    deptDist: data.deptDist || [],
+                    leavesList: (data.leavesList || []).map(l => ({
+                        id: l.id, employee_name: l.employee_name, email: l.email, department: l.department, leave_type: l.leave_type,
+                        start_date: new Date(l.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                        end_date: new Date(l.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), status: l.status
+                    })),
+                    activities: formattedActs,
+                    attendanceTrend: data.attendanceTrend || { labels: [], data: [] }
+                }
+            });
         }
         if (dashboardError) {
             console.error("Failed to load dashboard stats:", dashboardError);
-            setLoading(false);
+            dispatch({ type: "SET_LOADING", payload: false });
         }
     }, [dashboardData, dashboardError]);
 
@@ -252,23 +247,23 @@ function AdminDashboard() {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             if (response.data.success) {
-                setActionMessage(`Request successfully ${action.toLowerCase()}ed.`);
-                setTimeout(() => setActionMessage(""), 4000);
+                dispatch({ type: "SET_MESSAGE", payload: `Request successfully ${action.toLowerCase()}ed.` });
+                setTimeout(() => dispatch({ type: "SET_MESSAGE", payload: "" }), 4000);
                 // Reload data
                 fetchStats();
             }
         } catch (error) {
             console.error("Failed to execute leave action:", error);
-            setActionMessage("Action execution failed.");
-            setTimeout(() => setActionMessage(""), 4000);
+            dispatch({ type: "SET_MESSAGE", payload: "Action execution failed." });
+            setTimeout(() => dispatch({ type: "SET_MESSAGE", payload: "" }), 4000);
         }
     };
 
     const triggerReportDownload = () => {
-        setActionMessage("Generating summary report...");
+        dispatch({ type: "SET_MESSAGE", payload: "Generating summary report..." });
         setTimeout(() => {
-            setActionMessage("Report generated and downloaded successfully.");
-            setTimeout(() => setActionMessage(""), 3000);
+            dispatch({ type: "SET_MESSAGE", payload: "Report generated and downloaded successfully." });
+            setTimeout(() => dispatch({ type: "SET_MESSAGE", payload: "" }), 3000);
         }, 1500);
     };
 
@@ -289,11 +284,11 @@ function AdminDashboard() {
                         <p>Overview of organizational metrics and activities for today.</p>
                     </div>
                     <div className="dashboard-header-actions">
-                        <button className="btn-generate-report" onClick={triggerReportDownload}>
+                        <button type="button" className="btn-generate-report" onClick={triggerReportDownload}>
                             <FaDownload style={{ fontSize: "12px" }} />
                             Generate Report
                         </button>
-                        <button className="btn-add-employee" onClick={() => navigate("/admin/employees/add")}>
+                        <button type="button" className="btn-add-employee" onClick={() => navigate("/admin/employees/add")}>
                             <FaPlus style={{ fontSize: "12px" }} />
                             Add Employee
                         </button>
@@ -413,7 +408,7 @@ function AdminDashboard() {
                                     <h3>Attendance Trend</h3>
                                     <p>Last 7 Days Overview</p>
                                 </div>
-                                <button className="btn-more-options" aria-label="More options">
+                                <button type="button" className="btn-more-options" aria-label="More options">
                                     <FaEllipsisH />
                                 </button>
                             </div>
@@ -480,10 +475,10 @@ function AdminDashboard() {
                                                     </td>
                                                     <td>
                                                         <div className="table-action-buttons">
-                                                            <button className="btn-table-action approve" title="Approve" onClick={() => handleLeaveAction(row.id, "Approved")}>
+                                                            <button type="button" className="btn-table-action approve" title="Approve" onClick={() => handleLeaveAction(row.id, "Approved")}>
                                                                 <FaCheckCircle />
                                                             </button>
-                                                            <button className="btn-table-action reject" title="Reject" onClick={() => handleLeaveAction(row.id, "Rejected")}>
+                                                            <button type="button" className="btn-table-action reject" title="Reject" onClick={() => handleLeaveAction(row.id, "Rejected")}>
                                                                 <FaTimesCircle />
                                                             </button>
                                                         </div>
@@ -523,7 +518,7 @@ function AdminDashboard() {
                                 <div className="bento-card-title">
                                     <h3>Recent Activity</h3>
                                 </div>
-                                <button className="btn-more-options" aria-label="Filter activity">
+                                <button type="button" className="btn-more-options" aria-label="Filter activity">
                                     <FaFilter style={{ fontSize: "14px" }} />
                                 </button>
                             </div>
@@ -541,7 +536,7 @@ function AdminDashboard() {
                                         else if (act.type === "task") dotColor = "purple";
 
                                         return (
-                                            <div className="activity-timeline-item" key={index}>
+                                            <div className="activity-timeline-item" key={`key-${index}` /* fixed */}>
                                                 <div className={`activity-timeline-dot ${dotColor}`}></div>
                                                 <div className="activity-item-title">{act.title}</div>
                                                 <div className="activity-item-message">{act.message}</div>

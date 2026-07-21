@@ -1,34 +1,39 @@
-import { useState } from "react";
+import { useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { FaEye, FaEyeSlash, FaLock, FaCheck } from "react-icons/fa";
 import InlineAlert from "../../components/InlineAlert";
 
+const formReducer = (state, action) => {
+    switch (action.type) {
+        case "SET_FIELD": return { ...state, [action.field]: action.value };
+        case "SET_ALERT": return { ...state, alertMsg: action.msg, alertType: action.alertType };
+        case "SET_SUBMITTING": return { ...state, isSubmitting: action.value };
+        case "RESET_FORM": return { ...state, currentPassword: "", newPassword: "", confirmPassword: "" };
+        default: return state;
+    }
+};
+
 function ChangePassword() {
     const navigate = useNavigate();
-    const [currentPassword, setCurrentPassword] = useState("");
-    const [newPassword, setNewPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-
-    const [showCurrent, setShowCurrent] = useState(false);
-    const [showNew, setShowNew] = useState(false);
-    const [showConfirm, setShowConfirm] = useState(false);
-    const [alertMsg, setAlertMsg] = useState("");
-    const [alertType, setAlertType] = useState("");
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [state, dispatch] = useReducer(formReducer, {
+        currentPassword: "", newPassword: "", confirmPassword: "",
+        showCurrent: false, showNew: false, showConfirm: false,
+        alertMsg: "", alertType: "", isSubmitting: false
+    });
+    const { currentPassword, newPassword, confirmPassword, showCurrent, showNew, showConfirm, alertMsg, alertType, isSubmitting } = state;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (isSubmitting) return;
 
         if (newPassword !== confirmPassword) {
-            setAlertMsg("Passwords do not match. Please try again.");
-            setAlertType("error");
+            dispatch({ type: "SET_ALERT", msg: "Passwords do not match. Please try again.", alertType: "error" });
             return;
         }
 
-        setIsSubmitting(true);
+        dispatch({ type: "SET_SUBMITTING", value: true });
         try {
             const token = localStorage.getItem("token");
             const response = await axios.put(
@@ -44,20 +49,17 @@ function ChangePassword() {
                 }
             );
 
-            setAlertMsg(response.data.message || "Password changed successfully!");
-            setAlertType("success");
+            dispatch({ type: "SET_ALERT", msg: response.data.message || "Password changed successfully!", alertType: "success" });
 
             // Clear forced password change flag
             localStorage.removeItem("forcePasswordChange");
 
             // Update user in localStorage
-            const user = JSON.parse(localStorage.getItem("user")) || {};
+            const user = JSON.parse(localStorage.getItem("user:v1")) || {};
             user.must_change_password = 0;
-            localStorage.setItem("user", JSON.stringify(user));
+            localStorage.setItem("user:v1", JSON.stringify(user));
 
-            setCurrentPassword("");
-            setNewPassword("");
-            setConfirmPassword("");
+            dispatch({ type: "RESET_FORM" });
 
             setTimeout(() => {
                 if (user.role === "Admin") navigate("/admin/dashboard");
@@ -66,13 +68,9 @@ function ChangePassword() {
             }, 1500);
         } catch (error) {
             console.log(error);
-            setAlertMsg(
-                error.response?.data?.message ||
-                "Failed To Change Password"
-            );
-            setAlertType("error");
+            dispatch({ type: "SET_ALERT", msg: error.response?.data?.message || "Failed To Change Password", alertType: "error" });
         } finally {
-            setIsSubmitting(false);
+            dispatch({ type: "SET_SUBMITTING", value: false });
         }
     };
 
@@ -105,7 +103,7 @@ function ChangePassword() {
                         <InlineAlert
                             type={alertType}
                             message={alertMsg}
-                            onClose={() => setAlertMsg("")}
+                            onClose={() => dispatch({ type: "SET_ALERT", msg: "", alertType: "" })}
                         />
 
                         {/* Current Password */}
@@ -117,7 +115,7 @@ function ChangePassword() {
                                     aria-label="Current Password"
                                     type={showCurrent ? "text" : "password"}
                                     value={currentPassword}
-                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                    onChange={(e) => dispatch({ type: "SET_FIELD", field: "currentPassword", value: e.target.value })}
                                     style={{ 
                                         width: "100%", 
                                         padding: "12px 40px 12px 12px", 
@@ -143,7 +141,7 @@ function ChangePassword() {
                                         border: "none",
                                         padding: 0
                                     }}
-                                    onClick={() => setShowCurrent(!showCurrent)}
+                                    onClick={() => dispatch({ type: "SET_FIELD", field: "showCurrent", value: !showCurrent })}
                                 >
                                     {showCurrent ? <FaEyeSlash /> : <FaEye />}
                                 </button>
@@ -158,7 +156,7 @@ function ChangePassword() {
                                     aria-label="New Password"
                                     type={showNew ? "text" : "password"}
                                     value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    onChange={(e) => dispatch({ type: "SET_FIELD", field: "newPassword", value: e.target.value })}
                                     style={{ 
                                         width: "100%", 
                                         padding: "12px 40px 12px 12px", 
@@ -184,7 +182,7 @@ function ChangePassword() {
                                         border: "none",
                                         padding: 0
                                     }}
-                                    onClick={() => setShowNew(!showNew)}
+                                    onClick={() => dispatch({ type: "SET_FIELD", field: "showNew", value: !showNew })}
                                 >
                                     {showCurrent ? <FaEyeSlash /> : <FaEye />}
                                 </button>
@@ -199,7 +197,7 @@ function ChangePassword() {
                                     aria-label="Confirm Password"
                                     type={showConfirm ? "text" : "password"}
                                     value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    onChange={(e) => dispatch({ type: "SET_FIELD", field: "confirmPassword", value: e.target.value })}
                                     style={{ 
                                         width: "100%", 
                                         padding: "12px 40px 12px 12px", 
@@ -225,7 +223,7 @@ function ChangePassword() {
                                         border: "none",
                                         padding: 0
                                     }}
-                                    onClick={() => setShowConfirm(!showConfirm)}
+                                    onClick={() => dispatch({ type: "SET_FIELD", field: "showConfirm", value: !showConfirm })}
                                 >
                                     {showConfirm ? <FaEyeSlash /> : <FaEye />}
                                 </button>

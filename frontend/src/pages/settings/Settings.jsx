@@ -22,9 +22,11 @@ import DataBackupSettings from "./tabs/DataBackupSettings";
 import SystemSettings from "./tabs/SystemSettings";
 import AboutSettings from "./tabs/AboutSettings";
 
+const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
 function Settings() {
     
-    const user = JSON.parse(localStorage.getItem("user")) || {};
+    const user = JSON.parse(localStorage.getItem("user:v1")) || {};
     const isAdmin = user.role === "Admin";
 
     const allTabs = [
@@ -50,6 +52,7 @@ function Settings() {
     const [settingsData, setSettingsData] = useState({});
     const [originalData, setOriginalData] = useState({});
     const [isDirty, setIsDirty] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
     const [message, setMessage] = useState(null);
 
     const showNotification = (type, text) => {
@@ -57,7 +60,7 @@ function Settings() {
         setTimeout(() => setMessage(null), 5000);
     };
 
-    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
     const { data: officeData, isLoading: isOfficeLoading } = useSWR(isAdmin ? "http://localhost:5000/api/office-settings" : null, fetcher);
 
     // Load initial data (mocking API call for most, using actual API for geofencing if admin)
@@ -66,7 +69,7 @@ function Settings() {
         
         let initialData = {};
         // Mock fetching from API / LocalStorage for other settings
-        const savedSettings = JSON.parse(localStorage.getItem("staffspire_settings")) || {};
+        const savedSettings = JSON.parse(localStorage.getItem("staffspire_settings:v1")) || {};
         initialData = { ...initialData, ...savedSettings };
 
         if (isAdmin && officeData?.data) {
@@ -88,9 +91,11 @@ function Settings() {
     };
 
     const handleSave = async () => {
+        if (isSaving) return;
+        setIsSaving(true);
         try {
             // Save non-geofence settings locally for now
-            localStorage.setItem("staffspire_settings", JSON.stringify(settingsData));
+            localStorage.setItem("staffspire_settings:v1", JSON.stringify(settingsData));
 
             if (isAdmin && (settingsData.officeName || settingsData.latitude)) {
                 const token = localStorage.getItem("token");
@@ -112,6 +117,8 @@ function Settings() {
         } catch (error) {
             console.error("Failed to save settings:", error);
             showNotification("error", "Failed to save settings.");
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -146,7 +153,7 @@ function Settings() {
                     </div>
                     {isDirty && (
                         <div style={{ display: "flex", gap: "12px" }}>
-                            <button 
+                            <button type="button" 
                                 onClick={handleDiscard}
                                 style={{
                                     display: "flex", alignItems: "center", gap: "8px",
@@ -156,7 +163,7 @@ function Settings() {
                             >
                                 <FaUndo /> Discard
                             </button>
-                            <button 
+                            <button type="button" 
                                 onClick={handleSave}
                                 style={{
                                     display: "flex", alignItems: "center", gap: "8px",
@@ -204,6 +211,7 @@ function Settings() {
                             <FaSearch style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }} />
                             <input 
                                 type="text"
+                                aria-label="Search settings"
                                 placeholder="Search settings..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -221,7 +229,7 @@ function Settings() {
                             <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "4px" }}>
                                 {filteredTabs.map(tab => (
                                     <li key={tab.id}>
-                                        <button
+                                        <button type="button"
                                             onClick={() => handleTabChange(tab.id)}
                                             style={{
                                                 width: "100%",

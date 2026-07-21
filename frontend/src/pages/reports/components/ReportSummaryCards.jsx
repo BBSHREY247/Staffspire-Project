@@ -3,12 +3,14 @@ import axios from "axios";
 import useSWR from "swr";
 import { FaUsers, FaCalendarCheck, FaClipboardList, FaTasks, FaBuilding } from "react-icons/fa";
 
+const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
 function ReportSummaryCards() {
     const [stats, setStats] = useState(null);
-    const user = JSON.parse(localStorage.getItem("user")) || {};
+    const user = JSON.parse(localStorage.getItem("user:v1")) || {};
     const role = user.role || "Employee";
 
-    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
     const { data } = useSWR("http://localhost:5000/api/reports/dashboard-stats", fetcher);
 
     useEffect(() => {
@@ -21,7 +23,7 @@ function ReportSummaryCards() {
         return (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "18px", marginBottom: "28px" }}>
                 {[1, 2, 3, 4, 5].map((i) => (
-                    <div key={i} style={{
+                    <div key={`key-${i}` /* fixed by script */} style={{
                         height: "100px", background: "white", borderRadius: "14px",
                         boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
                         animation: "shimmer 1.5s infinite linear",
@@ -76,7 +78,7 @@ function ReportSummaryCards() {
                 };
 
                 return (
-                    <div key={index} className={`reports-kpi-card ${borderClass}`}>
+                    <div key={`key-${index}` /* fixed */} className={`reports-kpi-card ${borderClass}`}>
                         <div className="kpi-header-row">
                             <span className="kpi-title">{card.title}</span>
                             <div className={`kpi-icon-box ${iconClass}`}>

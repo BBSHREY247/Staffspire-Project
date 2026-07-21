@@ -16,7 +16,7 @@ const AccountSettings = ({ data, onChange, user }) => {
                         <div style={{ width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", color: "#64748b", fontWeight: "bold" }}>
                             {user?.name ? user.name.charAt(0) : "U"}
                         </div>
-                        <button style={buttonStyle}>Change</button>
+                        <button type="button" style={buttonStyle}>Change</button>
                     </div>
                 </SettingRow>
 
@@ -62,7 +62,7 @@ const AccountSettings = ({ data, onChange, user }) => {
                 </SettingRow>
 
                 <SettingRow label="Two-Factor Authentication" description="Add an extra layer of security.">
-                    <button style={buttonStyle}>Enable 2FA</button>
+                    <button type="button" style={buttonStyle}>Enable 2FA</button>
                 </SettingRow>
 
                 <SettingRow label="Last Login">

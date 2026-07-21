@@ -40,11 +40,11 @@ function CustomConfirmModal({
                     </div>
                 </div>
                 <div className="custom-modal-footer">
-                    <button className="btn-modal-cancel" onClick={onClose}>
+                    <button type="button" className="btn-modal-cancel" onClick={onClose}>
                         <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>undo</span>
                         {cancelText}
                     </button>
-                    <button className={`btn-modal-confirm ${type}`} onClick={onConfirm}>
+                    <button type="button" className={`btn-modal-confirm ${type}`} onClick={onConfirm}>
                         {confirmText}
                     </button>
                 </div>

@@ -25,7 +25,7 @@ function EmployeeDashboard() {
         return () => clearInterval(timer);
     }, []);
 
-    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
 
     const { data: dashDataRes, isLoading: dashLoading } = useSWR(token ? `${API_BASE}/employee/dashboard` : null, fetcher);
     const { data: todayRes, isLoading: todayLoading } = useSWR(token ? `${API_BASE}/attendance/today` : null, fetcher);
@@ -103,17 +103,17 @@ function EmployeeDashboard() {
                     </div>
                     <div>
                         {isCheckedIn && !isCheckedOut ? (
-                            <button className="emp-checkout-btn" onClick={handleCheckOut}>
+                            <button type="button" className="emp-checkout-btn" onClick={handleCheckOut}>
                                 <FaClock size={14} />
                                 Check Out
                             </button>
                         ) : isCheckedOut ? (
-                            <button className="emp-checkout-btn checked-out" disabled>
+                            <button type="button" className="emp-checkout-btn checked-out" disabled>
                                 <FaCheckCircle size={14} />
                                 Checked Out
                             </button>
                         ) : (
-                            <button
+                            <button type="button"
                                 className="emp-checkout-btn"
                                 onClick={() => navigate("/employee/attendance")}
                             >
@@ -177,7 +177,7 @@ function EmployeeDashboard() {
                             <div className="emp-card-icon secondary">
                                 <FaCalendarAlt />
                             </div>
-                            <button
+                            <button type="button"
                                 className="emp-leave-apply-btn"
                                 onClick={() => navigate("/employee/leaves")}
                             >
@@ -205,7 +205,7 @@ function EmployeeDashboard() {
                                 <FaCheckCircle color="#004ac6" />
                                 My Tasks
                             </h3>
-                            <button
+                            <button type="button"
                                 className="emp-submit-btn"
                                 onClick={() => navigate("/employee/tasks")}
                             >
@@ -247,7 +247,7 @@ function EmployeeDashboard() {
                                                     <span className="emp-task-deadline">{task.deadline}</span>
                                                 </td>
                                                 <td>
-                                                    <button
+                                                    <button type="button"
                                                         className="emp-task-action-btn"
                                                         onClick={() => navigate(`/employee/tasks/${task.id}`)}
                                                         title="View task"

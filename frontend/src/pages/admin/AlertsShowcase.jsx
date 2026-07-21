@@ -48,11 +48,11 @@ function AlertsShowcase() {
                                 <span className="alert-time-badge">Just Now</span>
                             </div>
                             <div className="alert-actions-row">
-                                <button className="btn-alert-primary" onClick={() => alert("Opening payroll audit details...")}>
+                                <button type="button" className="btn-alert-primary" onClick={() => alert("Opening payroll audit details...")}>
                                     View Details
                                     <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>open_in_new</span>
                                 </button>
-                                <button className="btn-alert-close" onClick={() => setShowSuccessAlert(false)} title="Dismiss">
+                                <button type="button" className="btn-alert-close" onClick={() => setShowSuccessAlert(false)} title="Dismiss">
                                     <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>close</span>
                                 </button>
                             </div>
@@ -76,12 +76,12 @@ function AlertsShowcase() {
                                 <span className="downtime-label">Scheduled Downtime</span>
                                 <span className="downtime-time">{formatCountdown(secondsLeft)}</span>
                             </div>
-                            <button className="btn-warning-remind" onClick={() => alert("Reminder set for 15 minutes before downtime.")}>
+                            <button type="button" className="btn-warning-remind" onClick={() => alert("Reminder set for 15 minutes before downtime.")}>
                                 Remind me
                             </button>
                         </div>
                         <div className="alert-actions-row">
-                            <button className="btn-warning-ack" onClick={() => alert("Maintenance acknowledged.")}>
+                            <button type="button" className="btn-warning-ack" onClick={() => alert("Maintenance acknowledged.")}>
                                 Acknowledge
                             </button>
                         </div>
@@ -106,10 +106,10 @@ function AlertsShowcase() {
                                     </div>
                                 </div>
                                 <div className="deletion-buttons">
-                                    <button className="btn-delete-anyway" onClick={() => alert("Item deleted.")}>
+                                    <button type="button" className="btn-delete-anyway" onClick={() => alert("Item deleted.")}>
                                         Delete Anyway
                                     </button>
-                                    <button className="btn-delete-undo" onClick={() => alert("Deletion undone.")}>
+                                    <button type="button" className="btn-delete-undo" onClick={() => alert("Deletion undone.")}>
                                         <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>undo</span>
                                         Undo
                                     </button>
@@ -138,7 +138,7 @@ function AlertsShowcase() {
                                 <div className="avatar-stack-item gray">AS</div>
                                 <div className="avatar-stack-item dark">+12</div>
                             </div>
-                            <button className="btn-info-read" onClick={() => alert("Opening policy document...")}>
+                            <button type="button" className="btn-info-read" onClick={() => alert("Opening policy document...")}>
                                 Read Now
                             </button>
                         </div>

@@ -9,6 +9,8 @@ import {
 } from "react-icons/fa";
 import CustomConfirmModal from "../../components/CustomConfirmModal";
 
+const fetcher = (url) => axios.get(url, { headers }).then(res => res.data);
+
 
 const API = "http://localhost:5000/api";
 
@@ -83,7 +85,7 @@ function AdminTaskList() {
         setTimeout(() => setMessage(null), 5000);
     };
 
-    const fetcher = (url) => axios.get(url, { headers }).then(res => res.data);
+
 
     // Employees fetching
     const { data: empData } = useSWR(`${API}/employees`, fetcher);
@@ -167,7 +169,7 @@ function AdminTaskList() {
                 {/* Header */}
                 <div className="employee-header" style={{ marginBottom: "24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <h1 className="page-title" style={{ margin: 0 }}>Task Management</h1>
-                    <button
+                    <button type="button"
                         onClick={() => setShowCreate(true)}
                         style={{
                             display: "inline-flex", alignItems: "center", gap: "8px",
@@ -263,21 +265,21 @@ function AdminTaskList() {
                                     <td style={{ fontSize: "13px", color: "#64748b" }}>{task.assigned_by || "—"}</td>
                                     <td style={{ textAlign: "center" }}>
                                         <div style={{ display: "flex", gap: "6px", justifyContent: "center" }}>
-                                            <button
+                                            <button type="button"
                                                 onClick={() => navigate(`/admin/tasks/${task.id}`)}
                                                 title="View / Edit"
                                                 aria-label="View or edit task"
-                                                style={{ background: "#eff6ff", color: "#4f8cff", border: "1.5px solid #bfdbfe", width: "34px", height: "34px", borderRadius: "8px", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}
-                                                onMouseEnter={e => { e.currentTarget.style.background = "#4f8cff"; e.currentTarget.style.color = "white"; }}
-                                                onMouseLeave={e => { e.currentTarget.style.background = "#eff6ff"; e.currentTarget.style.color = "#4f8cff"; }}
+                                                style={{ background: "#eff6ff", color: "#2563eb", border: "1.5px solid #bfdbfe", width: "34px", height: "34px", borderRadius: "8px", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}
+                                                onMouseEnter={e => { e.currentTarget.style.background = "#2563eb"; e.currentTarget.style.color = "white"; }}
+                                                onMouseLeave={e => { e.currentTarget.style.background = "#eff6ff"; e.currentTarget.style.color = "#2563eb"; }}
                                             ><FaEye /></button>
-                                            <button
+                                            <button type="button"
                                                 onClick={() => handleDeleteClick(task.id, task.task_title)}
                                                 title="Delete"
                                                 aria-label="Delete task"
-                                                style={{ background: "#fff5f5", color: "#ef4444", border: "1.5px solid #fecaca", width: "34px", height: "34px", borderRadius: "8px", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}
-                                                onMouseEnter={e => { e.currentTarget.style.background = "#ef4444"; e.currentTarget.style.color = "white"; }}
-                                                onMouseLeave={e => { e.currentTarget.style.background = "#fff5f5"; e.currentTarget.style.color = "#ef4444"; }}
+                                                style={{ background: "#fff5f5", color: "#dc2626", border: "1.5px solid #fecaca", width: "34px", height: "34px", borderRadius: "8px", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}
+                                                onMouseEnter={e => { e.currentTarget.style.background = "#dc2626"; e.currentTarget.style.color = "white"; }}
+                                                onMouseLeave={e => { e.currentTarget.style.background = "#fff5f5"; e.currentTarget.style.color = "#dc2626"; }}
                                             ><FaTrashAlt /></button>
                                         </div>
                                     </td>
@@ -292,7 +294,7 @@ function AdminTaskList() {
             {showCreate && (
                 <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.45)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <div className="form-card" style={{ width: "90%", maxWidth: "520px", margin: 0, position: "relative", maxHeight: "90vh", overflowY: "auto" }}>
-                        <button onClick={() => setShowCreate(false)} aria-label="Close modal"
+                        <button type="button" onClick={() => setShowCreate(false)} aria-label="Close modal"
                             style={{ position: "absolute", top: "20px", right: "20px", background: "none", border: "none", cursor: "pointer", fontSize: "18px", color: "#64748b" }}>
                             <FaTimes />
                         </button>
@@ -303,12 +305,12 @@ function AdminTaskList() {
                         <form onSubmit={handleCreate} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                             <div className="form-group" style={{ margin: 0 }}>
                                 <label>Task Title *</label>
-                                <input type="text" value={form.task_title} onChange={e => setForm({ ...form, task_title: e.target.value })} placeholder="e.g. Prepare monthly report" required />
+                                <input aria-label="Task Title" type="text" value={form.task_title} onChange={e => setForm({ ...form, task_title: e.target.value })} placeholder="e.g. Prepare monthly report" required />
                             </div>
 
                             <div className="form-group" style={{ margin: 0 }}>
                                 <label>Description</label>
-                                <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
+                                <textarea aria-label="Description" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
                                     placeholder="Task details and instructions..." rows="3"
                                     style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", resize: "none", fontSize: "14px" }} />
                             </div>

@@ -1,50 +1,53 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer } from "react";
 import axios from "axios";
 import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { FaPlus, FaTimes } from "react-icons/fa";
 import CustomConfirmModal from "../../components/CustomConfirmModal";
 
+const fetcherAuth = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+const fetcher = (url) => axios.get(url).then(res => res.data);
+
+const leaveReducer = (state, action) => {
+    switch(action.type) {
+        case "UPDATE_DATA": return { ...state, ...action.payload };
+        case "SET_FIELD": return { ...state, [action.field]: action.value };
+        case "SET_MODAL": return { ...state, confirmModal: { ...state.confirmModal, ...action.payload } };
+        case "SET_MESSAGE": return { ...state, message: action.payload };
+        case "RESET_FORM": return { ...state, leaveTypeId: "", startDate: "", endDate: "", reason: "", showApplyModal: false };
+        default: return state;
+    }
+};
 
 function LeaveDashboard() {
-    const [leaveTypes, setLeaveTypes] = useState([]);
-    const [history, setHistory] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [actionLoading, setActionLoading] = useState(false);
-    const [message, setMessage] = useState(null);
-    const [showApplyModal, setShowApplyModal] = useState(false);
-
-    // Custom confirm modal state
-    const [confirmModal, setConfirmModal] = useState({ isOpen: false, requestId: null, currentStatus: "", message: "" });
-
-
-    // Form states
-    const [leaveTypeId, setLeaveTypeId] = useState("");
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
-    const [reason, setReason] = useState("");
+    const [state, dispatch] = useReducer(leaveReducer, {
+        leaveTypes: [], history: [], loading: true, actionLoading: false, message: null, showApplyModal: false,
+        confirmModal: { isOpen: false, requestId: null, currentStatus: "", message: "" },
+        leaveTypeId: "", startDate: "", endDate: "", reason: ""
+    });
+    const { leaveTypes, history, loading, actionLoading, message, showApplyModal, confirmModal, leaveTypeId, startDate, endDate, reason } = state;
 
     const showNotification = (type, text) => {
-        setMessage({ type, text });
-        setTimeout(() => setMessage(null), 5000);
+        dispatch({ type: "SET_MESSAGE", payload: { type, text } });
+        setTimeout(() => dispatch({ type: "SET_MESSAGE", payload: null }), 5000);
     };
 
-    const fetcherAuth = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
-    const fetcher = (url) => axios.get(url).then(res => res.data);
+
+
 
     const { data: typesData } = useSWR("http://localhost:5000/api/leaves/types", fetcher);
     const { data: historyData, isLoading: historyLoading, mutate: fetchData } = useSWR("http://localhost:5000/api/leaves/history", fetcherAuth);
 
     useEffect(() => {
         if (typesData) {
-            setLeaveTypes(typesData.types || []);
+            dispatch({ type: "UPDATE_DATA", payload: { leaveTypes: typesData.types || [] } });
         }
     }, [typesData]);
 
     useEffect(() => {
-        setLoading(historyLoading && !historyData);
+        dispatch({ type: "UPDATE_DATA", payload: { loading: historyLoading && !historyData } });
         if (historyData) {
-            setHistory(historyData.history || []);
+            dispatch({ type: "UPDATE_DATA", payload: { history: historyData.history || [] } });
         }
     }, [historyData, historyLoading]);
 
@@ -67,7 +70,7 @@ function LeaveDashboard() {
         }
 
         try {
-            setActionLoading(true);
+            dispatch({ type: "UPDATE_DATA", payload: { actionLoading: true } });
             const token = localStorage.getItem("token");
             const response = await axios.post(
                 "http://localhost:5000/api/leaves/apply",
@@ -81,13 +84,9 @@ function LeaveDashboard() {
             );
 
             showNotification("success", response.data.message || "Leave applied successfully.");
-            setShowApplyModal(false);
             
             // Reset form
-            setLeaveTypeId("");
-            setStartDate("");
-            setEndDate("");
-            setReason("");
+            dispatch({ type: "RESET_FORM" });
 
             fetchData();
         } catch (error) {
@@ -97,7 +96,7 @@ function LeaveDashboard() {
                 error.response?.data?.message || "Failed to submit leave request."
             );
         } finally {
-            setActionLoading(false);
+            dispatch({ type: "UPDATE_DATA", payload: { actionLoading: false } });
         }
     };
 
@@ -105,13 +104,13 @@ function LeaveDashboard() {
         const confirmMsg = currentStatus === "Approved"
             ? "Are you sure you want to request cancellation for this approved leave?"
             : "Are you sure you want to cancel this pending leave request?";
-        setConfirmModal({ isOpen: true, requestId, currentStatus, message: confirmMsg });
+        dispatch({ type: "SET_MODAL", payload: { isOpen: true, requestId, currentStatus, message: confirmMsg } });
     };
 
     const handleConfirmCancelRequest = async () => {
         const { requestId, currentStatus } = confirmModal;
         try {
-            setActionLoading(true);
+            dispatch({ type: "UPDATE_DATA", payload: { actionLoading: true } });
             const token = localStorage.getItem("token");
             await axios.delete(`http://localhost:5000/api/leaves/cancel/${requestId}`, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -128,8 +127,8 @@ function LeaveDashboard() {
                 error.response?.data?.message || "Failed to cancel leave request."
             );
         } finally {
-            setActionLoading(false);
-            setConfirmModal({ isOpen: false, requestId: null, currentStatus: "", message: "" });
+            dispatch({ type: "UPDATE_DATA", payload: { actionLoading: false } });
+            dispatch({ type: "SET_MODAL", payload: { isOpen: false, requestId: null, currentStatus: "", message: "" } });
         }
     };
 
@@ -165,9 +164,9 @@ function LeaveDashboard() {
             <div className="attendance-page-container">
                 <div className="employee-header" style={{ marginBottom: "24px" }}>
                     <h1 className="page-title" style={{ margin: 0 }}>My Leave Management</h1>
-                    <button
+                    <button type="button"
                         className="add-btn"
-                        onClick={() => setShowApplyModal(true)}
+                        onClick={() => dispatch({ type: "UPDATE_DATA", payload: { showApplyModal: true } })}
                         style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontWeight: "600" }}
                     >
                         <FaPlus /> Apply for Leave
@@ -231,7 +230,7 @@ function LeaveDashboard() {
                                             </td>
                                             <td>
                                                 {record.status === "Pending" ? (
-                                                    <button
+                                                    <button type="button"
                                                         className="clear-date-btn"
                                                         onClick={() => handleCancelRequestClick(record.id, record.status)}
                                                         style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "#ef4444" }}
@@ -240,9 +239,9 @@ function LeaveDashboard() {
                                                         <FaTimes /> Cancel
                                                     </button>
                                                 ) : record.status === "Approved" ? (
-                                                    <button
+                                                    <button type="button"
                                                         className="clear-date-btn"
-                                                        onClick={() => handleCancelRequest(record.id, "Approved")}
+                                                        onClick={() => handleCancelRequestClick(record.id, "Approved")}
                                                         style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "#f59e0b", background: "none", border: "none", cursor: "pointer", fontWeight: "600" }}
                                                         disabled={actionLoading}
                                                     >
@@ -266,9 +265,9 @@ function LeaveDashboard() {
                 {showApplyModal && (
                     <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(15, 23, 42, 0.4)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <div className="form-card" style={{ width: "90%", maxWidth: "500px", margin: 0, position: "relative" }}>
-                            <button
+                            <button type="button"
                                 aria-label="Close modal"
-                                onClick={() => setShowApplyModal(false)}
+                                onClick={() => dispatch({ type: "UPDATE_DATA", payload: { showApplyModal: false } })}
                                 style={{ position: "absolute", top: "20px", right: "20px", background: "none", border: "none", cursor: "pointer", fontSize: "18px", color: "#94a3b8" }}
                             >
                                 <FaTimes />
@@ -282,7 +281,7 @@ function LeaveDashboard() {
                                     <select
                                         aria-label="Leave Type"
                                         value={leaveTypeId}
-                                        onChange={(e) => setLeaveTypeId(e.target.value)}
+                                        onChange={(e) => dispatch({ type: "SET_FIELD", field: "leaveTypeId", value: e.target.value })}
                                         style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }}
                                         required
                                     >
@@ -302,7 +301,7 @@ function LeaveDashboard() {
                                             aria-label="Start Date"
                                             type="date"
                                             value={startDate}
-                                            onChange={(e) => setStartDate(e.target.value)}
+                                            onChange={(e) => dispatch({ type: "SET_FIELD", field: "startDate", value: e.target.value })}
                                             required
                                         />
                                     </div>
@@ -312,7 +311,7 @@ function LeaveDashboard() {
                                             aria-label="End Date"
                                             type="date"
                                             value={endDate}
-                                            onChange={(e) => setEndDate(e.target.value)}
+                                            onChange={(e) => dispatch({ type: "SET_FIELD", field: "endDate", value: e.target.value })}
                                             required
                                         />
                                     </div>
@@ -329,7 +328,7 @@ function LeaveDashboard() {
                                     <textarea
                                         aria-label="Reason for Leave"
                                         value={reason}
-                                        onChange={(e) => setReason(e.target.value)}
+                                        onChange={(e) => dispatch({ type: "SET_FIELD", field: "reason", value: e.target.value })}
                                         placeholder="Please provide details about your request..."
                                         rows="4"
                                         style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", resize: "none", fontSize: "14px" }}
@@ -359,7 +358,7 @@ function LeaveDashboard() {
             </div>
             <CustomConfirmModal
                 isOpen={confirmModal.isOpen}
-                onClose={() => setConfirmModal({ isOpen: false, requestId: null, currentStatus: "", message: "" })}
+                onClose={() => dispatch({ type: "SET_MODAL", payload: { isOpen: false, requestId: null, currentStatus: "", message: "" } })}
                 onConfirm={handleConfirmCancelRequest}
                 title="Cancel Leave Request"
                 message={confirmModal.message}

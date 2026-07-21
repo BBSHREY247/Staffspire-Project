@@ -4,6 +4,8 @@ import useSWR from "swr";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
 
+const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
 
 function MyProfile() {
     const navigate = useNavigate();
@@ -13,7 +15,7 @@ function MyProfile() {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("Overview");
 
-    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
     const { data, isLoading } = useSWR("http://localhost:5000/api/employee/dashboard", fetcher);
 
     useEffect(() => {
@@ -86,7 +88,7 @@ function MyProfile() {
                         <span style={{ color: "#191b23", fontWeight: 600 }}>Profile Details</span>
                     </nav>
                     <div style={{ display: "flex", gap: "12px" }}>
-                        <button 
+                        <button type="button" 
                             className="profile-btn-print" 
                             onClick={() => navigate('/change-password')}
                             style={{ backgroundColor: "#4f46e5", color: "white", border: "none" }}
@@ -94,7 +96,7 @@ function MyProfile() {
                             <span className="material-symbols-outlined" style={{ fontSize: "20px", color: "white" }}>lock</span>
                             Change Password
                         </button>
-                        <button className="profile-btn-print" onClick={() => window.print()}>
+                        <button type="button" className="profile-btn-print" onClick={() => window.print()}>
                             <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>print</span>
                             Print
                         </button>
@@ -136,8 +138,8 @@ function MyProfile() {
                             </div>
 
                             {/* <div className="profile-action-btns">
-                                <button className="profile-btn-message" onClick={() => alert("Direct messaging features coming soon!")}>Message</button>
-                                <button className="profile-btn-more">
+                                <button type="button" className="profile-btn-message" onClick={() => alert("Direct messaging features coming soon!")}>Message</button>
+                                <button type="button" className="profile-btn-more">
                                     <span className="material-symbols-outlined">more_horiz</span>
                                 </button>
                             </div> */}
@@ -166,7 +168,7 @@ function MyProfile() {
                         {/* Sticky Glassmorphic Navigation */}
                         <div className="profile-tabs-nav">
                             {["Overview", "Documents", "Payroll", "Activity"].map(tab => (
-                                <button 
+                                <button type="button" 
                                     key={tab}
                                     className={`profile-tab-btn ${activeTab === tab ? 'active' : ''}`}
                                     onClick={() => setActiveTab(tab)}
@@ -251,7 +253,7 @@ function MyProfile() {
                                     <h3 className="profile-section-title">Direct Team Members</h3>
                                     <div className="profile-team-grid">
                                         {team.map((member, index) => (
-                                            <div key={index} className="profile-team-card">
+                                            <div key={`key-${index}` /* fixed */} className="profile-team-card">
                                                 <div className="profile-team-avatar">
                                                     {member.initials}
                                                 </div>

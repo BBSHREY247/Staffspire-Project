@@ -7,6 +7,8 @@ import { FaBuilding, FaUsers, FaEdit, FaTrash, FaCheck, FaTimes, FaUserTie, FaBr
 import CustomConfirmModal from "../../components/CustomConfirmModal";
 import InlineAlert from "../../components/InlineAlert";
 
+const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
 
 function DepartmentDetails() {
     const { id } = useParams();
@@ -28,7 +30,7 @@ function DepartmentDetails() {
         setTimeout(() => setAlertMsg(""), 6000);
     };
 
-    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
     const { data: deptData, mutate: fetchDepartmentDetails } = useSWR(`http://localhost:5000/api/departments/${id}`, fetcher);
 
     useEffect(() => {
@@ -99,7 +101,7 @@ function DepartmentDetails() {
             {/* Page header */}
             <div className="employee-header" style={{ marginBottom: "20px" }}>
                 <h1 className="page-title" style={{ margin: 0 }}>Department Profile</h1>
-                <button
+                <button type="button"
                     className="action-btn-custom action-btn-secondary"
                     onClick={() => navigate("/admin/departments")}
                 >
@@ -236,13 +238,13 @@ function DepartmentDetails() {
 
                             {/* Action buttons */}
                             <div className="actions-container" style={{ marginTop: "24px" }}>
-                                <button
+                                <button type="button"
                                     className="action-btn-custom action-btn-danger"
                                     onClick={handleDeleteClick}
                                 >
                                     <FaTrash /> Delete Department
                                 </button>
-                                <button
+                                <button type="button"
                                     className="action-btn-custom action-btn-primary"
                                     onClick={() => setEditing(true)}
                                 >
@@ -323,7 +325,7 @@ function DepartmentDetails() {
                                                             </span>
                                                         </td>
                                                         <td style={{ padding: "10px 14px", textAlign: "center" }}>
-                                                            <button
+                                                            <button type="button"
                                                                 className="table-action-btn"
                                                                 title="View Employee"
                                                                 aria-label="View Employee"

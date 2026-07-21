@@ -7,6 +7,8 @@ import logo from "../assets/Softspire_Logo.jpeg";
 import Navbar from "../components/public/Navbar";
 import InlineAlert from "../components/InlineAlert";
 
+const fetcher = (url) => axios.get(url).then(res => res.data);
+
 function RegisterAdmin() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -25,7 +27,7 @@ function RegisterAdmin() {
     
     const navigate = useNavigate();
 
-    const fetcher = (url) => axios.get(url).then(res => res.data);
+
     const { data: adminData, error: adminError } = useSWR("http://localhost:5000/api/auth/check-admin-exists", fetcher);
 
     useEffect(() => {

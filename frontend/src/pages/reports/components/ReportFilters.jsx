@@ -3,13 +3,15 @@ import axios from "axios";
 import useSWR from "swr";
 import { FaSearch } from "react-icons/fa";
 
+const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
 function ReportFilters({ reportType, filters, onFilterChange, onReset }) {
     const [departments, setDepartments] = useState([]);
     const [employees, setEmployees] = useState([]);
-    const user = JSON.parse(localStorage.getItem("user")) || {};
+    const user = JSON.parse(localStorage.getItem("user:v1")) || {};
     const role = user.role || "Employee";
 
-    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
     const { data: deptData } = useSWR("http://localhost:5000/api/departments", fetcher);
     const { data: empData } = useSWR(role !== "Employee" ? "http://localhost:5000/api/employees" : null, fetcher);
 
@@ -197,7 +199,7 @@ function ReportFilters({ reportType, filters, onFilterChange, onReset }) {
 
                 {/* Reset Action */}
                 <div className="filter-field">
-                    <button className="btn-filter-reset" onClick={onReset}>
+                    <button type="button" className="btn-filter-reset" onClick={onReset}>
                         <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>restart_alt</span>
                         Reset Filters
                     </button>

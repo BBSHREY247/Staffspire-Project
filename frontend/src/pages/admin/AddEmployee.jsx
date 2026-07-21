@@ -6,6 +6,8 @@ import InlineAlert from "../../components/InlineAlert";
 
 const fetcher = (url) => axios.get(url).then(res => res.data);
 
+
+
 function AddEmployee() {
     const navigate = useNavigate();
 
@@ -165,7 +167,7 @@ function AddEmployee() {
             {/* Header bar */}
             <header className="transactional-header">
                 <div className="transactional-header-left">
-                    <button
+                    <button type="button"
                         onClick={handlePrevStep}
                         className="btn-back-round"
                         title="Go back"

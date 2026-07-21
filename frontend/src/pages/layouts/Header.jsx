@@ -23,11 +23,13 @@ function Header() {
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const [showNotifMenu, setShowNotifMenu] = useState(false);
     const [notifications, setNotifications] = useState([]);
+    const [isClearing, setIsClearing] = useState(false);
+    const [isMarkingRead, setIsMarkingRead] = useState(false);
 
-    const user = JSON.parse(localStorage.getItem("user")) || { name: "Shreyash", role: "Admin" };
+    const user = JSON.parse(localStorage.getItem("user:v1")) || { name: "Shreyash", role: "Admin" };
     const token = localStorage.getItem("token");
 
-    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
     const { data: notifData } = useSWR(token ? "http://localhost:5000/api/notifications" : null, fetcher, { refreshInterval: 15000 });
 
     useEffect(() => {
@@ -37,7 +39,8 @@ function Header() {
     }, [notifData]);
 
     const handleClearAll = async () => {
-        if (!token) return;
+        if (!token || isClearing) return;
+        setIsClearing(true);
         try {
             await axios.put("http://localhost:5000/api/notifications/read-all", {}, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -45,11 +48,14 @@ function Header() {
             setNotifications([]);
         } catch (error) {
             console.error("Error clearing notifications:", error);
+        } finally {
+            setIsClearing(false);
         }
     };
 
     const handleMarkAsRead = async (id) => {
-        if (!token) return;
+        if (!token || isMarkingRead) return;
+        setIsMarkingRead(true);
         try {
             await axios.put(`http://localhost:5000/api/notifications/${id}/read`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -57,6 +63,8 @@ function Header() {
             setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: 1 } : n));
         } catch (error) {
             console.error("Error marking notification as read:", error);
+        } finally {
+            setIsMarkingRead(false);
         }
     };
 
@@ -147,7 +155,7 @@ function Header() {
             <div className="header-right">
                 {/* Notifications Bell */}
                 <div style={{position: "relative"}}>
-                    <button 
+                    <button type="button" 
                         className="header-action-btn" 
                         aria-label="Notifications"
                         onClick={() => {
@@ -199,7 +207,7 @@ function Header() {
                 </div>
 
                 {/* Settings Cog */}
-                <button 
+                <button type="button" 
                     className="header-action-btn" 
                     aria-label="Settings"
                     onClick={() => {
@@ -251,7 +259,7 @@ function Header() {
                 </div>
 
                 {/* Direct Logout Icon */}
-                <button className="header-action-btn" onClick={handleLogout} title="Logout" aria-label="Logout">
+                <button type="button" className="header-action-btn" onClick={handleLogout} title="Logout" aria-label="Logout">
                     <FaSignOutAlt />
                 </button>
             </div>

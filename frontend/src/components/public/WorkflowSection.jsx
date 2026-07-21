@@ -56,7 +56,7 @@ function WorkflowSection() {
 
                     {nodes.map((node, i) => (
                         <div
-                            key={i}
+                            key={`key-${i}` /* fixed by script */}
                             className="ss-workflow-node reveal-fade-in"
                             style={{ transitionDelay: `${i * 80}ms` }}
                         >

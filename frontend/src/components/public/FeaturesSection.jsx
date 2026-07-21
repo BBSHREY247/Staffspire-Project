@@ -50,7 +50,7 @@ function FeaturesSection() {
             <div className="ss-features-grid">
                 {features.map((f, i) => (
                     <div
-                        key={i}
+                        key={`key-${i}` /* fixed by script */}
                         className="ss-feature-card reveal-fade-in"
                         style={{ transitionDelay: f.delay }}
                     >

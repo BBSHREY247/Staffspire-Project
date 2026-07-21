@@ -28,7 +28,7 @@ function TaskDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const user = JSON.parse(localStorage.getItem("user")) || {};
+    const user = JSON.parse(localStorage.getItem("user:v1")) || {};
     const isEmployee = user.role === "Employee";
     const isAdminOrManager = user.role === "Admin" || user.role === "Manager";
 
@@ -54,7 +54,7 @@ function TaskDetail() {
         setTimeout(() => setMessage(null), 5000);
     };
 
-    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
 
     const { data: taskData, isLoading: taskLoading, mutate: fetchTask } = useSWR(`${API}/tasks/${id}`, fetcher);
     const { data: empData } = useSWR(isAdminOrManager ? `${API}/employees` : null, fetcher);
@@ -135,7 +135,7 @@ function TaskDetail() {
         <DashboardLayout>
             <div className="attendance-page-container">
                 {/* Back */}
-                <button onClick={() => navigate(backPath)}
+                <button type="button" onClick={() => navigate(backPath)}
                     style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", color: "#2563eb", fontWeight: "600", fontSize: "14px", marginBottom: "24px", padding: 0 }}>
                     <FaArrowLeft /> Back to Tasks
                 </button>
@@ -162,7 +162,7 @@ function TaskDetail() {
                                 {task.status}
                             </span>
                             {(!editing && (isAdminOrManager || (isEmployee && task.status !== "Completed"))) && (
-                                <button onClick={() => setEditing(true)}
+                                <button type="button" onClick={() => setEditing(true)}
                                     style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "#2563eb", color: "white", border: "none", padding: "10px 18px", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "13px" }}>
                                     <FaEdit /> Edit Task
                                 </button>
@@ -219,7 +219,7 @@ function TaskDetail() {
                     <div style={{ background: "white", borderRadius: "16px", padding: "28px", boxShadow: "0 2px 16px rgba(0,0,0,0.08)", marginBottom: "20px" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
                             <h2 style={{ margin: 0, fontWeight: "700", fontSize: "18px" }}>Edit Task</h2>
-                            <button onClick={() => setEditing(false)}
+                            <button type="button" onClick={() => setEditing(false)}
                                 style={{ background: "none", border: "none", cursor: "pointer", color: "#64748b", fontSize: "18px" }}>
                                 <FaTimes />
                             </button>
@@ -298,7 +298,7 @@ function TaskDetail() {
                     <div style={{ background: "white", borderRadius: "16px", padding: "28px", boxShadow: "0 2px 16px rgba(0,0,0,0.08)", marginBottom: "20px" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
                             <h2 style={{ margin: 0, fontWeight: "700", fontSize: "18px" }}>Edit Task</h2>
-                            <button aria-label="Close modal" onClick={() => setEditing(false)}
+                            <button type="button" aria-label="Close modal" onClick={() => setEditing(false)}
                                 style={{ background: "none", border: "none", cursor: "pointer", color: "#64748b", fontSize: "18px" }}>
                                 <FaTimes />
                             </button>

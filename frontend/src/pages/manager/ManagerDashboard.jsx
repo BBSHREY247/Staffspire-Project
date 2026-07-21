@@ -11,6 +11,8 @@ import {
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
+const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
 Chart.register(...registerables);
 
 function ManagerDashboard() {
@@ -45,7 +47,7 @@ function ManagerDashboard() {
         projectProgress: []
     });
 
-    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
     const { data: dashData, error: dashError, isLoading } = useSWR(token ? "http://localhost:5000/api/admin/manager/dashboard-info" : null, fetcher);
 
     useEffect(() => {
@@ -189,15 +191,15 @@ function ManagerDashboard() {
                         <h2>Department Overview</h2>
                     </div>
                     <div className="manager-header-actions">
-                        <button className="btn-review-leaves" onClick={() => navigate("/admin/leaves")}>
+                        <button type="button" className="btn-review-leaves" onClick={() => navigate("/admin/leaves")}>
                             <FaFileAlt style={{ fontSize: "14px" }} />
                             Review Leaves
                         </button>
-                        <button className="btn-assign-task" onClick={() => navigate("/admin/tasks")}>
+                        <button type="button" className="btn-assign-task" onClick={() => navigate("/admin/tasks")}>
                             <FaTasks style={{ fontSize: "14px" }} />
                             Assign Team Task
                         </button>
-                        <button className="btn-team-report" onClick={() => navigate("/reports")}>
+                        <button type="button" className="btn-team-report" onClick={() => navigate("/reports")}>
                             <FaChartBar style={{ fontSize: "14px" }} />
                             Team Report
                         </button>
@@ -343,7 +345,7 @@ function ManagerDashboard() {
                     <div className="manager-bento-card" style={{ gridColumn: "span 1" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
                             <h3 className="manager-bento-card-title" style={{ marginBottom: 0 }}>Activity Timeline</h3>
-                            <button className="text-primary text-label-sm font-label-sm hover:underline" style={{ background: "none", border: "none", color: "#004ac6", cursor: "pointer", fontSize: "12px", fontWeight: "600" }} onClick={() => navigate("/reports")}>View All</button>
+                            <button type="button" className="text-primary text-label-sm font-label-sm hover:underline" style={{ background: "none", border: "none", color: "#004ac6", cursor: "pointer", fontSize: "12px", fontWeight: "600" }} onClick={() => navigate("/reports")}>View All</button>
                         </div>
                         <div style={{ position: "relative", paddingLeft: "16px", borderLeft: "2px solid #E5E7EB", display: "flex", flexDirection: "column", gap: "24px", margin: "12px 0 0 12px" }}>
                             {activities.length === 0 ? (
@@ -358,7 +360,7 @@ function ManagerDashboard() {
                                     else if (act.type === "task") dotColor = "#005a82"; // secondary
 
                                     return (
-                                        <div className="relative" key={index} style={{ position: "relative" }}>
+                                        <div className="relative" key={`key-${index}` /* fixed */} style={{ position: "relative" }}>
                                             <div 
                                                 className="absolute rounded-full" 
                                                 style={{ 

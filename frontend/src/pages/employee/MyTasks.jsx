@@ -60,7 +60,7 @@ function MyTasks() {
     const token = localStorage.getItem("token");
     const headers = { Authorization: `Bearer ${token}` };
 
-    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
     const tasksUrl = activeTab === "all" ? `${API}/tasks/my` : `${API}/tasks/my?status=${encodeURIComponent(activeTab)}`;
     const { data: tasksData, isLoading: tasksLoading } = useSWR(tasksUrl, fetcher);
     const { data: statsData, isLoading: statsLoading } = useSWR(`${API}/tasks/stats`, fetcher);
@@ -133,7 +133,7 @@ function MyTasks() {
                 {/* Status Tabs */}
                 <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "24px" }}>
                     {tabs.map(({ key, label, count }) => (
-                        <button key={key} onClick={() => setActiveTab(key)}
+                        <button type="button" key={key} onClick={() => setActiveTab(key)}
                             style={{
                                 padding: "8px 16px", borderRadius: "30px", border: "1.5px solid",
                                 borderColor: activeTab === key ? "#4f8cff" : "#e2e8f0",
@@ -191,7 +191,7 @@ function MyTasks() {
                                         <td style={{ fontSize: "13px", color: "#64748b" }}>{task.assigned_by || "—"}</td>
                                         <td style={{ textAlign: "center" }}>
                                             <div style={{ display: "flex", gap: "6px", justifyContent: "center" }}>
-                                                <button
+                                                <button type="button"
                                                     onClick={() => navigate(`/employee/tasks/${task.id}`)}
                                                     title="View / Edit"
                                                     style={{ background: "#eff6ff", color: "#2563eb", border: "1.5px solid #bfdbfe", width: "34px", height: "34px", borderRadius: "8px", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}

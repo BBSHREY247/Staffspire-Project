@@ -79,7 +79,7 @@ function ReportTable({ columns, keys, data = [] }) {
                         <tr>
                             {columns.map((col, index) => (
                                 <th
-                                    key={index}
+                                    key={`key-${index}` /* fixed */}
                                     onClick={() => handleSort(keys[index])}
                                     style={{ cursor: "pointer" }}
                                 >
@@ -134,7 +134,7 @@ function ReportTable({ columns, keys, data = [] }) {
                         Showing <strong>{startIndex + 1}</strong> to <strong>{Math.min(startIndex + rowsPerPage, data.length)}</strong> of <strong>{data.length}</strong> records
                     </span>
                     <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                        <button
+                        <button type="button"
                             aria-label="Previous Page"
                             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                             disabled={currentPage === 1}
@@ -166,7 +166,7 @@ function ReportTable({ columns, keys, data = [] }) {
                                 pageNum = currentPage - 2 + i;
                             }
                             return (
-                                <button
+                                <button type="button"
                                     key={pageNum}
                                     aria-label={`Page ${pageNum}`}
                                     onClick={() => setCurrentPage(pageNum)}
@@ -187,7 +187,7 @@ function ReportTable({ columns, keys, data = [] }) {
                             );
                         })}
 
-                        <button
+                        <button type="button"
                             aria-label="Next Page"
                             onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                             disabled={currentPage === totalPages}

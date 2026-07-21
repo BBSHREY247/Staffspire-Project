@@ -5,9 +5,11 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import { FaSearch, FaCalendarAlt, FaHistory, FaCheckCircle, FaUserClock } from "react-icons/fa";
 import CustomConfirmModal from "../../components/CustomConfirmModal";
 
+const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
 
 function AttendanceList() {
-    const loggedInUser = JSON.parse(localStorage.getItem("user")) || {};
+    const loggedInUser = JSON.parse(localStorage.getItem("user:v1")) || {};
     const [attendance, setAttendance] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
@@ -17,7 +19,7 @@ function AttendanceList() {
     const [confirmModal, setConfirmModal] = useState({ isOpen: false, employeeId: null, attendanceDate: null, employeeName: "" });
 
 
-    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
     const { data: attData, isLoading: attLoading, mutate: fetchAttendance } = useSWR("http://localhost:5000/api/attendance", fetcher);
 
     useEffect(() => {
@@ -177,7 +179,7 @@ function AttendanceList() {
                             onChange={(e) => setDateFilter(e.target.value)}
                         />
                         {dateFilter && (
-                            <button className="clear-date-btn" onClick={() => setDateFilter("")}>
+                            <button type="button" className="clear-date-btn" onClick={() => setDateFilter("")}>
                                 Clear Date
                             </button>
                         )}
@@ -244,11 +246,11 @@ function AttendanceList() {
                                             ) : record.status === "Absent" ? (
                                                 <span style={{ color: "#64748b", fontSize: "13px", fontWeight: "500" }}>--</span>
                                             ) : !record.check_out ? (
-                                                <button
+                                                <button type="button"
                                                     onClick={() => handleForceCheckOutClick(record.employee_id, record.attendance_date, record.first_name, record.last_name)}
                                                     style={{
                                                         background: "#fee2e2",
-                                                        color: "#ef4444",
+                                                        color: "#dc2626",
                                                         border: "1px solid #fecaca",
                                                         padding: "6px 12px",
                                                         borderRadius: "6px",
@@ -257,8 +259,8 @@ function AttendanceList() {
                                                         cursor: "pointer",
                                                         transition: "all 0.15s ease"
                                                     }}
-                                                    onMouseEnter={e => { e.currentTarget.style.background="#ef4444"; e.currentTarget.style.color="white"; }}
-                                                    onMouseLeave={e => { e.currentTarget.style.background="#fee2e2"; e.currentTarget.style.color="#ef4444"; }}
+                                                    onMouseEnter={e => { e.currentTarget.style.background="#dc2626"; e.currentTarget.style.color="white"; }}
+                                                    onMouseLeave={e => { e.currentTarget.style.background="#fee2e2"; e.currentTarget.style.color="#dc2626"; }}
                                                 >
                                                     Force Check-out
                                                 </button>

@@ -184,7 +184,7 @@ function Features() {
                                             readOnly
                                         />
                                     </div>
-                                    <button className="ft-add-btn">
+                                    <button type="button" className="ft-add-btn">
                                         <span className="material-symbols-outlined">add</span>
                                         Add Employee
                                     </button>
@@ -212,7 +212,7 @@ function Features() {
                                             <td>Senior Architect</td>
                                             <td><span className="ft-badge ft-badge-active">Active</span></td>
                                             <td className="ft-td-right">
-                                                <button className="ft-action-btn">
+                                                <button type="button" className="ft-action-btn">
                                                     <span className="material-symbols-outlined">more_vert</span>
                                                 </button>
                                             </td>
@@ -228,7 +228,7 @@ function Features() {
                                             <td>Creative Director</td>
                                             <td><span className="ft-badge ft-badge-active">Active</span></td>
                                             <td className="ft-td-right">
-                                                <button className="ft-action-btn">
+                                                <button type="button" className="ft-action-btn">
                                                     <span className="material-symbols-outlined">more_vert</span>
                                                 </button>
                                             </td>
@@ -259,7 +259,7 @@ function Features() {
                                         94% Present
                                     </span>
                                 </div>
-                                <button className="ft-checkin-btn">Check In / Out</button>
+                                <button type="button" className="ft-checkin-btn">Check In / Out</button>
                             </div>
                         </div>
 
@@ -269,10 +269,10 @@ function Features() {
                                 <div className="ft-att-header">
                                     <h4 className="ft-att-title">Weekly Attendance Visualizer</h4>
                                     <div className="ft-att-nav">
-                                        <button className="ft-nav-btn">
+                                        <button type="button" className="ft-nav-btn">
                                             <span className="material-symbols-outlined">chevron_left</span>
                                         </button>
-                                        <button className="ft-nav-btn">
+                                        <button type="button" className="ft-nav-btn">
                                             <span className="material-symbols-outlined">chevron_right</span>
                                         </button>
                                     </div>
@@ -328,7 +328,7 @@ function Features() {
                                         <span className="ft-leave-balance-label">Current Balance</span>
                                         <span className="ft-leave-balance">12 Days</span>
                                     </div>
-                                    <button className="ft-apply-btn">Apply Leave</button>
+                                    <button type="button" className="ft-apply-btn">Apply Leave</button>
                                 </div>
                                 <div className="ft-leave-timeline">
                                     <div className="ft-leave-item">
@@ -414,11 +414,11 @@ function Features() {
                                     multiple formats with a single click and stay ahead of the curve.
                                 </p>
                                 <div className="ft-insights-btns">
-                                    <button className="ft-export-btn">
+                                    <button type="button" className="ft-export-btn">
                                         <span className="material-symbols-outlined">picture_as_pdf</span>
                                         Export PDF
                                     </button>
-                                    <button className="ft-export-btn">
+                                    <button type="button" className="ft-export-btn">
                                         <span className="material-symbols-outlined">table_chart</span>
                                         Excel / CSV
                                     </button>
