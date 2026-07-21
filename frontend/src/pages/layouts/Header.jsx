@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import useSWR from "swr";
 import { 
     FaBell, 
     FaCog, 
@@ -26,25 +27,14 @@ function Header() {
     const user = JSON.parse(localStorage.getItem("user")) || { name: "Shreyash", role: "Admin" };
     const token = localStorage.getItem("token");
 
-    const fetchNotifications = async () => {
-        if (!token) return;
-        try {
-            const response = await axios.get("http://localhost:5000/api/notifications", {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (response.data.success) {
-                setNotifications(response.data.notifications);
-            }
-        } catch (error) {
-            console.error("Error fetching notifications:", error);
-        }
-    };
+    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+    const { data: notifData } = useSWR(token ? "http://localhost:5000/api/notifications" : null, fetcher, { refreshInterval: 15000 });
 
     useEffect(() => {
-        fetchNotifications();
-        const interval = setInterval(fetchNotifications, 15000); // Poll every 15s
-        return () => clearInterval(interval);
-    }, [token]);
+        if (notifData && notifData.success) {
+            setNotifications(notifData.notifications);
+        }
+    }, [notifData]);
 
     const handleClearAll = async () => {
         if (!token) return;

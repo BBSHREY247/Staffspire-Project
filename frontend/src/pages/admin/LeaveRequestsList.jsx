@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { FaCheck, FaTimes, FaSearch, FaRegClock, FaExclamationCircle, FaEye } from "react-icons/fa";
 
@@ -24,29 +25,20 @@ function LeaveRequestsList() {
         setTimeout(() => setMessage(null), 5000);
     };
 
-    const fetchData = async () => {
-        try {
-            setLoading(true);
-            const token = localStorage.getItem("token");
-            const headers = { Authorization: `Bearer ${token}` };
-
-            // Fetch requests
-            const reqRes = await axios.get("http://localhost:5000/api/leaves/admin/requests", { headers });
-            setRequests(reqRes.data.requests || []);
-
-            // Fetch statistics
-            const statsRes = await axios.get("http://localhost:5000/api/leaves/admin/stats", { headers });
-            setStats(statsRes.data.stats || { pending: 0, approvedToday: 0, rejectedToday: 0, currentlyOnLeave: 0 });
-        } catch (error) {
-            console.error("Failed to load admin leaves data:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+    const { data: reqData, isLoading: reqLoading, mutate: mutateRequests } = useSWR("http://localhost:5000/api/leaves/admin/requests", fetcher);
+    const { data: statsData, mutate: mutateStats } = useSWR("http://localhost:5000/api/leaves/admin/stats", fetcher);
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        setLoading(reqLoading && !reqData);
+        if (reqData) setRequests(reqData.requests || []);
+        if (statsData) setStats(statsData.stats || { pending: 0, approvedToday: 0, rejectedToday: 0, currentlyOnLeave: 0 });
+    }, [reqData, statsData, reqLoading]);
+
+    const fetchData = () => {
+        mutateRequests();
+        mutateStats();
+    };
 
     const handleAction = async (requestId, action, remarks = "") => {
         try {

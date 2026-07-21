@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import useSWR from "swr";
 import { FaUsers, FaCalendarCheck, FaClipboardList, FaTasks, FaBuilding } from "react-icons/fa";
 
 function ReportSummaryCards() {
@@ -7,22 +8,14 @@ function ReportSummaryCards() {
     const user = JSON.parse(localStorage.getItem("user")) || {};
     const role = user.role || "Employee";
 
+    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+    const { data } = useSWR("http://localhost:5000/api/reports/dashboard-stats", fetcher);
+
     useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                const response = await axios.get("http://localhost:5000/api/reports/dashboard-stats", {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                if (response.data.success) {
-                    setStats(response.data.stats);
-                }
-            } catch (error) {
-                console.error("Failed to load summary stats:", error);
-            }
-        };
-        fetchStats();
-    }, []);
+        if (data && data.success) {
+            setStats(data.stats);
+        }
+    }, [data]);
 
     if (!stats) {
         return (

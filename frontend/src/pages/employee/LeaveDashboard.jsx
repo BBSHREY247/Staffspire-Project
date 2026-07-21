@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { FaPlus, FaTimes } from "react-icons/fa";
 import CustomConfirmModal from "../../components/CustomConfirmModal";
@@ -28,36 +29,24 @@ function LeaveDashboard() {
         setTimeout(() => setMessage(null), 5000);
     };
 
-    const fetchLeaveTypes = async () => {
-        try {
-            const res = await axios.get("http://localhost:5000/api/leaves/types");
-            setLeaveTypes(res.data.types || []);
-        } catch (error) {
-            console.error("Failed to load leave types:", error);
-        }
-    };
+    const fetcherAuth = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+    const fetcher = (url) => axios.get(url).then(res => res.data);
 
-    const fetchData = async () => {
-        try {
-            setLoading(true);
-            const token = localStorage.getItem("token");
-            const headers = { Authorization: `Bearer ${token}` };
-
-            // Get history
-            const histRes = await axios.get("http://localhost:5000/api/leaves/history", { headers });
-            setHistory(histRes.data.history || []);
-        } catch (error) {
-            console.error("Failed to load leaves history:", error);
-            showNotification("error", "Failed to load leave records.");
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { data: typesData } = useSWR("http://localhost:5000/api/leaves/types", fetcher);
+    const { data: historyData, isLoading: historyLoading, mutate: fetchData } = useSWR("http://localhost:5000/api/leaves/history", fetcherAuth);
 
     useEffect(() => {
-        fetchLeaveTypes();
-        fetchData();
-    }, []);
+        if (typesData) {
+            setLeaveTypes(typesData.types || []);
+        }
+    }, [typesData]);
+
+    useEffect(() => {
+        setLoading(historyLoading && !historyData);
+        if (historyData) {
+            setHistory(historyData.history || []);
+        }
+    }, [historyData, historyLoading]);
 
     // Auto-calculate requested duration
     const calculateRequestedDays = () => {

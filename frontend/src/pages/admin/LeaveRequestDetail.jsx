@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
 import {
     FaArrowLeft, FaCheck, FaTimes, FaUser, FaCalendarAlt,
@@ -24,25 +25,16 @@ function LeaveRequestDetail() {
         setTimeout(() => setMessage(null), 5000);
     };
 
-    const fetchRequest = async () => {
-        try {
-            setLoading(true);
-            const token = localStorage.getItem("token");
-            const res = await axios.get("http://localhost:5000/api/leaves/admin/requests", {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            const found = (res.data.requests || []).find((r) => String(r.id) === String(id));
-            setRequest(found || null);
-        } catch (error) {
-            console.error("Failed to fetch leave request:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+    const { data: reqData, isLoading: reqLoading, mutate: fetchRequest } = useSWR("http://localhost:5000/api/leaves/admin/requests", fetcher);
 
     useEffect(() => {
-        fetchRequest();
-    }, [id]);
+        setLoading(reqLoading && !reqData);
+        if (reqData) {
+            const found = (reqData.requests || []).find((r) => String(r.id) === String(id));
+            setRequest(found || null);
+        }
+    }, [reqData, reqLoading, id]);
 
     const handleAction = async (action, remarks = "") => {
         try {

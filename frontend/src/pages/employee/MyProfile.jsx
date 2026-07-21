@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import useSWR from "swr";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
 
@@ -12,32 +13,17 @@ function MyProfile() {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("Overview");
 
-    useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                const response = await axios.get(
-                    "http://localhost:5000/api/employee/dashboard",
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    }
-                );
-                if (response.data.success) {
-                    setProfile(response.data.employee);
-                    setTeam(response.data.team || []);
-                    setActivities(response.data.activities || []);
-                }
-            } catch (error) {
-                console.error("Failed to load employee profile:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+    const { data, isLoading } = useSWR("http://localhost:5000/api/employee/dashboard", fetcher);
 
-        fetchProfile();
-    }, []);
+    useEffect(() => {
+        setLoading(isLoading && !data);
+        if (data && data.success) {
+            setProfile(data.employee);
+            setTeam(data.team || []);
+            setActivities(data.activities || []);
+        }
+    }, [data, isLoading]);
 
     if (loading) {
         return (

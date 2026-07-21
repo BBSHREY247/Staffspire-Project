@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import useSWR from "swr";
 import InlineAlert from "../../components/InlineAlert";
+
+const fetcher = (url) => axios.get(url).then(res => res.data);
 
 function AddEmployee() {
     const navigate = useNavigate();
@@ -40,7 +43,8 @@ function AddEmployee() {
         return { label: "Strong", color: "#10b981", width: "100%" };
     };
 
-    const [departments, setDepartments] = useState([]);
+    const { data: departments = [] } = useSWR("http://localhost:5000/api/departments", fetcher);
+
     const [showModal, setShowModal] = useState(false);
     const [actionLoading, setActionLoading] = useState(false);
     const [createdCredentials, setCreatedCredentials] = useState({ employeeId: "", temporaryPassword: "" });
@@ -54,18 +58,7 @@ function AddEmployee() {
         setTimeout(() => setFormAlert(""), 5000);
     };
 
-    // Fetch existing departments for the select dropdown
-    useEffect(() => {
-        const fetchDepartments = async () => {
-            try {
-                const response = await axios.get("http://localhost:5000/api/departments");
-                setDepartments(response.data || []);
-            } catch (error) {
-                console.error("Failed to load departments:", error);
-            }
-        };
-        fetchDepartments();
-    }, []);
+    // Fetch existing departments is now handled by useSWR above
 
     const handleChange = (e) => {
         setFormData({

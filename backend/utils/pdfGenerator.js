@@ -65,8 +65,7 @@ const generatePDF = (res, { reportTitle, generatedBy, filters, headers, keys, ro
     let filterText = "None";
     if (filters && Object.keys(filters).length > 0) {
         filterText = Object.entries(filters)
-            .filter(([_, v]) => v !== undefined && v !== null && v !== "")
-            .map(([k, v]) => `${k}: ${v}`)
+            .flatMap(([k, v]) => (v !== undefined && v !== null && v !== "") ? [`${k}: ${v}`] : [])
             .join("  |  ");
     }
     doc.font("Helvetica").text(filterText || "None", 50, currentY + 22);

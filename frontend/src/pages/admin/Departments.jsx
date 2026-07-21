@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import useSWR from "swr";
 import { FaBuilding, FaPlus, FaEye, FaTimes } from "react-icons/fa";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useNavigate } from "react-router-dom";
@@ -13,18 +14,14 @@ function Departments() {
     const [modalAlert, setModalAlert] = useState("");
     const [modalAlertType, setModalAlertType] = useState("error");
 
-    const fetchDepartments = async () => {
-        try {
-            const res = await axios.get("http://localhost:5000/api/departments");
-            setDepartments(res.data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
+    const fetcher = (url) => axios.get(url).then(res => res.data);
+    const { data: deptData, mutate: fetchDepartments } = useSWR("http://localhost:5000/api/departments", fetcher);
 
     useEffect(() => {
-        fetchDepartments();
-    }, []);
+        if (deptData) {
+            setDepartments(deptData);
+        }
+    }, [deptData]);
 
     const handleAddDepartment = async (e) => {
         e.preventDefault();

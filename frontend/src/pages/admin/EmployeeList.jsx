@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaPlus } from "react-icons/fa";
@@ -10,26 +11,14 @@ function EmployeeList() {
     const user = JSON.parse(localStorage.getItem("user")) || {};
     const isAdmin = user.role === "Admin";
 
-    const fetchEmployees = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const response = await axios.get(
-                "http://localhost:5000/api/employees",
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }
-            );
-            setEmployees(response.data.employees);
-        } catch (error) {
-            console.log(error);
-        }
-    };
+    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+    const { data: empData } = useSWR("http://localhost:5000/api/employees", fetcher);
 
     useEffect(() => {
-        fetchEmployees();
-    }, []);
+        if (empData && empData.employees) {
+            setEmployees(empData.employees);
+        }
+    }, [empData]);
 
     // Helper to get initials for employee avatar
     const getInitials = (firstName, lastName) => {

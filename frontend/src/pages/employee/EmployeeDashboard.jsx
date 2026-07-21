@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
 import {
     FaSignInAlt, FaClock, FaCalendarAlt, FaCheckCircle,
@@ -24,36 +25,21 @@ function EmployeeDashboard() {
         return () => clearInterval(timer);
     }, []);
 
+    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
+    const { data: dashDataRes, isLoading: dashLoading } = useSWR(token ? `${API_BASE}/employee/dashboard` : null, fetcher);
+    const { data: todayRes, isLoading: todayLoading } = useSWR(token ? `${API_BASE}/attendance/today` : null, fetcher);
+
     useEffect(() => {
         if (!token) return;
-        const fetchDashboard = async () => {
-            try {
-                const [dashRes, todayRes] = await Promise.all([
-                    axios.get(`${API_BASE}/employee/dashboard`, {
-                        headers: { Authorization: `Bearer ${token}` }
-                    }),
-                    axios.get(`${API_BASE}/attendance/today`, {
-                        headers: { Authorization: `Bearer ${token}` }
-                    })
-                ]);
-
-                let todayStatusData = null;
-                if (todayRes.data.success) {
-                    todayStatusData = todayRes.data;
-                    setTodayStatus(todayStatusData);
-                }
-
-                if (dashRes.data.success) {
-                    setDashData(dashRes.data);
-                }
-            } catch (err) {
-                console.error("Employee dashboard fetch error:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchDashboard();
-    }, [token]);
+        setLoading(dashLoading || todayLoading || (!dashDataRes && !todayRes));
+        if (todayRes) {
+            setTodayStatus(todayRes);
+        }
+        if (dashDataRes && dashDataRes.success !== false) {
+            setDashData(dashDataRes);
+        }
+    }, [dashDataRes, todayRes, dashLoading, todayLoading, token]);
 
     const formatDateTime = (date) => {
         return date.toLocaleDateString("en-US", {

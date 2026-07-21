@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { FaSearch, FaCalendarAlt, FaHistory, FaCheckCircle, FaUserClock } from "react-icons/fa";
 import CustomConfirmModal from "../../components/CustomConfirmModal";
@@ -16,24 +17,15 @@ function AttendanceList() {
     const [confirmModal, setConfirmModal] = useState({ isOpen: false, employeeId: null, attendanceDate: null, employeeName: "" });
 
 
-    const fetchAttendance = async () => {
-        try {
-            setLoading(true);
-            const token = localStorage.getItem("token");
-            const response = await axios.get("http://localhost:5000/api/attendance", {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setAttendance(response.data.attendance || []);
-        } catch (error) {
-            console.error("Error fetching attendance list:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+    const { data: attData, isLoading: attLoading, mutate: fetchAttendance } = useSWR("http://localhost:5000/api/attendance", fetcher);
 
     useEffect(() => {
-        fetchAttendance();
-    }, []);
+        setLoading(attLoading && !attData);
+        if (attData) {
+            setAttendance(attData.attendance || []);
+        }
+    }, [attData, attLoading]);
 
     const handleForceCheckOutClick = (employeeId, attendanceDate, firstName, lastName) => {
         const fullName = `${firstName || ""} ${lastName || ""}`.trim() || employeeId;

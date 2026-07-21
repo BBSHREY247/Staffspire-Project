@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import axios from "axios";
+import useSWR from "swr";
 import { 
     FaCog, FaBuilding, FaUser, FaPalette, FaBell, FaClock, 
     FaShieldAlt, FaUserShield, FaPlug, FaDatabase, FaServer, 
@@ -56,38 +57,30 @@ function Settings() {
         setTimeout(() => setMessage(null), 5000);
     };
 
+    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+    const { data: officeData, isLoading: isOfficeLoading } = useSWR(isAdmin ? "http://localhost:5000/api/office-settings" : null, fetcher);
+
     // Load initial data (mocking API call for most, using actual API for geofencing if admin)
     useEffect(() => {
-        const loadData = async () => {
-            let initialData = {};
-            // Mock fetching from API / LocalStorage for other settings
-            const savedSettings = JSON.parse(localStorage.getItem("staffspire_settings")) || {};
-            initialData = { ...initialData, ...savedSettings };
+        if (isAdmin && isOfficeLoading) return; // Wait for data if admin
+        
+        let initialData = {};
+        // Mock fetching from API / LocalStorage for other settings
+        const savedSettings = JSON.parse(localStorage.getItem("staffspire_settings")) || {};
+        initialData = { ...initialData, ...savedSettings };
 
-            if (isAdmin) {
-                try {
-                    const token = localStorage.getItem("token");
-                    const response = await axios.get("http://localhost:5000/api/office-settings", {
-                        headers: { Authorization: `Bearer ${token}` }
-                    });
-                    const office = response.data.data;
-                    if (office) {
-                        initialData.officeName = office.office_name;
-                        initialData.latitude = office.latitude;
-                        initialData.longitude = office.longitude;
-                        initialData.attendance_radius = office.attendance_radius;
-                    }
-                } catch (error) {
-                    console.error("Failed to load geofencing settings:", error);
-                }
-            }
-            
-            setSettingsData(initialData);
-            setOriginalData(initialData);
-            setIsDirty(false);
-        };
-        loadData();
-    }, [isAdmin]);
+        if (isAdmin && officeData?.data) {
+            const office = officeData.data;
+            initialData.officeName = office.office_name;
+            initialData.latitude = office.latitude;
+            initialData.longitude = office.longitude;
+            initialData.attendance_radius = office.attendance_radius;
+        }
+
+        setSettingsData(initialData);
+        setOriginalData(initialData);
+        setIsDirty(false);
+    }, [isAdmin, officeData, isOfficeLoading]);
 
     const handleSettingChange = (key, value) => {
         setSettingsData(prev => {

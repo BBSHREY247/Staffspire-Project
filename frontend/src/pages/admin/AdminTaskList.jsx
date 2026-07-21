@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
 import {
     FaPlus, FaTimes, FaSearch, FaEye, FaTrashAlt,
@@ -62,6 +63,7 @@ function AdminTaskList() {
 
     // Filters
     const [search, setSearch] = useState("");
+    const [submittedSearch, setSubmittedSearch] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
     const [priorityFilter, setPriorityFilter] = useState("");
 
@@ -81,42 +83,32 @@ function AdminTaskList() {
         setTimeout(() => setMessage(null), 5000);
     };
 
-    const fetchAll = async () => {
-        try {
-            setLoading(true);
-            const params = {};
-            if (statusFilter) params.status = statusFilter;
-            if (priorityFilter) params.priority = priorityFilter;
-            if (search) params.search = search;
+    const fetcher = (url) => axios.get(url, { headers }).then(res => res.data);
 
-            const [tasksRes, statsRes] = await Promise.all([
-                axios.get(`${API}/tasks`, { headers, params }),
-                axios.get(`${API}/tasks/stats`, { headers }),
-            ]);
-            setTasks(tasksRes.data.tasks || []);
-            setStats(statsRes.data.stats || {});
-        } catch (err) {
-            console.error("Fetch tasks error:", err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    // Employees fetching
+    const { data: empData } = useSWR(`${API}/employees`, fetcher);
+    useEffect(() => {
+        if (empData) setEmployees(empData.employees || []);
+    }, [empData]);
 
-    const fetchEmployees = async () => {
-        try {
-            const res = await axios.get(`${API}/employees`, { headers });
-            setEmployees(res.data.employees || []);
-        } catch (err) {
-            console.error("Fetch employees error:", err);
-        }
-    };
+    // Tasks and Stats fetching
+    const qs = new URLSearchParams();
+    if (statusFilter) qs.append("status", statusFilter);
+    if (priorityFilter) qs.append("priority", priorityFilter);
+    if (submittedSearch) qs.append("search", submittedSearch);
 
-    useEffect(() => { fetchAll(); fetchEmployees(); }, []);
-    useEffect(() => { fetchAll(); }, [statusFilter, priorityFilter]);
+    const { data: tasksData, isLoading: tasksLoading, mutate: mutateTasks } = useSWR(`${API}/tasks?${qs.toString()}`, fetcher);
+    const { data: statsData, mutate: mutateStats } = useSWR(`${API}/tasks/stats`, fetcher);
+
+    useEffect(() => {
+        setLoading(tasksLoading && !tasksData);
+        if (tasksData) setTasks(tasksData.tasks || []);
+        if (statsData) setStats(statsData.stats || { total: 0, pending: 0, inProgress: 0, onHold: 0, completed: 0, overdue: 0 });
+    }, [tasksData, statsData, tasksLoading]);
 
     const handleSearch = (e) => {
         e.preventDefault();
-        fetchAll();
+        setSubmittedSearch(search);
     };
 
     const handleCreate = async (e) => {
@@ -127,7 +119,8 @@ function AdminTaskList() {
             showNotification("success", "Task created successfully!");
             setShowCreate(false);
             setForm({ task_title: "", description: "", assigned_to: "", priority: "Medium", deadline: "" });
-            fetchAll();
+            mutateTasks();
+            mutateStats();
         } catch (err) {
             showNotification("error", err.response?.data?.message || "Failed to create task.");
         } finally {
@@ -144,7 +137,8 @@ function AdminTaskList() {
         try {
             await axios.delete(`${API}/tasks/${id}`, { headers });
             showNotification("success", "Task deleted.");
-            fetchAll();
+            mutateTasks();
+            mutateStats();
         } catch (err) {
             showNotification("error", err.response?.data?.message || "Failed to delete task.");
         } finally {

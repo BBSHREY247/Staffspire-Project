@@ -1,6 +1,7 @@
 const db = require("../config/db");
 const bcrypt = require("bcryptjs");
 const { encryptPassword, decryptPassword } = require("../utils/cryptoHelper");
+const crypto = require("crypto");
 
 const getManagerDepartment = async (userId) => {
     const [users] = await db.promise().query("SELECT email FROM users WHERE id = ?", [userId]);
@@ -43,7 +44,7 @@ const generateUniqueEmployeeId = async () => {
     let isUnique = false;
     let employeeId = "";
     while (!isUnique) {
-        const randNum = Math.floor(1000 + Math.random() * 9000);
+        const randNum = crypto.randomInt(1000, 10000);
         employeeId = `EM${randNum}SS`;
         const [rows] = await db.promise().query("SELECT id FROM employees WHERE employee_id = ?", [employeeId]);
         if (rows.length === 0) {
@@ -58,21 +59,21 @@ const generateTempPassword = () => {
     const lowers = "abcdefghijklmnopqrstuvwxyz";
     const numbers = "0123456789";
     const all = uppers + lowers + numbers;
-    const length = Math.floor(8 + Math.random() * 3); // 8, 9, or 10 characters
+    const length = crypto.randomInt(8, 11); // 8, 9, or 10 characters
     
     let password = [
-        uppers[Math.floor(Math.random() * uppers.length)],
-        lowers[Math.floor(Math.random() * lowers.length)],
-        numbers[Math.floor(Math.random() * numbers.length)]
+        uppers[crypto.randomInt(0, uppers.length)],
+        lowers[crypto.randomInt(0, lowers.length)],
+        numbers[crypto.randomInt(0, numbers.length)]
     ];
     
     for (let i = 3; i < length; i++) {
-        password.push(all[Math.floor(Math.random() * all.length)]);
+        password.push(all[crypto.randomInt(0, all.length)]);
     }
     
     // Shuffle
     for (let i = password.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j = crypto.randomInt(0, i + 1);
         [password[i], password[j]] = [password[j], password[i]];
     }
     

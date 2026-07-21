@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import useSWR from "swr";
 import { FaSearch } from "react-icons/fa";
 
 function ReportFilters({ reportType, filters, onFilterChange, onReset }) {
@@ -8,25 +9,14 @@ function ReportFilters({ reportType, filters, onFilterChange, onReset }) {
     const user = JSON.parse(localStorage.getItem("user")) || {};
     const role = user.role || "Employee";
 
+    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+    const { data: deptData } = useSWR("http://localhost:5000/api/departments", fetcher);
+    const { data: empData } = useSWR(role !== "Employee" ? "http://localhost:5000/api/employees" : null, fetcher);
+
     useEffect(() => {
-        const fetchDropdownData = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                const headers = { Authorization: `Bearer ${token}` };
-                const deptRes = await axios.get("http://localhost:5000/api/departments", { headers });
-                setDepartments(deptRes.data || []);
-                if (role !== "Employee") {
-                    const empRes = await axios.get("http://localhost:5000/api/employees", { headers });
-                    if (empRes.data && empRes.data.success) {
-                        setEmployees(empRes.data.employees);
-                    }
-                }
-            } catch (error) {
-                console.error("Failed to load filter dropdown lists:", error);
-            }
-        };
-        fetchDropdownData();
-    }, [role]);
+        if (deptData) setDepartments(deptData || []);
+        if (empData && empData.success) setEmployees(empData.employees);
+    }, [deptData, empData]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;

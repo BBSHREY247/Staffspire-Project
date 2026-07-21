@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import useSWR from "swr";
 import { useNavigate, Link } from "react-router-dom";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import logo from "../assets/Softspire_Logo.jpeg";
@@ -24,22 +25,19 @@ function RegisterAdmin() {
     
     const navigate = useNavigate();
 
-    // Check if any admin already exists when component mounts
+    const fetcher = (url) => axios.get(url).then(res => res.data);
+    const { data: adminData, error: adminError } = useSWR("http://localhost:5000/api/auth/check-admin-exists", fetcher);
+
     useEffect(() => {
-        const checkAdmin = async () => {
-            try {
-                const res = await axios.get("http://localhost:5000/api/auth/check-admin-exists");
-                if (res.data && res.data.exists) {
-                    setAdminExists(true);
-                    setAlertMsg("An administrator already exists. Credentials of an existing admin are required to register another admin.");
-                    setAlertType("error");
-                }
-            } catch (err) {
-                console.error("Failed to check if admin exists:", err);
-            }
-        };
-        checkAdmin();
-    }, []);
+        if (adminData && adminData.exists) {
+            setAdminExists(true);
+            setAlertMsg("An administrator already exists. Credentials of an existing admin are required to register another admin.");
+            setAlertType("error");
+        }
+        if (adminError) {
+            console.error("Failed to check if admin exists:", adminError);
+        }
+    }, [adminData, adminError]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

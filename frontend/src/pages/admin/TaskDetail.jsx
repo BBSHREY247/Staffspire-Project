@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
 import {
     FaArrowLeft, FaEdit, FaCheck, FaTimes, FaCalendarAlt,
@@ -53,32 +54,26 @@ function TaskDetail() {
         setTimeout(() => setMessage(null), 5000);
     };
 
-    const fetchTask = async () => {
-        try {
-            setLoading(true);
-            const res = await axios.get(`${API}/tasks/${id}`, { headers });
-            setTask(res.data.task);
-            setEditForm(res.data.task);
-            setEmpStatus(res.data.task.status);
-            setEmpRemarks(res.data.task.remarks || "");
-        } catch (err) {
-            console.error("Fetch task error:", err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
 
-    const fetchEmployees = async () => {
-        try {
-            const res = await axios.get(`${API}/employees`, { headers });
-            setEmployees(res.data.employees || []);
-        } catch (err) { /* non-critical */ }
-    };
+    const { data: taskData, isLoading: taskLoading, mutate: fetchTask } = useSWR(`${API}/tasks/${id}`, fetcher);
+    const { data: empData } = useSWR(isAdminOrManager ? `${API}/employees` : null, fetcher);
 
     useEffect(() => {
-        fetchTask();
-        if (isAdminOrManager) fetchEmployees();
-    }, [id]);
+        setLoading(taskLoading && !taskData);
+        if (taskData && taskData.task) {
+            setTask(taskData.task);
+            setEditForm(taskData.task);
+            setEmpStatus(taskData.task.status);
+            setEmpRemarks(taskData.task.remarks || "");
+        }
+    }, [taskData, taskLoading]);
+
+    useEffect(() => {
+        if (empData) {
+            setEmployees(empData.employees || []);
+        }
+    }, [empData]);
 
     const handleAdminUpdate = async (e) => {
         e.preventDefault();

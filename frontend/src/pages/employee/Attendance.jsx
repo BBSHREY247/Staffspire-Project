@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { FaClock, FaSignInAlt, FaSignOutAlt, FaCalendarCheck, FaHourglassHalf, FaCalendarDay } from "react-icons/fa";
 
@@ -23,34 +24,28 @@ function Attendance() {
         return () => clearInterval(timer);
     }, []);
 
-    const fetchAttendanceData = async () => {
-        try {
-            setLoading(true);
-            const token = localStorage.getItem("token");
-            const headers = { Authorization: `Bearer ${token}` };
-
-            // Fetch today's status
-            const todayRes = await axios.get("http://localhost:5000/api/attendance/today", { headers });
-            setTodayRecord(todayRes.data.attendance);
-            setIsCheckInAllowed(todayRes.data.isCheckInAllowed !== false);
-            setIsCheckOutAllowed(!!todayRes.data.isCheckOutAllowed);
-            setCheckInBlockReason(todayRes.data.checkInBlockReason || "");
-            setTodayStatusLabel(todayRes.data.todayStatusLabel || "Absent");
-
-            // Fetch history
-            const historyRes = await axios.get("http://localhost:5000/api/attendance/history", { headers });
-            setHistory(historyRes.data.history || []);
-        } catch (error) {
-            console.error("Error fetching attendance data:", error);
-            showNotification("error", "Failed to fetch attendance data.");
-        } finally {
-            setLoading(false);
-        }
-    };
+    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+    const { data: todayData, isLoading: todayLoading, mutate: mutateToday } = useSWR("http://localhost:5000/api/attendance/today", fetcher);
+    const { data: historyData, isLoading: historyLoading, mutate: mutateHistory } = useSWR("http://localhost:5000/api/attendance/history", fetcher);
 
     useEffect(() => {
-        fetchAttendanceData();
-    }, []);
+        setLoading((todayLoading && !todayData) || (historyLoading && !historyData));
+        if (todayData) {
+            setTodayRecord(todayData.attendance);
+            setIsCheckInAllowed(todayData.isCheckInAllowed !== false);
+            setIsCheckOutAllowed(!!todayData.isCheckOutAllowed);
+            setCheckInBlockReason(todayData.checkInBlockReason || "");
+            setTodayStatusLabel(todayData.todayStatusLabel || "Absent");
+        }
+        if (historyData) {
+            setHistory(historyData.history || []);
+        }
+    }, [todayData, historyData, todayLoading, historyLoading]);
+
+    const fetchAttendanceData = () => {
+        mutateToday();
+        mutateHistory();
+    };
 
     const showNotification = (type, text) => {
         setMessage({ type, text });

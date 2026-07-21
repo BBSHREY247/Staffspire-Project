@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
 import {
     FaTasks, FaHourglassHalf, FaSpinner, FaCheckCircle,
@@ -59,24 +60,16 @@ function MyTasks() {
     const token = localStorage.getItem("token");
     const headers = { Authorization: `Bearer ${token}` };
 
-    const fetchData = async (status = "all") => {
-        try {
-            setLoading(true);
-            const params = status !== "all" ? { status } : {};
-            const [tasksRes, statsRes] = await Promise.all([
-                axios.get(`${API}/tasks/my`, { headers, params }),
-                axios.get(`${API}/tasks/stats`, { headers }),
-            ]);
-            setTasks(tasksRes.data.tasks || []);
-            setStats(statsRes.data.stats || {});
-        } catch (err) {
-            console.error("Fetch my tasks error:", err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+    const tasksUrl = activeTab === "all" ? `${API}/tasks/my` : `${API}/tasks/my?status=${encodeURIComponent(activeTab)}`;
+    const { data: tasksData, isLoading: tasksLoading } = useSWR(tasksUrl, fetcher);
+    const { data: statsData, isLoading: statsLoading } = useSWR(`${API}/tasks/stats`, fetcher);
 
-    useEffect(() => { fetchData(activeTab); }, [activeTab]);
+    useEffect(() => {
+        setLoading((tasksLoading && !tasksData) || (statsLoading && !statsData));
+        if (tasksData) setTasks(tasksData.tasks || []);
+        if (statsData) setStats(statsData.stats || { total: 0, pending: 0, inProgress: 0, onHold: 0, completed: 0, overdue: 0 });
+    }, [tasksData, statsData, tasksLoading, statsLoading]);
 
     const formatDate = (d) => {
         if (!d) return "—";

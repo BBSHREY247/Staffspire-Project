@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import useSWR from "swr";
 import { Chart, registerables } from "chart.js";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { 
@@ -53,75 +54,72 @@ function AdminDashboard() {
     const attendanceChartInstance = useRef(null);
     const deptChartInstance = useRef(null);
 
-    const fetchStats = async () => {
-        if (!token) return;
-        try {
-            const response = await axios.get("http://localhost:5000/api/admin/dashboard-stats", {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (response.data.success) {
-                const data = response.data;
-                setStats({
-                    totalEmployees: data.stats.totalEmployees || 0,
-                    departmentsCount: data.stats.departmentsCount || 0,
-                    presentToday: data.stats.presentToday || 0,
-                    absentToday: data.stats.absentToday !== undefined ? data.stats.absentToday : 0,
-                    lateToday: data.stats.lateToday !== undefined ? data.stats.lateToday : 0,
-                    pendingLeaves: data.stats.pendingLeaves !== undefined ? data.stats.pendingLeaves : 0,
-                    activeTasks: data.stats.activeTasks !== undefined ? data.stats.activeTasks : 0,
-                    attendanceRate: data.stats.attendanceRate || 0
-                });
-
-                setDeptDist(data.deptDist || []);
-
-                setLeavesList((data.leavesList || []).map(l => ({
-                    id: l.id,
-                    employee_name: l.employee_name,
-                    email: l.email,
-                    department: l.department,
-                    leave_type: l.leave_type,
-                    start_date: new Date(l.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                    end_date: new Date(l.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                    status: l.status
-                })));
-
-                const formattedActs = (data.recentActivities || []).map(act => {
-                    let formattedTime = "Today";
-                    if (act.created_at) {
-                        const date = new Date(act.created_at);
-                        const now = new Date();
-                        const diffMs = now - date;
-                        const diffMins = Math.floor(diffMs / 60000);
-                        if (diffMins < 1) formattedTime = "Just now";
-                        else if (diffMins < 60) formattedTime = `${diffMins}m ago`;
-                        else if (diffMins < 1440) {
-                            const hrs = Math.floor(diffMins / 60);
-                            formattedTime = `${hrs} hr${hrs > 1 ? 's' : ''} ago`;
-                        } else {
-                            formattedTime = date.toLocaleDateString([], { month: 'short', day: 'numeric' });
-                        }
-                    }
-                    return {
-                        title: act.title,
-                        message: act.message,
-                        time: formattedTime,
-                        type: act.type
-                    };
-                });
-                setActivities(formattedActs);
-
-                setAttendanceTrend(data.attendanceTrend || { labels: [], data: [] });
-            }
-        } catch (error) {
-            console.error("Failed to load dashboard stats:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${token}` } }).then(res => res.data);
+    const { data: dashboardData, error: dashboardError, mutate: fetchStats } = useSWR(
+        token ? "http://localhost:5000/api/admin/dashboard-stats" : null,
+        fetcher
+    );
 
     useEffect(() => {
-        fetchStats();
-    }, [token]);
+        if (dashboardData && dashboardData.success) {
+            const data = dashboardData;
+            setStats({
+                totalEmployees: data.stats.totalEmployees || 0,
+                departmentsCount: data.stats.departmentsCount || 0,
+                presentToday: data.stats.presentToday || 0,
+                absentToday: data.stats.absentToday !== undefined ? data.stats.absentToday : 0,
+                lateToday: data.stats.lateToday !== undefined ? data.stats.lateToday : 0,
+                pendingLeaves: data.stats.pendingLeaves !== undefined ? data.stats.pendingLeaves : 0,
+                activeTasks: data.stats.activeTasks !== undefined ? data.stats.activeTasks : 0,
+                attendanceRate: data.stats.attendanceRate || 0
+            });
+
+            setDeptDist(data.deptDist || []);
+
+            setLeavesList((data.leavesList || []).map(l => ({
+                id: l.id,
+                employee_name: l.employee_name,
+                email: l.email,
+                department: l.department,
+                leave_type: l.leave_type,
+                start_date: new Date(l.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                end_date: new Date(l.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                status: l.status
+            })));
+
+            const formattedActs = (data.recentActivities || []).map(act => {
+                let formattedTime = "Today";
+                if (act.created_at) {
+                    const date = new Date(act.created_at);
+                    const now = new Date();
+                    const diffMs = now - date;
+                    const diffMins = Math.floor(diffMs / 60000);
+                    if (diffMins < 1) formattedTime = "Just now";
+                    else if (diffMins < 60) formattedTime = `${diffMins}m ago`;
+                    else if (diffMins < 1440) {
+                        const hrs = Math.floor(diffMins / 60);
+                        formattedTime = `${hrs} hr${hrs > 1 ? 's' : ''} ago`;
+                    } else {
+                        formattedTime = date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+                    }
+                }
+                return {
+                    title: act.title,
+                    message: act.message,
+                    time: formattedTime,
+                    type: act.type
+                };
+            });
+            setActivities(formattedActs);
+
+            setAttendanceTrend(data.attendanceTrend || { labels: [], data: [] });
+            setLoading(false);
+        }
+        if (dashboardError) {
+            console.error("Failed to load dashboard stats:", dashboardError);
+            setLoading(false);
+        }
+    }, [dashboardData, dashboardError]);
 
     // Draw charts on data changes
     useEffect(() => {

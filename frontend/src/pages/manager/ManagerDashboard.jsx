@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import useSWR from "swr";
 import { Chart, registerables } from "chart.js";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { 
@@ -44,57 +45,43 @@ function ManagerDashboard() {
         projectProgress: []
     });
 
+    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+    const { data: dashData, error: dashError, isLoading } = useSWR(token ? "http://localhost:5000/api/admin/manager/dashboard-info" : null, fetcher);
+
     useEffect(() => {
-        const fetchDashboardData = async () => {
-            if (!token) return;
-            try {
-                const response = await axios.get(
-                    "http://localhost:5000/api/admin/manager/dashboard-info",
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    }
-                );
-                if (response.data.success) {
-                    const resData = response.data;
-                    
-                    setData({
-                        departmentInfo: {
-                            departmentName: resData.departmentInfo.departmentName || "",
-                            managerName: resData.departmentInfo.managerName || "",
-                            teamSize: resData.departmentInfo.teamSize !== undefined ? resData.departmentInfo.teamSize : 0,
-                            attendanceRate: resData.departmentInfo.attendanceRate !== undefined ? resData.departmentInfo.attendanceRate : 0
-                        },
-                        widgets: {
-                            presentToday: resData.widgets.presentToday !== undefined ? resData.widgets.presentToday : 0,
-                            lateToday: resData.widgets.lateToday !== undefined ? resData.widgets.lateToday : 0,
-                            absentToday: resData.widgets.absentToday !== undefined ? resData.widgets.absentToday : 0,
-                            pendingLeaves: resData.widgets.pendingLeaves !== undefined ? resData.widgets.pendingLeaves : 0,
-                            activeTasks: resData.widgets.activeTasks !== undefined ? resData.widgets.activeTasks : 0,
-                            completedTasks: resData.widgets.completedTasks !== undefined ? resData.widgets.completedTasks : 0
-                        },
-                        activities: resData.activities || [],
-                        attendanceTrend: resData.attendanceTrend || {
-                            labels: [],
-                            data: []
-                        },
-                        projectProgress: resData.projectProgress || []
-                    });
-                } else {
-                    setError("Failed to fetch dashboard data.");
-                }
-
-            } catch (err) {
-                console.error(err);
-                setError("An error occurred while fetching dashboard statistics.");
-            } finally {
-                setLoading(false);
+        setLoading(isLoading && !dashData);
+        if (dashError) {
+            setError("An error occurred while fetching dashboard statistics.");
+        } else if (dashData) {
+            if (dashData.success) {
+                const resData = dashData;
+                setData({
+                    departmentInfo: {
+                        departmentName: resData.departmentInfo?.departmentName || "",
+                        managerName: resData.departmentInfo?.managerName || "",
+                        teamSize: resData.departmentInfo?.teamSize !== undefined ? resData.departmentInfo.teamSize : 0,
+                        attendanceRate: resData.departmentInfo?.attendanceRate !== undefined ? resData.departmentInfo.attendanceRate : 0
+                    },
+                    widgets: {
+                        presentToday: resData.widgets?.presentToday !== undefined ? resData.widgets.presentToday : 0,
+                        lateToday: resData.widgets?.lateToday !== undefined ? resData.widgets.lateToday : 0,
+                        absentToday: resData.widgets?.absentToday !== undefined ? resData.widgets.absentToday : 0,
+                        pendingLeaves: resData.widgets?.pendingLeaves !== undefined ? resData.widgets.pendingLeaves : 0,
+                        activeTasks: resData.widgets?.activeTasks !== undefined ? resData.widgets.activeTasks : 0,
+                        completedTasks: resData.widgets?.completedTasks !== undefined ? resData.widgets.completedTasks : 0
+                    },
+                    activities: resData.activities || [],
+                    attendanceTrend: resData.attendanceTrend || {
+                        labels: [],
+                        data: []
+                    },
+                    projectProgress: resData.projectProgress || []
+                });
+            } else {
+                setError("Failed to fetch dashboard data.");
             }
-        };
-
-        fetchDashboardData();
-    }, [token]);
+        }
+    }, [dashData, dashError, isLoading]);
 
     // Draw Line Chart on data changes
     useEffect(() => {

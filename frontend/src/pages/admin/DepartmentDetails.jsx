@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaBuilding, FaUsers, FaEdit, FaTrash, FaCheck, FaTimes, FaUserTie, FaBriefcase, FaIdBadge, FaEye } from "react-icons/fa";
@@ -27,27 +28,17 @@ function DepartmentDetails() {
         setTimeout(() => setAlertMsg(""), 6000);
     };
 
-    const fetchDepartmentDetails = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const response = await axios.get(
-                `http://localhost:5000/api/departments/${id}`,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            if (response.data.success) {
-                setDept(response.data.department);
-                setNewName(response.data.department.department_name);
-                setEmployees(response.data.employees || []);
-                setManager(response.data.manager || null);
-            }
-        } catch (error) {
-            console.log("Error loading department details:", error);
-        }
-    };
+    const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+    const { data: deptData, mutate: fetchDepartmentDetails } = useSWR(`http://localhost:5000/api/departments/${id}`, fetcher);
 
     useEffect(() => {
-        fetchDepartmentDetails();
-    }, [id]);
+        if (deptData && deptData.success) {
+            setDept(deptData.department);
+            setNewName(deptData.department.department_name);
+            setEmployees(deptData.employees || []);
+            setManager(deptData.manager || null);
+        }
+    }, [deptData]);
 
     const handleUpdate = async () => {
         if (!newName.trim()) {

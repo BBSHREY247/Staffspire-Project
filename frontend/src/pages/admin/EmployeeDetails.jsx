@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaUser, FaEnvelope, FaBuilding, FaIdBadge, FaEdit, FaTrash, FaCheck, FaTimes, FaLock, FaKey, FaPhone, FaVenusMars, FaMoneyBillAlt, FaBriefcase, FaCalendarAlt } from "react-icons/fa";
@@ -38,32 +39,23 @@ function EmployeeDetails() {
         setTimeout(() => setAlertMsg(""), 6000);
     };
 
-    const fetchEmployee = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            const response = await axios.get(
-                `http://localhost:5000/api/employees/${id}`,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            setEmployee(response.data.employee);
-        } catch (error) {
-            console.log(error);
-        }
-    };
+    const fetcherAuth = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+    const fetcher = (url) => axios.get(url).then(res => res.data);
 
-    const fetchDepartments = async () => {
-        try {
-            const res = await axios.get("http://localhost:5000/api/departments");
-            setDepartments(res.data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
+    const { data: empData, mutate: fetchEmployee } = useSWR(`http://localhost:5000/api/employees/${id}`, fetcherAuth);
+    const { data: deptData } = useSWR("http://localhost:5000/api/departments", fetcher);
 
     useEffect(() => {
-        fetchEmployee();
-        fetchDepartments();
-    }, []);
+        if (empData && empData.employee) {
+            setEmployee(empData.employee);
+        }
+    }, [empData]);
+
+    useEffect(() => {
+        if (deptData) {
+            setDepartments(deptData);
+        }
+    }, [deptData]);
 
     const handleVerifyAdminPassword = async () => {
         if (!adminPasswordInput) {
