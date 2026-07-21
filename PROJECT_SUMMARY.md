@@ -1,8 +1,8 @@
 # StaffSpire Project Summary
 
-> **Generated:** July 2025  
+> **Generated:** July 2026  
 > **Repository:** StaffSpire Employee Management System  
-> **Branch:** `main` (up to date with `origin/main`)
+> **Branch:** `main`
 
 ---
 
@@ -16,13 +16,13 @@
 
 | Layer | Technology |
 |-------|------------|
-| **Frontend** | React 19, Vite, React Router DOM 7, Axios, Chart.js, Tailwind CSS 4 |
-| **Backend** | Node.js 20, Express 5, MySQL2, JWT |
-| **Security** | bcryptjs (password hashing), JWT (stateless auth), CORS, role-based middleware |
+| **Frontend** | React 19, Vite 8, React Router DOM 7, Axios, Chart.js, SWR, Tailwind CSS 4 (installed, mostly unused), React Icons |
+| **Backend** | Node.js 20, Express 5, MySQL2 (promise wrapper), JWT, bcryptjs, node-cron |
+| **Security** | bcryptjs (password hashing), JWT (stateless auth), AES-256-CBC (employee password encryption), CORS, role-based middleware |
 | **Reports** | PDFKit (PDF), ExcelJS (Excel), custom CSV generator |
-| **Email** | Nodemailer (OTP reset, task/leave notifications, contact form) |
-| **Scheduling** | node-cron (auto-mark absents at 08:45 AM, auto-checkout at 22:30) |
-| **DevOps** | GitHub Actions CI (backend tests + frontend build) |
+| **Email** | Nodemailer (OTP reset, task/leave notifications, contact form) — graceful fallback to mock_emails.log |
+| **Scheduling** | node-cron (auto-mark absents at 08:45, auto-checkout at 22:30, weekend & leave-aware) |
+| **DevOps** | GitHub Actions CI (backend + frontend jobs), React Doctor workflow |
 
 ---
 
@@ -31,34 +31,39 @@
 ```
 StaffSpire/
 ├── backend/
-│   ├── config/           # DB pool config, mail transporter
-│   ├── controllers/      # 12 controllers (auth, employee, attendance, leave, task, report, notification, dashboard x3, department, office settings)
-│   ├── middleware/       # JWT auth protector, role guards (adminOnly, managerOnly, employeeOnly, adminOrManager)
-│   ├── routes/           # 11 route modules
-│   ├── utils/            # Token generator, crypto helpers, email helper, CSV/Excel/PDF generators
-│   ├── server.js         # Entry point (port 5000)
+│   ├── config/             # DB pool config, mail transporter
+│   ├── controllers/        # 13 controllers (auth, employee, attendance, leave, task, project, report, notification, adminDashboard, employeeDashboard, managerDashboard, department, officeSettings)
+│   ├── middleware/         # JWT auth protector, role guards (adminOnly, managerOnly, employeeOnly, adminOrManager)
+│   ├── routes/             # 12 route modules
+│   ├── utils/              # Token generator, AES-256-CBC crypto helpers, email helper (mock fallback), CSV/Excel/PDF generators
+│   ├── scripts/            # DB migration scripts
+│   ├── server.js           # Entry point (port 5000)
 │   └── package.json
 ├── frontend/
 │   ├── src/
-│   │   ├── auth/         # Login, Register Admin, Forgot/Reset Password, OTP Verify
+│   │   ├── auth/           # Login, Register Admin, Forgot/Reset Password, OTP Verify
 │   │   ├── pages/
-│   │   │   ├── public/   # Home, Features, Solutions, About, Contact
-│   │   │   ├── admin/    # Dashboard, Employees, Attendance, Leaves, Tasks, Departments, Reports, Settings
-│   │   │   ├── manager/  # Manager Dashboard
-│   │   │   ├── employee/ # Dashboard, Profile, Attendance, Leaves, Tasks
-│   │   │   ├── reports/  # Reports Dashboard with filters & exports
-│   │   │   └── layouts/  # Sidebar, Header, Footer, Dashboard Layout
-│   │   ├── components/   # Reusable UI (modals, alerts, scroll-to-top)
-│   │   ├── hooks/        # useScrollReveal
-│   │   ├── assets/       # Logo, dashboard images, public page visuals
-│   │   ├── styles/       # 17 CSS modules (global, per-page, per-dashboard)
-│   │   ├── App.jsx       # Route definitions (28 routes)
-│   │   └── main.jsx      # React root entry
+│   │   │   ├── public/     # Home, Features, Solutions, About, Contact
+│   │   │   ├── admin/      # Dashboard, Employees, Attendance, Leaves, Tasks, Projects, Departments, Alerts
+│   │   │   ├── manager/    # Manager Dashboard
+│   │   │   ├── employee/   # Dashboard, Profile, Attendance, Leaves, Tasks
+│   │   │   ├── reports/    # Reports Dashboard with filters & exports
+│   │   │   ├── settings/   # Settings page + tabs
+│   │   │   └── layouts/    # Sidebar, Header, Footer, Dashboard Layout
+│   │   ├── components/     # Reusable UI (modals, alerts, scroll-to-top)
+│   │   ├── hooks/          # useScrollReveal
+│   │   ├── assets/         # Logo, dashboard images, public page visuals
+│   │   ├── styles/         # 16 CSS modules (global, per-page, per-dashboard)
+│   │   ├── App.jsx         # Route definitions (32 routes)
+│   │   └── main.jsx        # React root entry
+│   ├── dist/               # Pre-built production bundle
 │   ├── index.html
 │   └── package.json
-├── .github/workflows/    # CI pipeline
+├── .github/workflows/      # CI pipeline + React Doctor
 ├── README.md
-└── package.json          # Workspace root
+├── PROJECT_SUMMARY.md
+├── package.json            # Workspace root
+└── StaffSpire*.pdf/docx    # Requirements docs
 ```
 
 ---
@@ -100,7 +105,7 @@ StaffSpire/
 - **Email + in-app notifications** sent to department manager (or fallback admin) on new leave applications
 
 ### 4.5 Task Management
-- **Create & assign** tasks with priority (Low/Medium/High), deadline, department
+- **Create & assign** tasks with priority (Low/Medium/High), deadline, department, and optional project association
 - **Status tracking**: Pending → In Progress → On Hold → Completed (with overdue auto-detection)
 - **Role-based views**: Admin sees all, Manager sees department, Employee sees own
 - **Employee updates**: Can only change status and add remarks
@@ -108,16 +113,23 @@ StaffSpire/
 - **Email + in-app notifications** on new task assignment
 - **Completion date** auto-captured when status set to Completed
 
-### 4.6 Department Management
+### 4.6 Project Management
+- **CRUD** projects with code generation (`PRJ####`), color coding, and icons
+- **Member management**: Add/remove employees to projects
+- **Milestone tracking**: Create, update, complete milestones with due dates
+- **Progress calculation**: Auto-computed completion % from linked tasks
+- **Analytics dashboard**: Project stats, department distribution, average progress
+
+### 4.7 Department Management
 - **CRUD** departments with employee count aggregation
-- **Department Details** page showing employees, manager, and activity
+- **Department Details** page showing employees list, manager, and employee count
 - **Manager assignment** linked to department
 
-### 4.7 Office Settings
+### 4.8 Office Settings
 - **Geofence configuration**: Office name, latitude, longitude, attendance radius
 - Used by attendance module for location validation *(feature logic present, currently disabled)*
 
-### 4.8 Reports & Exports
+### 4.9 Reports & Exports
 Five report types, each with filters, summary statistics, and export capability:
 
 | Report | Filters | Exports |
@@ -131,7 +143,7 @@ Five report types, each with filters, summary statistics, and export capability:
 - **Role-scoped reports**: Managers see only their department; Employees see only their own data
 - **Employees blocked from exports**: Organization-wide exports restricted to Admin/Manager
 
-### 4.9 Dashboards
+### 4.10 Dashboards
 
 #### Admin Dashboard
 - Key stats: Total Employees, Departments, Present Today, Late Today, Absent Today, Attendance Rate, Pending Leaves, Active Tasks
@@ -143,17 +155,28 @@ Five report types, each with filters, summary statistics, and export capability:
 #### Manager Dashboard
 - Department-scoped version of admin stats
 - Team attendance, task, and leave summaries
+- Project progress tracking
 
 #### Employee Dashboard
-- Personal attendance summary
-- Upcoming tasks, leave balance view, recent check-in status
+- Personal attendance summary with working hours progress bar
+- Upcoming tasks with priority and deadline indicators
+- Leave balance (annual allowance vs. taken)
+- 14-day attendance heatmap
+- Team members and manager info
+- Recent activity log
 
-### 4.10 Public Marketing Pages
+### 4.11 Public Marketing Pages
 - **Home**: Hero section, feature highlights, stats, trusted carousel, workflow, CTA, footer
 - **Features**: Detailed capability breakdown
 - **Solutions**: Use-case oriented presentation
 - **About**: Company story with real images
 - **Contact**: Contact form with integrated map image (SF HQ)
+
+### 4.12 In-App Notifications
+- **Notification bell** with unread count
+- **Auto-created** on new leave requests (for manager/admin)
+- **Auto-created** on new task assignment (for assignee)
+- **Mark as read** (individual) and **clear all** actions
 
 ---
 
@@ -163,12 +186,15 @@ Five report types, each with filters, summary statistics, and export capability:
 |-------|---------|
 | `users` | Login accounts (id, name, email, password, role_id, login_id, status, must_change_password, reset_otp, otp_expiry) |
 | `roles` | Role definitions (Admin=1, Manager=2, Employee=3) |
-| `employees` | Employee profiles (personal info, department, designation, salary, joining_date, employee_id, encrypted password) |
+| `employees` | Employee profiles (personal info, department, designation, salary, joining_date, employee_id, encrypted password, date_of_birth, probation_period) |
 | `departments` | Department names |
 | `attendance` | Daily attendance records (check_in, check_out, working_hours, status, attendance_date) |
 | `leave_requests` | Leave applications (type, dates, reason, status, rejection_remarks) |
 | `leave_types` | Leave type catalog |
-| `tasks` | Task assignments (title, description, assigned_by, employee_id, priority, status, deadline, completion_date, remarks, task_id) |
+| `tasks` | Task assignments (title, description, assigned_by, assigned_by_user_id, employee_id, priority, status, deadline, completion_date, remarks, task_id, project_id) |
+| `projects` | Projects (name, description, department, manager, priority, dates, color, icon, status, project_code) |
+| `project_members` | Project-employee membership |
+| `project_milestones` | Milestones (title, description, due_date, status, completion_date) |
 | `office_settings` | Geofence config (latitude, longitude, radius) |
 | `notifications` | In-app notification bell items (user_id, title, message, is_read) |
 
@@ -177,7 +203,7 @@ Five report types, each with filters, summary statistics, and export capability:
 ## 6. Security Measures
 
 - **Password hashing**: bcrypt with 10 salt rounds
-- **Encrypted employee passwords**: Custom crypto helper for reversible storage (for admin reveal feature)
+- **Encrypted employee passwords**: Custom AES-256-CBC crypto helper for reversible storage (for admin reveal feature)
 - **JWT authentication**: Stateless tokens with role embedding
 - **Parameterized queries**: All SQL via MySQL2 prepared statements (SQL injection protection)
 - **Role-based access control**: Granular middleware on every protected route
@@ -186,116 +212,165 @@ Five report types, each with filters, summary statistics, and export capability:
 
 ---
 
-## 7. Recent Development Activity
-
-Recent commits (latest → oldest):
-
-| Commit | Description |
-|--------|-------------|
-| `71bb1cf` | Fixed task reassignment issue when employee department is changed |
-| `de8f99b` | Updated employee task UI to match manager dashboard edit UI |
-| `db7e75b` | Added theme toggle features for dashboard |
-| `36f4913` | Fixed page scroll issue; prevented force checkout of absent employees |
-| `77d1f60` | Updated public page images |
-| `e7b50de` | Contact page updated with SF Headquarters map image |
-| `e968ef8` | Solutions page real images updated |
-| `4e9b96e` | About page images added instead of CSS mockups |
-| `f1474cd` | Features page upgraded |
-
-**Trend**: Recent work focused on **UI/UX polish** (real images replacing mockups, theme toggle, page scrolling), **task management refinements**, and **attendance edge-case fixes**.
-
----
-
-## 8. Current Status & Known Notes
+## 7. Current Status & Known Issues
 
 | Aspect | Status |
 |--------|--------|
-| **Git working tree** | Clean (no uncommitted code changes) |
-| **Branch** | `main` — up to date with `origin/main` |
 | **Geofence / GPS validation** | **Temporarily disabled** in attendance check-in/out (code commented out; office settings still configurable) |
-| **CI/CD** | GitHub Actions configured; backend tests run against MySQL 8.0 service; frontend builds with Vite |
-| **Email delivery** | Configured via Nodemailer (credentials in `.env`) |
+| **CI/CD** | GitHub Actions configured; backend CI will **fail** (missing `lint` and `test` scripts in `package.json`) |
+| **Testing** | **None implemented** — no test dependencies, no test directory, CI step will fail |
+| **Email delivery** | Configured via Nodemailer (`.env` with real Gmail credentials committed — **rotate immediately**) |
 | **Production build** | Frontend `dist/` folder exists (pre-built) |
+| **Docker** | Referenced in docs but no `Dockerfile` or `docker-compose.yml` exist |
+
+### Known Issues
+
+| # | Issue | Location | Severity |
+|---|-------|----------|----------|
+| 1 | **No tests** — CI references `npm test` but no test deps or scripts exist | Backend root | Critical |
+| 2 | **`.env` committed** — contains real Gmail app password | `backend/.env` | Critical |
+| 3 | **Bug: undefined `distance`** — response references undeclared variable | `attendanceController.js:365` | High |
+| 4 | **CI will fail** — `npm run lint` and `npm test` scripts missing from backend | `backend/package.json` | High |
+| 5 | **Duplicate helpers** — `getManagerDepartment` (x3), `getEmployeeIdFromUser` (x2), `getEmployeeFromUser` (x3), working-hours calculation (x3) | Multiple controllers | High |
+| 6 | **Inline `require()`** — `notificationController` and `emailHelper` loaded inside function bodies | `leaveController.js:94`, `taskController.js:73` | High |
+| 7 | **No input validation library** — manual `if (!x)` checks everywhere, `registerUser` returns raw MySQL error | All controllers | High |
+| 8 | **No centralized error handler** — 13+ identical try/catch blocks with boilerplate | Every controller | Medium |
+| 9 | **Hardcoded API URLs** — `http://localhost:5000` hardcoded in every frontend file | Multiple JSX files | Medium |
+| 10 | **Department routes unauthenticated** — `GET /api/departments` and `GET /:id` have no `protect` middleware | `departmentRoutes.js` | Medium |
+| 11 | **Response inconsistency** — `departmentController` returns `{ message }` without `success` field | `departmentController.js` | Medium |
+| 12 | **Tailwind installed but unused** — `@tailwindcss/vite` in deps but no proxy config; 16 separate CSS files | Frontend | Low |
+| 13 | **No rate limiting** on auth endpoints (brute-force protection missing) | Missing entirely | Low |
+| 14 | **No HTTP security headers** (Helmet not installed) | Missing entirely | Low |
+| 15 | **`adminRoutes` mounted twice** — same routes registered twice on `/api/admin` | `server.js:19-26` | Low |
+| 16 | **`dotenv.config()` called twice** | `server.js:1,9` | Low |
+| 17 | **`markAllAsRead` deletes instead of marking** — notifications are removed, not marked | `notificationController.js:65` | Low |
+| 18 | **`.gitignore` not blocking `.env`** — environment file is tracked | Repository root | Info |
 
 ---
 
-## 9. API Endpoints Summary
+## 8. API Endpoints Summary
 
-| Base Path | Description |
-|-----------|-------------|
-| `POST /api/auth/login` | Login with email or Employee ID |
-| `POST /api/auth/register` | Register new user |
-| `POST /api/auth/forgot-password` | Send OTP to email |
-| `POST /api/auth/verify-otp` | Verify OTP code |
-| `POST /api/auth/reset-password` | Reset password with OTP |
-| `POST /api/auth/change-password` | Change password (authenticated) |
-| `POST /api/auth/register-admin` | Register admin (with auth check) |
-| `GET /api/auth/check-admin` | Check if any admin exists |
-| `POST /api/auth/contact` | Contact form submission |
-| `GET /api/employees` | List employees (Admin: all, Manager: dept) |
-| `POST /api/employees` | Create employee (Admin/Manager) |
-| `GET /api/employees/:id` | Get employee details |
-| `PUT /api/employees/:id` | Update employee |
-| `DELETE /api/employees/:id` | Delete employee |
-| `POST /api/employees/:id/reveal-password` | Reveal employee password (admin auth required) |
-| `GET /api/attendance/today` | Today's attendance status |
-| `POST /api/attendance/check-in` | Employee check-in |
-| `POST /api/attendance/check-out` | Employee check-out |
-| `GET /api/attendance/history` | Personal attendance history |
-| `GET /api/attendance` | All attendance records (Admin/Manager scoped) |
-| `GET /api/attendance/:employeeId` | Specific employee attendance |
-| `POST /api/attendance/admin/check-out` | Admin force checkout |
-| `GET /api/leaves/types` | Leave type dropdown |
-| `POST /api/leaves/apply` | Apply for leave |
-| `GET /api/leaves/history` | Personal leave history |
-| `DELETE /api/leaves/cancel/:id` | Cancel leave request |
-| `GET /api/leaves/admin/requests` | Admin/Manager leave requests list |
-| `POST /api/leaves/admin/action` | Approve/Reject leave |
-| `GET /api/leaves/admin/stats` | Leave statistics |
-| `POST /api/tasks` | Create task |
-| `GET /api/tasks` | List tasks (role-scoped) |
-| `GET /api/tasks/my` | Employee's own tasks |
-| `GET /api/tasks/stats` | Task statistics |
-| `GET /api/tasks/employees` | Employees for assignment dropdown |
-| `GET /api/tasks/:id` | Task detail |
-| `PUT /api/tasks/:id` | Update task |
-| `DELETE /api/tasks/:id` | Delete task |
-| `GET /api/reports/employees` | Employee report data |
-| `GET /api/reports/attendance` | Attendance report data |
-| `GET /api/reports/leaves` | Leave report data |
-| `GET /api/reports/tasks` | Task report data |
-| `GET /api/reports/departments` | Department summary report |
-| `GET /api/reports/export/csv` | Export CSV |
-| `GET /api/reports/export/excel` | Export Excel |
-| `GET /api/reports/export/pdf` | Export PDF |
-| `GET /api/reports/dashboard-stats` | Dashboard statistics |
-| `GET /api/notifications` | User notifications |
-| `PUT /api/notifications/:id/read` | Mark notification read |
-| `PUT /api/notifications/read-all` | Clear all notifications |
-| `GET /api/departments` | List departments |
-| `GET /api/office-settings` | Get office geofence settings |
-| `PUT /api/office-settings` | Update office settings |
+| Method | Path | Auth | Role |
+|--------|------|------|------|
+| `POST` | `/api/auth/register` | No | — |
+| `GET` | `/api/auth/check-admin-exists` | No | — |
+| `POST` | `/api/auth/register-admin` | No | — |
+| `POST` | `/api/auth/login` | No | — |
+| `GET` | `/api/auth/profile` | JWT | Any |
+| `PUT` | `/api/auth/change-password` | JWT | Any |
+| `POST` | `/api/auth/forgot-password` | No | — |
+| `PUT` | `/api/auth/reset-password` | No | — |
+| `POST` | `/api/auth/verify-otp` | No | — |
+| `POST` | `/api/auth/contact` | No | — |
+| `GET` | `/api/admin/dashboard-stats` | JWT | Admin |
+| `GET` | `/api/admin/manager/dashboard-info` | JWT | Admin/Manager |
+| `GET` | `/api/employees` | JWT | Admin/Manager |
+| `POST` | `/api/employees` | JWT | Admin |
+| `GET` | `/api/employees/:id` | JWT | Admin/Manager |
+| `PUT` | `/api/employees/:id` | JWT | Admin/Manager |
+| `DELETE` | `/api/employees/:id` | JWT | Admin |
+| `POST` | `/api/employees/:id/reveal-password` | JWT | Admin |
+| `GET` | `/api/employee/dashboard` | JWT | Employee |
+| `GET` | `/api/attendance/today` | JWT | Any |
+| `POST` | `/api/attendance/check-in` | JWT | Any |
+| `POST` | `/api/attendance/check-out` | JWT | Any |
+| `GET` | `/api/attendance/history` | JWT | Any |
+| `GET` | `/api/attendance` | JWT | Admin/Manager |
+| `POST` | `/api/attendance/admin/check-out` | JWT | Admin/Manager |
+| `GET` | `/api/attendance/:employeeId` | JWT | Admin/Manager |
+| `GET` | `/api/leaves/types` | No | — |
+| `POST` | `/api/leaves/apply` | JWT | Any |
+| `GET` | `/api/leaves/history` | JWT | Any |
+| `DELETE` | `/api/leaves/cancel/:id` | JWT | Any |
+| `GET` | `/api/leaves/admin/requests` | JWT | Admin/Manager |
+| `POST` | `/api/leaves/admin/action` | JWT | Admin/Manager |
+| `GET` | `/api/leaves/admin/stats` | JWT | Admin/Manager |
+| `POST` | `/api/tasks` | JWT | Admin/Manager |
+| `GET` | `/api/tasks` | JWT | Any (scoped) |
+| `GET` | `/api/tasks/my` | JWT | Employee |
+| `GET` | `/api/tasks/stats` | JWT | Any (scoped) |
+| `GET` | `/api/tasks/employees` | JWT | Admin/Manager |
+| `GET` | `/api/tasks/:id` | JWT | Any |
+| `PUT` | `/api/tasks/:id` | JWT | Any (scoped) |
+| `DELETE` | `/api/tasks/:id` | JWT | Admin |
+| `GET` | `/api/projects/analytics` | JWT | Any |
+| `POST` | `/api/projects` | JWT | Any |
+| `GET` | `/api/projects` | JWT | Any |
+| `GET` | `/api/projects/:id` | JWT | Any |
+| `PUT` | `/api/projects/:id` | JWT | Any |
+| `DELETE` | `/api/projects/:id` | JWT | Any |
+| `PUT` | `/api/projects/:id/archive` | JWT | Any |
+| `POST` | `/api/projects/members` | JWT | Any |
+| `DELETE` | `/api/projects/members` | JWT | Any |
+| `POST` | `/api/projects/milestones` | JWT | Any |
+| `PUT` | `/api/projects/milestones/:id` | JWT | Any |
+| `DELETE` | `/api/projects/milestones/:id` | JWT | Any |
+| `GET` | `/api/reports/dashboard-stats` | JWT | Any (scoped) |
+| `GET` | `/api/reports/employees` | JWT | Any (scoped) |
+| `GET` | `/api/reports/attendance` | JWT | Any (scoped) |
+| `GET` | `/api/reports/leaves` | JWT | Any (scoped) |
+| `GET` | `/api/reports/tasks` | JWT | Any (scoped) |
+| `GET` | `/api/reports/departments` | JWT | Admin/Manager |
+| `GET` | `/api/reports/export/csv` | JWT | Admin/Manager |
+| `GET` | `/api/reports/export/excel` | JWT | Admin/Manager |
+| `GET` | `/api/reports/export/pdf` | JWT | Admin/Manager |
+| `GET` | `/api/notifications` | JWT | Any |
+| `PUT` | `/api/notifications/:id/read` | JWT | Any |
+| `PUT` | `/api/notifications/read-all` | JWT | Any |
+| `GET` | `/api/departments` | **None** | — |
+| `GET` | `/api/departments/:id` | **None** | — |
+| `POST` | `/api/departments` | **None** | — |
+| `PUT` | `/api/departments/:id` | **None** | — |
+| `DELETE` | `/api/departments/:id` | **None** | — |
+| `GET` | `/api/office-settings` | JWT | Any |
+| `POST` | `/api/office-settings` | JWT | Admin |
 
 ---
 
-## 10. Development Quick Reference
+## 9. Development Quick Reference
 
 ```bash
-# Run both frontend and backend concurrently
-npm run dev
+# Backend
+cd backend
+npm run dev       # Start with nodemon on :5000
+npm start         # Production start
 
-# Individual services
-npm run dev --workspace=backend   # API on :5000
-npm run dev --workspace=frontend  # Vite on :5173
+# Frontend
+cd frontend
+npm run dev       # Vite dev server on :5173
+npm run build     # Production build
+npm run lint      # ESLint check
+npm run preview   # Preview production build
 
-# Production
-npm run build    # Build frontend
-npm run start    # Start backend
-
-# Testing
-npm run test --workspace=backend
+# Testing (not yet implemented)
+# cd backend && npm test
 ```
 
 ---
 
-*This summary was generated from direct inspection of the codebase, including source files, controllers, routes, middleware, configuration, and git history.*
+## 10. Upgrade Roadmap (to 9/10)
+
+| Priority | Task | Effort |
+|----------|------|--------|
+| P0 | Write backend tests (Jest + Supertest) | 2-3 days |
+| P0 | Remove `.env` from git, rotate credentials, add to `.gitignore` | 30 min |
+| P0 | Fix `undefined distance` bug in `attendanceController.js:365` | 5 min |
+| P0 | Add `lint` and `test` scripts to backend `package.json` | 15 min |
+| P1 | Extract duplicated helpers into `utils/employeeHelper.js` | 1 day |
+| P1 | Install `express-validator`/`zod` for request validation | 1 day |
+| P1 | Add Express error-handling middleware | 1 day |
+| P1 | Replace inline `require()` with top-level imports | 30 min |
+| P1 | Configure Vite proxy, remove hardcoded URLs | 1 day |
+| P1 | Add `express-rate-limit` on auth routes | 30 min |
+| P1 | Fix unauthenticated department routes | 30 min |
+| P1 | Normalize `departmentController` response shape | 30 min |
+| P2 | Add Helmet for HTTP security headers | 15 min |
+| P2 | Fix duplicate `dotenv.config()` and `adminRoutes` mount | 15 min |
+| P2 | Change `markAllAsRead` to update instead of delete | 15 min |
+| P3 | Add TypeScript | 3-5 days |
+| P3 | Add Docker setup | 1-2 days |
+| P3 | Use Tailwind properly or clean up unused deps | 1 day |
+
+---
+
+*This summary was generated from direct inspection of the codebase, including all 13 backend controllers, 12 route files, middleware, configuration, 16 frontend CSS modules, and git history.*
