@@ -38,6 +38,7 @@ import TaskDetail from "./pages/admin/TaskDetail";
 import MyTasks from "./pages/employee/MyTasks";
 import ReportsDashboard from "./pages/reports/ReportsDashboard";
 import AlertsShowcase from "./pages/admin/AlertsShowcase";
+import ProjectDashboard from "./pages/admin/ProjectDashboard";
 
 
 function App() {
@@ -109,6 +110,11 @@ function App() {
                 <Route
                     path="/admin/tasks/:id"
                     element={<TaskDetail />}
+                />
+
+                <Route
+                    path="/admin/projects"
+                    element={<ProjectDashboard />}
                 />
 
                 <Route

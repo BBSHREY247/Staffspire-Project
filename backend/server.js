@@ -62,6 +62,9 @@ app.use("/api/leaves", leaveRoutes);
 const taskRoutes = require("./routes/taskRoutes");
 app.use("/api/tasks", taskRoutes);
 
+const projectRoutes = require("./routes/projectRoutes");
+app.use("/api/projects", projectRoutes);
+
 const reportRoutes = require("./routes/reportRoutes");
 app.use("/api/reports", reportRoutes);
 

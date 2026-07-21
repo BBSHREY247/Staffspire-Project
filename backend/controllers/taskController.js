@@ -27,7 +27,7 @@ const createTask = async (req, res) => {
         const emp = await getEmployeeFromUser(req.user.id);
         const assignedByName = emp ? `${emp.first_name} ${emp.last_name}` : "Admin";
 
-        const { task_title, description, assigned_to, priority, deadline, department } = req.body;
+        const { task_title, description, assigned_to, priority, deadline, department, project_id } = req.body;
         if (!task_title || !assigned_to || !deadline) {
             return res.status(400).json({ success: false, message: "Title, assigned employee, and due date are required." });
         }
@@ -47,9 +47,9 @@ const createTask = async (req, res) => {
         }
 
         const [result] = await db.promise().query(
-            `INSERT INTO tasks (task_title, description, assigned_by, assigned_by_user_id, employee_id, department, priority, status, deadline)
-             VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending', ?)`,
-            [task_title, description || null, assignedByName, req.user.id, assigned_to, dept, priority || "Medium", deadline]
+            `INSERT INTO tasks (task_title, description, assigned_by, assigned_by_user_id, employee_id, department, priority, status, deadline, project_id)
+             VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending', ?, ?)`,
+            [task_title, description || null, assignedByName, req.user.id, assigned_to, dept, priority || "Medium", deadline, project_id || null]
         );
 
         // Generate task_id from insert ID
@@ -309,7 +309,7 @@ const updateTask = async (req, res) => {
             );
         } else {
             // Admin / Manager: full update
-            const { task_title, description, assigned_to, priority, status, deadline, department, remarks } = req.body;
+            const { task_title, description, assigned_to, priority, status, deadline, department, remarks, project_id } = req.body;
 
             const emp = await getEmployeeFromUser(req.user.id);
             if (role === "Manager") {
@@ -336,7 +336,7 @@ const updateTask = async (req, res) => {
 
             await db.promise().query(
                 `UPDATE tasks SET task_title = ?, description = ?, employee_id = ?, priority = ?,
-                 status = ?, deadline = ?, department = ?, remarks = ?, completion_date = ? WHERE id = ?`,
+                 status = ?, deadline = ?, department = ?, remarks = ?, completion_date = ?, project_id = ? WHERE id = ?`,
                 [
                     task_title || task.task_title,
                     description !== undefined ? description : task.description,
@@ -347,6 +347,7 @@ const updateTask = async (req, res) => {
                     dept,
                     remarks !== undefined ? remarks : task.remarks,
                     completionDate,
+                    project_id !== undefined ? project_id : task.project_id,
                     req.params.id
                 ]
             );
