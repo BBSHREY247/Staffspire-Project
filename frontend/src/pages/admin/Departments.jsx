@@ -80,6 +80,7 @@ function Departments() {
                                 <td style={{ textAlign: "center" }}>
                                     <button
                                         className="table-action-btn"
+                                        aria-label="View Department"
                                         onClick={() => navigate(`/admin/departments/${dept.id}`)}
                                         title="View Details"
                                     >
@@ -125,6 +126,7 @@ function Departments() {
                     }}>
                         <button
                             onClick={() => { setShowAddModal(false); setDepartmentName(""); }}
+                            aria-label="Close modal"
                             style={{
                                 position: "absolute",
                                 top: "20px",
@@ -151,9 +153,10 @@ function Departments() {
 
                         <form onSubmit={handleAddDepartment} className="form-group" style={{ margin: 0 }}>
                             <div className="form-group-custom" style={{ marginBottom: "20px" }}>
-                                <label className="form-label-custom">Department Name</label>
+                                <label className="form-label-custom" htmlFor="add-dept-name">Department Name</label>
                                 <input
                                     type="text"
+                                    id="add-dept-name"
                                     placeholder="Enter department name (e.g. Sales, HR)"
                                     value={departmentName}
                                     onChange={(e) => setDepartmentName(e.target.value)}

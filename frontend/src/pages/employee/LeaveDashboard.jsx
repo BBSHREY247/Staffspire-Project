@@ -267,6 +267,7 @@ function LeaveDashboard() {
                     <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(15, 23, 42, 0.4)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <div className="form-card" style={{ width: "90%", maxWidth: "500px", margin: 0, position: "relative" }}>
                             <button
+                                aria-label="Close modal"
                                 onClick={() => setShowApplyModal(false)}
                                 style={{ position: "absolute", top: "20px", right: "20px", background: "none", border: "none", cursor: "pointer", fontSize: "18px", color: "#94a3b8" }}
                             >
@@ -279,6 +280,7 @@ function LeaveDashboard() {
                                 <div className="form-group" style={{ margin: 0 }}>
                                     <label>Leave Type</label>
                                     <select
+                                        aria-label="Leave Type"
                                         value={leaveTypeId}
                                         onChange={(e) => setLeaveTypeId(e.target.value)}
                                         style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", fontSize: "14px" }}
@@ -297,6 +299,7 @@ function LeaveDashboard() {
                                     <div className="form-group" style={{ margin: 0, flex: 1 }}>
                                         <label>Start Date</label>
                                         <input
+                                            aria-label="Start Date"
                                             type="date"
                                             value={startDate}
                                             onChange={(e) => setStartDate(e.target.value)}
@@ -306,6 +309,7 @@ function LeaveDashboard() {
                                     <div className="form-group" style={{ margin: 0, flex: 1 }}>
                                         <label>End Date</label>
                                         <input
+                                            aria-label="End Date"
                                             type="date"
                                             value={endDate}
                                             onChange={(e) => setEndDate(e.target.value)}
@@ -323,6 +327,7 @@ function LeaveDashboard() {
                                 <div className="form-group" style={{ margin: 0 }}>
                                     <label>Reason for Leave</label>
                                     <textarea
+                                        aria-label="Reason for Leave"
                                         value={reason}
                                         onChange={(e) => setReason(e.target.value)}
                                         placeholder="Please provide details about your request..."

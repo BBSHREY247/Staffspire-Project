@@ -135,6 +135,7 @@ function ReportTable({ columns, keys, data = [] }) {
                     </span>
                     <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                         <button
+                            aria-label="Previous Page"
                             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                             disabled={currentPage === 1}
                             style={{
@@ -167,6 +168,7 @@ function ReportTable({ columns, keys, data = [] }) {
                             return (
                                 <button
                                     key={pageNum}
+                                    aria-label={`Page ${pageNum}`}
                                     onClick={() => setCurrentPage(pageNum)}
                                     style={{
                                         background: currentPage === pageNum ? "#2563eb" : "white",
@@ -186,6 +188,7 @@ function ReportTable({ columns, keys, data = [] }) {
                         })}
 
                         <button
+                            aria-label="Next Page"
                             onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                             disabled={currentPage === totalPages}
                             style={{

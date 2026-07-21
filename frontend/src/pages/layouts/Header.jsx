@@ -149,6 +149,7 @@ function Header() {
                 <div style={{position: "relative"}}>
                     <button 
                         className="header-action-btn" 
+                        aria-label="Notifications"
                         onClick={() => {
                             setShowNotifMenu(!showNotifMenu);
                             setShowProfileMenu(false);
@@ -200,6 +201,7 @@ function Header() {
                 {/* Settings Cog */}
                 <button 
                     className="header-action-btn" 
+                    aria-label="Settings"
                     onClick={() => {
                         navigate("/settings");
                         setShowNotifMenu(false);
@@ -249,7 +251,7 @@ function Header() {
                 </div>
 
                 {/* Direct Logout Icon */}
-                <button className="header-action-btn" onClick={handleLogout} title="Logout">
+                <button className="header-action-btn" onClick={handleLogout} title="Logout" aria-label="Logout">
                     <FaSignOutAlt />
                 </button>
             </div>

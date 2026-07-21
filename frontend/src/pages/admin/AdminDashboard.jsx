@@ -413,7 +413,7 @@ function AdminDashboard() {
                                     <h3>Attendance Trend</h3>
                                     <p>Last 7 Days Overview</p>
                                 </div>
-                                <button className="btn-more-options">
+                                <button className="btn-more-options" aria-label="More options">
                                     <FaEllipsisH />
                                 </button>
                             </div>
@@ -523,7 +523,7 @@ function AdminDashboard() {
                                 <div className="bento-card-title">
                                     <h3>Recent Activity</h3>
                                 </div>
-                                <button className="btn-more-options">
+                                <button className="btn-more-options" aria-label="Filter activity">
                                     <FaFilter style={{ fontSize: "14px" }} />
                                 </button>
                             </div>

@@ -34,6 +34,7 @@ function ReportFilters({ reportType, filters, onFilterChange, onReset }) {
                         <div className="filter-input-wrapper">
                             <span className="material-symbols-outlined filter-input-icon">search</span>
                             <input
+                                aria-label="Search"
                                 type="text"
                                 name="search"
                                 value={filters.search || ""}
@@ -47,6 +48,7 @@ function ReportFilters({ reportType, filters, onFilterChange, onReset }) {
                     <div className="filter-field">
                         <label>Search</label>
                         <input
+                            aria-label="Search"
                             type="text"
                             name="search"
                             value={filters.search || ""}
@@ -61,7 +63,7 @@ function ReportFilters({ reportType, filters, onFilterChange, onReset }) {
                 {role === "Admin" ? (
                     <div className="filter-field">
                         <label>Department</label>
-                        <select name="department" value={filters.department || ""} onChange={handleChange} className="filter-select">
+                        <select aria-label="Filter by department" name="department" value={filters.department || ""} onChange={handleChange} className="filter-select">
                             <option value="">All Departments</option>
                             {departments.map((d) => (
                                 <option key={d.id} value={d.department_name}>{d.department_name}</option>
@@ -72,6 +74,7 @@ function ReportFilters({ reportType, filters, onFilterChange, onReset }) {
                     <div className="filter-field">
                         <label>Department</label>
                         <input
+                            aria-label="Department"
                             type="text"
                             value={user.department || ""}
                             className="filter-input"
@@ -85,14 +88,14 @@ function ReportFilters({ reportType, filters, onFilterChange, onReset }) {
                 <div className="filter-field">
                     <label>Status</label>
                     {reportType === "employees" && (
-                        <select name="status" value={filters.status || ""} onChange={handleChange} className="filter-select">
+                        <select aria-label="Filter by status" name="status" value={filters.status || ""} onChange={handleChange} className="filter-select">
                             <option value="">All Statuses</option>
                             <option value="Active">Active</option>
                             <option value="Inactive">Inactive</option>
                         </select>
                     )}
                     {reportType === "tasks" && (
-                        <select name="status" value={filters.status || ""} onChange={handleChange} className="filter-select">
+                        <select aria-label="Filter by status" name="status" value={filters.status || ""} onChange={handleChange} className="filter-select">
                             <option value="">All Statuses</option>
                             <option value="Pending">Pending</option>
                             <option value="In Progress">In Progress</option>
@@ -102,7 +105,7 @@ function ReportFilters({ reportType, filters, onFilterChange, onReset }) {
                         </select>
                     )}
                     {reportType === "leaves" && (
-                        <select name="status" value={filters.status || ""} onChange={handleChange} className="filter-select">
+                        <select aria-label="Filter by status" name="status" value={filters.status || ""} onChange={handleChange} className="filter-select">
                             <option value="">All Statuses</option>
                             <option value="Pending">Pending</option>
                             <option value="Approved">Approved</option>
@@ -110,7 +113,7 @@ function ReportFilters({ reportType, filters, onFilterChange, onReset }) {
                         </select>
                     )}
                     {reportType === "attendance" && (
-                        <select name="status" value={filters.status || ""} onChange={handleChange} className="filter-select">
+                        <select aria-label="Filter by status" name="status" value={filters.status || ""} onChange={handleChange} className="filter-select">
                             <option value="">All Statuses</option>
                             <option value="Present">Present</option>
                             <option value="Absent">Absent</option>
@@ -120,6 +123,7 @@ function ReportFilters({ reportType, filters, onFilterChange, onReset }) {
                     )}
                     {reportType === "departments" && (
                         <input
+                            aria-label="Filter by status"
                             type="text"
                             value="All Statuses"
                             className="filter-input"
@@ -133,21 +137,21 @@ function ReportFilters({ reportType, filters, onFilterChange, onReset }) {
                 <div className="filter-field">
                     <label>Type</label>
                     {reportType === "employees" ? (
-                        <select name="employment_type" value={filters.employment_type || ""} onChange={handleChange} className="filter-select">
+                        <select aria-label="Filter by employment type" name="employment_type" value={filters.employment_type || ""} onChange={handleChange} className="filter-select">
                             <option value="">All Types</option>
                             <option value="Full Time">Full-Time</option>
                             <option value="Part Time">Part-Time</option>
                             <option value="Contract">Contract</option>
                         </select>
                     ) : reportType === "tasks" ? (
-                        <select name="priority" value={filters.priority || ""} onChange={handleChange} className="filter-select">
+                        <select aria-label="Filter by priority" name="priority" value={filters.priority || ""} onChange={handleChange} className="filter-select">
                             <option value="">All Priorities</option>
                             <option value="High">High</option>
                             <option value="Medium">Medium</option>
                             <option value="Low">Low</option>
                         </select>
                     ) : (
-                        <select className="filter-select" disabled style={{ backgroundColor: "#e7e7f3", color: "#585f6c", cursor: "not-allowed" }}>
+                        <select aria-label="Filter by type" className="filter-select" disabled style={{ backgroundColor: "#e7e7f3", color: "#585f6c", cursor: "not-allowed" }}>
                             <option>All Types</option>
                         </select>
                     )}
@@ -160,6 +164,7 @@ function ReportFilters({ reportType, filters, onFilterChange, onReset }) {
                 <div className="filter-field">
                     <label>From Date</label>
                     <input
+                        aria-label="From Date"
                         type="date"
                         name="from"
                         value={filters.from || ""}
@@ -172,6 +177,7 @@ function ReportFilters({ reportType, filters, onFilterChange, onReset }) {
                 <div className="filter-field">
                     <label>To Date</label>
                     <input
+                        aria-label="To Date"
                         type="date"
                         name="to"
                         value={filters.to || ""}
@@ -183,7 +189,7 @@ function ReportFilters({ reportType, filters, onFilterChange, onReset }) {
                 {/* Sort Order */}
                 <div className="filter-field">
                     <label>Sort Order</label>
-                    <select name="sort" value={filters.sort || "DESC"} onChange={handleChange} className="filter-select">
+                    <select aria-label="Sort Order" name="sort" value={filters.sort || "DESC"} onChange={handleChange} className="filter-select">
                         <option value="DESC">Latest First</option>
                         <option value="ASC">Oldest First</option>
                     </select>

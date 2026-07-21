@@ -204,17 +204,20 @@ function AdminTaskList() {
                             <FaSearch className="filter-icon" />
                             <input
                                 type="text" placeholder="Search task, employee..."
+                                aria-label="Search task or employee"
                                 value={search} onChange={e => setSearch(e.target.value)}
                             />
                         </div>
                         <button type="submit" style={{ background: "#4f8cff", color: "white", border: "none", padding: "0 16px", borderRadius: "8px", cursor: "pointer", fontWeight: "600" }}>Search</button>
                     </form>
                     <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
+                        aria-label="Filter by status"
                         style={{ padding: "10px 14px", border: "1px solid #e2e8f0", borderRadius: "10px", background: "#f8fafc", fontSize: "14px", color: "#475569", fontWeight: "500", outline: "none" }}>
                         <option value="">All Statuses</option>
                         {["Pending", "In Progress", "On Hold", "Completed", "Overdue"].map(s => <option key={s}>{s}</option>)}
                     </select>
                     <select value={priorityFilter} onChange={e => setPriorityFilter(e.target.value)}
+                        aria-label="Filter by priority"
                         style={{ padding: "10px 14px", border: "1px solid #e2e8f0", borderRadius: "10px", background: "#f8fafc", fontSize: "14px", color: "#475569", fontWeight: "500", outline: "none" }}>
                         <option value="">All Priorities</option>
                         {["High", "Medium", "Low"].map(p => <option key={p}>{p}</option>)}
@@ -263,6 +266,7 @@ function AdminTaskList() {
                                             <button
                                                 onClick={() => navigate(`/admin/tasks/${task.id}`)}
                                                 title="View / Edit"
+                                                aria-label="View or edit task"
                                                 style={{ background: "#eff6ff", color: "#4f8cff", border: "1.5px solid #bfdbfe", width: "34px", height: "34px", borderRadius: "8px", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}
                                                 onMouseEnter={e => { e.currentTarget.style.background = "#4f8cff"; e.currentTarget.style.color = "white"; }}
                                                 onMouseLeave={e => { e.currentTarget.style.background = "#eff6ff"; e.currentTarget.style.color = "#4f8cff"; }}
@@ -270,7 +274,7 @@ function AdminTaskList() {
                                             <button
                                                 onClick={() => handleDeleteClick(task.id, task.task_title)}
                                                 title="Delete"
-
+                                                aria-label="Delete task"
                                                 style={{ background: "#fff5f5", color: "#ef4444", border: "1.5px solid #fecaca", width: "34px", height: "34px", borderRadius: "8px", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}
                                                 onMouseEnter={e => { e.currentTarget.style.background = "#ef4444"; e.currentTarget.style.color = "white"; }}
                                                 onMouseLeave={e => { e.currentTarget.style.background = "#fff5f5"; e.currentTarget.style.color = "#ef4444"; }}
@@ -288,7 +292,7 @@ function AdminTaskList() {
             {showCreate && (
                 <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.45)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <div className="form-card" style={{ width: "90%", maxWidth: "520px", margin: 0, position: "relative", maxHeight: "90vh", overflowY: "auto" }}>
-                        <button onClick={() => setShowCreate(false)}
+                        <button onClick={() => setShowCreate(false)} aria-label="Close modal"
                             style={{ position: "absolute", top: "20px", right: "20px", background: "none", border: "none", cursor: "pointer", fontSize: "18px", color: "#94a3b8" }}>
                             <FaTimes />
                         </button>

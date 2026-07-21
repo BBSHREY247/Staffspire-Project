@@ -240,6 +240,7 @@ function LeaveRequestDetail() {
                 }}>
                     <div className="form-card" style={{ width: "90%", maxWidth: "460px", margin: 0, position: "relative" }}>
                         <button
+                            aria-label="Close modal"
                             onClick={() => setShowRejectModal(false)}
                             style={{ position: "absolute", top: "20px", right: "20px", background: "none", border: "none", cursor: "pointer", fontSize: "18px", color: "#94a3b8" }}
                         >
@@ -258,6 +259,7 @@ function LeaveRequestDetail() {
                         <div className="form-group" style={{ margin: "0 0 16px" }}>
                             <label>Rejection Remarks</label>
                             <textarea
+                                aria-label="Rejection Remarks"
                                 value={rejectionRemarks}
                                 onChange={(e) => setRejectionRemarks(e.target.value)}
                                 placeholder="e.g. Insufficient staffing during this period..."

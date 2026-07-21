@@ -158,6 +158,7 @@ function LeaveRequestsList() {
                     <div className="search-box">
                         <FaSearch className="filter-icon" />
                         <input
+                            aria-label="Search employee name or ID"
                             type="text"
                             placeholder="Search employee name or ID..."
                             value={searchQuery}
@@ -166,6 +167,7 @@ function LeaveRequestsList() {
                     </div>
                     <div className="date-filter-box" style={{ background: "transparent", border: "none", padding: 0 }}>
                         <select
+                            aria-label="Filter by status"
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
                             style={{
@@ -248,6 +250,7 @@ function LeaveRequestsList() {
                                         </td>
                                         <td style={{ textAlign: "center" }}>
                                             <button
+                                                aria-label="View Details"
                                                 onClick={() => navigate(`/admin/leaves/${record.id}`)}
                                                 title="View Details"
                                                 style={{
@@ -282,6 +285,7 @@ function LeaveRequestsList() {
                     <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(15, 23, 42, 0.4)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <div className="form-card" style={{ width: "90%", maxWidth: "450px", margin: 0, position: "relative" }}>
                             <button
+                                                aria-label="Close modal"
                                 onClick={() => setShowRejectModal(false)}
                                 style={{ position: "absolute", top: "20px", right: "20px", background: "none", border: "none", cursor: "pointer", fontSize: "18px", color: "#94a3b8" }}
                             >
@@ -293,6 +297,7 @@ function LeaveRequestsList() {
                             <div className="form-group" style={{ margin: 0, marginBottom: "16px" }}>
                                 <label>Rejection Reason / Comments</label>
                                 <textarea
+                                    aria-label="Rejection Reason"
                                     value={rejectionRemarks}
                                     onChange={(e) => setRejectionRemarks(e.target.value)}
                                     placeholder="Provide feedback on why this request is being rejected..."

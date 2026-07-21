@@ -44,6 +44,7 @@ const RolesPermissionsSettings = ({ data, onChange }) => {
                                         <td key={`${role}-${mod}`} style={{ padding: "12px", textAlign: "center" }}>
                                             <input 
                                                 type="checkbox" 
+                                                aria-label={`Permission for ${role} on ${mod}`}
                                                 checked={perms[role][mod]} 
                                                 onChange={() => handlePermChange(role, mod)}
                                                 style={{ width: "16px", height: "16px", cursor: "pointer", accentColor: "#4f46e5" }}

@@ -174,6 +174,7 @@ function RegisterAdmin() {
                                             className="login-eye-btn"
                                             onClick={() => setShowPassword(!showPassword)}
                                             tabIndex={-1}
+                                            aria-label={showPassword ? "Hide password" : "Show password"}
                                         >
                                             {showPassword ? <FaRegEyeSlash size={20} /> : <FaRegEye size={20} />}
                                         </button>
@@ -223,6 +224,7 @@ function RegisterAdmin() {
                                                     className="login-eye-btn"
                                                     onClick={() => setShowAuthPassword(!showAuthPassword)}
                                                     tabIndex={-1}
+                                                    aria-label={showAuthPassword ? "Hide password" : "Show password"}
                                                 >
                                                     {showAuthPassword ? <FaRegEyeSlash size={20} /> : <FaRegEye size={20} />}
                                                 </button>

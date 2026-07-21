@@ -177,6 +177,7 @@ function DepartmentDetails() {
                                 </label>
                                 <input
                                     type="text"
+                                    aria-label="Department Name"
                                     value={newName}
                                     onChange={(e) => setNewName(e.target.value)}
                                     autoFocus
@@ -325,6 +326,7 @@ function DepartmentDetails() {
                                                             <button
                                                                 className="table-action-btn"
                                                                 title="View Employee"
+                                                                aria-label="View Employee"
                                                                 onClick={() => navigate(`/admin/employees/${emp.id}`)}
                                                             >
                                                                 <FaEye />

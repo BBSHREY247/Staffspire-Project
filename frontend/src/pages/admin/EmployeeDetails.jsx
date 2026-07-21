@@ -284,6 +284,7 @@ function EmployeeDetails() {
                             <div style={fieldGroupStyle}>
                                 <label style={labelStyle}>First Name *</label>
                                 <input
+                                    aria-label="First Name"
                                     style={inputStyle}
                                     type="text"
                                     value={employee.first_name || ""}
@@ -297,6 +298,7 @@ function EmployeeDetails() {
                             <div style={fieldGroupStyle}>
                                 <label style={labelStyle}>Last Name *</label>
                                 <input
+                                    aria-label="Last Name"
                                     style={inputStyle}
                                     type="text"
                                     value={employee.last_name || ""}
@@ -310,6 +312,7 @@ function EmployeeDetails() {
                             <div style={{ ...fieldGroupStyle, gridColumn: "1 / -1" }}>
                                 <label style={labelStyle}>Work Email *</label>
                                 <input
+                                    aria-label="Work Email"
                                     style={inputStyle}
                                     type="email"
                                     value={employee.email || ""}
@@ -323,6 +326,7 @@ function EmployeeDetails() {
                             <div style={fieldGroupStyle}>
                                 <label style={labelStyle}>Mobile Number</label>
                                 <input
+                                    aria-label="Mobile Number"
                                     style={inputStyle}
                                     type="text"
                                     value={employee.mobile || ""}
@@ -335,6 +339,7 @@ function EmployeeDetails() {
                             <div style={fieldGroupStyle}>
                                 <label style={labelStyle}>Gender</label>
                                 <select
+                                    aria-label="Gender"
                                     style={inputStyle}
                                     value={employee.gender || ""}
                                     onChange={(e) => setEmployee({ ...employee, gender: e.target.value })}
@@ -352,6 +357,7 @@ function EmployeeDetails() {
                             <div style={fieldGroupStyle}>
                                 <label style={labelStyle}>Department *</label>
                                 <select
+                                    aria-label="Department"
                                     style={inputStyle}
                                     value={employee.department || ""}
                                     onChange={(e) => setEmployee({ ...employee, department: e.target.value })}
@@ -371,6 +377,7 @@ function EmployeeDetails() {
                             <div style={fieldGroupStyle}>
                                 <label style={labelStyle}>Designation *</label>
                                 <input
+                                    aria-label="Designation"
                                     style={inputStyle}
                                     type="text"
                                     value={employee.designation || ""}
@@ -383,6 +390,7 @@ function EmployeeDetails() {
                             <div style={fieldGroupStyle}>
                                 <label style={labelStyle}>Employment Type</label>
                                 <select
+                                    aria-label="Employment Type"
                                     style={inputStyle}
                                     value={employee.employment_type || ""}
                                     onChange={(e) => setEmployee({ ...employee, employment_type: e.target.value })}
@@ -398,6 +406,7 @@ function EmployeeDetails() {
                             <div style={fieldGroupStyle}>
                                 <label style={labelStyle}>Status</label>
                                 <select
+                                    aria-label="Status"
                                     style={inputStyle}
                                     value={employee.status || "Active"}
                                     onChange={(e) => setEmployee({ ...employee, status: e.target.value })}
@@ -412,6 +421,7 @@ function EmployeeDetails() {
                                 <div style={fieldGroupStyle}>
                                     <label style={labelStyle}>Role</label>
                                     <select
+                                        aria-label="Role"
                                         style={inputStyle}
                                         value={employee.role || "Employee"}
                                         onChange={(e) => setEmployee({ ...employee, role: e.target.value })}
@@ -427,6 +437,7 @@ function EmployeeDetails() {
                                 <div style={fieldGroupStyle}>
                                     <label style={labelStyle}>Salary (Monthly ₹)</label>
                                     <input
+                                        aria-label="Salary"
                                         style={inputStyle}
                                         type="number"
                                         min="0"
@@ -442,6 +453,7 @@ function EmployeeDetails() {
                                 <div style={fieldGroupStyle}>
                                     <label style={labelStyle}>Date of Birth</label>
                                     <input
+                                        aria-label="Date of Birth"
                                         style={inputStyle}
                                         type="date"
                                         value={employee.date_of_birth ? (() => {
@@ -464,6 +476,7 @@ function EmployeeDetails() {
                                 <div style={fieldGroupStyle}>
                                     <label style={labelStyle}>Probation Period</label>
                                     <select
+                                        aria-label="Probation Period"
                                         style={inputStyle}
                                         value={employee.probation_period || "Ongoing"}
                                         onChange={(e) => setEmployee({ ...employee, probation_period: e.target.value })}
@@ -598,6 +611,7 @@ function EmployeeDetails() {
                         <div style={{ marginBottom: "20px" }}>
                             <label style={labelStyle}>Admin Password</label>
                             <input
+                                aria-label="Admin Password"
                                 type="password"
                                 placeholder="Enter your admin password"
                                 value={adminPasswordInput}
@@ -695,7 +709,7 @@ function EmployeeDetails() {
                                         <div style={{ fontWeight: "600", color: "#0f172a", fontSize: "14px" }}>Reassign active tasks</div>
                                         {taskAction === "reassign" && (
                                             <div style={{ marginTop: "12px" }}>
-                                                <select value={reassignTo} onChange={e => setReassignTo(e.target.value)} style={{ width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid #cbd5e1", fontSize: "14px", outline: "none" }}>
+                                                <select aria-label="Reassign to" value={reassignTo} onChange={e => setReassignTo(e.target.value)} style={{ width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid #cbd5e1", fontSize: "14px", outline: "none" }}>
                                                     <option value="" disabled>Select Employee</option>
                                                     {departmentEmployees.map(e => (
                                                         <option key={e.employee_id} value={e.employee_id}>{e.first_name} {e.last_name} ({e.employee_id})</option>

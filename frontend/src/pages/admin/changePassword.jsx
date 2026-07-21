@@ -109,6 +109,7 @@ function ChangePassword() {
                             <label className="form-label-custom" style={{ fontWeight: "600", fontSize: "14px", color: "#475569" }}>Current Password</label>
                             <div style={{ position: "relative", marginTop: "6px" }}>
                                 <input
+                                    aria-label="Current Password"
                                     type={showCurrent ? "text" : "password"}
                                     value={currentPassword}
                                     onChange={(e) => setCurrentPassword(e.target.value)}
@@ -121,7 +122,9 @@ function ChangePassword() {
                                     }}
                                     required
                                 />
-                                <span
+                                <button
+                                    type="button"
+                                    aria-label="Toggle password visibility"
                                     style={{ 
                                         position: "absolute", 
                                         right: "12px", 
@@ -130,12 +133,15 @@ function ChangePassword() {
                                         cursor: "pointer", 
                                         color: "#64748b",
                                         display: "flex",
-                                        alignItems: "center"
+                                        alignItems: "center",
+                                        background: "none",
+                                        border: "none",
+                                        padding: 0
                                     }}
                                     onClick={() => setShowCurrent(!showCurrent)}
                                 >
                                     {showCurrent ? <FaEyeSlash /> : <FaEye />}
-                                </span>
+                                </button>
                             </div>
                         </div>
 
@@ -144,6 +150,7 @@ function ChangePassword() {
                             <label className="form-label-custom" style={{ fontWeight: "600", fontSize: "14px", color: "#475569" }}>New Password</label>
                             <div style={{ position: "relative", marginTop: "6px" }}>
                                 <input
+                                    aria-label="New Password"
                                     type={showNew ? "text" : "password"}
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
@@ -156,7 +163,9 @@ function ChangePassword() {
                                     }}
                                     required
                                 />
-                                <span
+                                <button
+                                    type="button"
+                                    aria-label="Toggle password visibility"
                                     style={{ 
                                         position: "absolute", 
                                         right: "12px", 
@@ -165,12 +174,15 @@ function ChangePassword() {
                                         cursor: "pointer", 
                                         color: "#64748b",
                                         display: "flex",
-                                        alignItems: "center"
+                                        alignItems: "center",
+                                        background: "none",
+                                        border: "none",
+                                        padding: 0
                                     }}
                                     onClick={() => setShowNew(!showNew)}
                                 >
                                     {showCurrent ? <FaEyeSlash /> : <FaEye />}
-                                </span>
+                                </button>
                             </div>
                         </div>
 
@@ -179,6 +191,7 @@ function ChangePassword() {
                             <label className="form-label-custom" style={{ fontWeight: "600", fontSize: "14px", color: "#475569" }}>Confirm Password</label>
                             <div style={{ position: "relative", marginTop: "6px" }}>
                                 <input
+                                    aria-label="Confirm Password"
                                     type={showConfirm ? "text" : "password"}
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -191,7 +204,9 @@ function ChangePassword() {
                                     }}
                                     required
                                 />
-                                <span
+                                <button
+                                    type="button"
+                                    aria-label="Toggle password visibility"
                                     style={{ 
                                         position: "absolute", 
                                         right: "12px", 
@@ -200,12 +215,15 @@ function ChangePassword() {
                                         cursor: "pointer", 
                                         color: "#64748b",
                                         display: "flex",
-                                        alignItems: "center"
+                                        alignItems: "center",
+                                        background: "none",
+                                        border: "none",
+                                        padding: 0
                                     }}
                                     onClick={() => setShowConfirm(!showConfirm)}
                                 >
                                     {showConfirm ? <FaEyeSlash /> : <FaEye />}
-                                </span>
+                                </button>
                             </div>
                         </div>
 

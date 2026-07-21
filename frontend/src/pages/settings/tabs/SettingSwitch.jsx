@@ -11,6 +11,7 @@ const SettingSwitch = ({ checked, onChange }) => {
         }}>
             <input 
                 type="checkbox" 
+                aria-label="Toggle setting"
                 checked={checked || false}
                 onChange={(e) => onChange(e.target.checked)}
                 style={{ opacity: 0, width: 0, height: 0 }}

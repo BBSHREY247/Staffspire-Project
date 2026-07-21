@@ -163,6 +163,7 @@ function AttendanceList() {
                         <input
                             type="text"
                             placeholder="Search employee name or ID..."
+                            aria-label="Search employee name or ID"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -171,6 +172,7 @@ function AttendanceList() {
                         <FaCalendarAlt className="filter-icon" />
                         <input
                             type="date"
+                            aria-label="Filter by date"
                             value={dateFilter}
                             onChange={(e) => setDateFilter(e.target.value)}
                         />

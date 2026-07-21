@@ -228,19 +228,19 @@ function TaskDetail() {
                         <form onSubmit={handleAdminUpdate} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                             <div className="form-group" style={{ margin: 0 }}>
                                 <label>Task Title</label>
-                                <input type="text" value={editForm.task_title || ""} onChange={e => setEditForm({ ...editForm, task_title: e.target.value })} required />
+                                <input aria-label="Task Title" type="text" value={editForm.task_title || ""} onChange={e => setEditForm({ ...editForm, task_title: e.target.value })} required />
                             </div>
 
                             <div className="form-group" style={{ margin: 0 }}>
                                 <label>Description</label>
-                                <textarea value={editForm.description || ""} onChange={e => setEditForm({ ...editForm, description: e.target.value })}
+                                <textarea aria-label="Description" value={editForm.description || ""} onChange={e => setEditForm({ ...editForm, description: e.target.value })}
                                     rows="3" style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", resize: "none", fontSize: "14px" }} />
                             </div>
 
                             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                                 <div className="form-group" style={{ margin: 0 }}>
                                     <label>Assign To</label>
-                                    <select value={editForm.employee_id || ""} onChange={e => setEditForm({ ...editForm, assigned_to: e.target.value, employee_id: e.target.value })}
+                                    <select aria-label="Assign To" value={editForm.employee_id || ""} onChange={e => setEditForm({ ...editForm, assigned_to: e.target.value, employee_id: e.target.value })}
                                         style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", fontSize: "14px" }}>
                                         {employees.map(emp => (
                                             <option key={emp.employee_id} value={emp.employee_id}>
@@ -251,21 +251,21 @@ function TaskDetail() {
                                 </div>
                                 <div className="form-group" style={{ margin: 0 }}>
                                     <label>Due Date</label>
-                                    <input type="date" value={editForm.deadline ? editForm.deadline.split("T")[0] : ""} onChange={e => setEditForm({ ...editForm, deadline: e.target.value })} />
+                                    <input aria-label="Due Date" type="date" value={editForm.deadline ? editForm.deadline.split("T")[0] : ""} onChange={e => setEditForm({ ...editForm, deadline: e.target.value })} />
                                 </div>
                             </div>
 
                             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                                 <div className="form-group" style={{ margin: 0 }}>
                                     <label>Priority</label>
-                                    <select value={editForm.priority || "Medium"} onChange={e => setEditForm({ ...editForm, priority: e.target.value })}
+                                    <select aria-label="Priority" value={editForm.priority || "Medium"} onChange={e => setEditForm({ ...editForm, priority: e.target.value })}
                                         style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", fontSize: "14px" }}>
                                         <option>High</option><option>Medium</option><option>Low</option>
                                     </select>
                                 </div>
                                 <div className="form-group" style={{ margin: 0 }}>
                                     <label>Status</label>
-                                    <select value={editForm.status || "Pending"} onChange={e => setEditForm({ ...editForm, status: e.target.value })}
+                                    <select aria-label="Status" value={editForm.status || "Pending"} onChange={e => setEditForm({ ...editForm, status: e.target.value })}
                                         style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", fontSize: "14px" }}>
                                         {["Pending", "In Progress", "On Hold", "Completed"].map(s => <option key={s}>{s}</option>)}
                                     </select>
@@ -274,7 +274,7 @@ function TaskDetail() {
 
                             <div className="form-group" style={{ margin: 0 }}>
                                 <label>Remarks</label>
-                                <textarea value={editForm.remarks || ""} onChange={e => setEditForm({ ...editForm, remarks: e.target.value })}
+                                <textarea aria-label="Remarks" value={editForm.remarks || ""} onChange={e => setEditForm({ ...editForm, remarks: e.target.value })}
                                     rows="3" placeholder="Add notes or feedback..."
                                     style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", resize: "none", fontSize: "14px" }} />
                             </div>
@@ -298,7 +298,7 @@ function TaskDetail() {
                     <div style={{ background: "white", borderRadius: "16px", padding: "28px", boxShadow: "0 2px 16px rgba(0,0,0,0.08)", marginBottom: "20px" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
                             <h2 style={{ margin: 0, fontWeight: "700", fontSize: "18px" }}>Edit Task</h2>
-                            <button onClick={() => setEditing(false)}
+                            <button aria-label="Close modal" onClick={() => setEditing(false)}
                                 style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", fontSize: "18px" }}>
                                 <FaTimes />
                             </button>
@@ -306,14 +306,14 @@ function TaskDetail() {
                         <form onSubmit={handleEmployeeUpdate} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                             <div className="form-group" style={{ margin: 0 }}>
                                 <label>Update Status</label>
-                                <select value={empStatus} onChange={e => setEmpStatus(e.target.value)}
+                                <select aria-label="Update Status" value={empStatus} onChange={e => setEmpStatus(e.target.value)}
                                     style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", fontSize: "14px" }}>
                                     {["Pending", "In Progress", "On Hold", "Completed"].map(s => <option key={s}>{s}</option>)}
                                 </select>
                             </div>
                             <div className="form-group" style={{ margin: 0 }}>
                                 <label>Completion Notes / Remarks</label>
-                                <textarea value={empRemarks} onChange={e => setEmpRemarks(e.target.value)}
+                                <textarea aria-label="Completion Notes" value={empRemarks} onChange={e => setEmpRemarks(e.target.value)}
                                     placeholder="Describe what you've done, any blockers, or completion notes..."
                                     rows="4"
                                     style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", resize: "none", fontSize: "14px" }} />

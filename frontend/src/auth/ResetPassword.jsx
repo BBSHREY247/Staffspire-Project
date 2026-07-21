@@ -106,6 +106,7 @@ function ResetPassword() {
                                             className="login-eye-btn"
                                             onClick={() => setShowNew(p => !p)}
                                             tabIndex={-1}
+                                            aria-label={showNew ? "Hide password" : "Show password"}
                                         >
                                             {showNew ? <FaRegEyeSlash size={20} /> : <FaRegEye size={20} />}
                                         </button>
@@ -134,6 +135,7 @@ function ResetPassword() {
                                             className="login-eye-btn"
                                             onClick={() => setShowConfirm(p => !p)}
                                             tabIndex={-1}
+                                            aria-label={showConfirm ? "Hide password" : "Show password"}
                                         >
                                             {showConfirm ? <FaRegEyeSlash size={20} /> : <FaRegEye size={20} />}
                                         </button>
