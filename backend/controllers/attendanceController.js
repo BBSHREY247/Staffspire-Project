@@ -50,6 +50,7 @@ const autoCheckOutExpiredRecords = async () => {
         const [records] = await db.promise().query(
             `SELECT * FROM attendance 
              WHERE check_out IS NULL 
+               AND check_in IS NOT NULL
                AND (attendance_date < ? OR (attendance_date = ? AND ? >= '22:30:00'))`,
             [localDate, localDate, currentTime]
         );
