@@ -9,7 +9,9 @@ import {
 } from "react-icons/fa";
 import CustomConfirmModal from "../../components/CustomConfirmModal";
 
-const fetcher = (url) => axios.get(url, { headers }).then(res => res.data);
+const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
+
 
 
 const API = "http://localhost:5000/api";

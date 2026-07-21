@@ -16,6 +16,8 @@ import {
 } from "react-icons/fa";
 import profilePic from "../../assets/Softspire_Logo.jpeg"
 
+const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
+
 function Header() {
     const navigate = useNavigate();
     const location = useLocation();

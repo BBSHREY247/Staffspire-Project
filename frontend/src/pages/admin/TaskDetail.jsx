@@ -4,9 +4,12 @@ import axios from "axios";
 import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
 import {
+
     FaArrowLeft, FaEdit, FaCheck, FaTimes, FaCalendarAlt,
     FaUser, FaBuilding, FaFlag, FaStickyNote, FaClock, FaIdBadge
 } from "react-icons/fa";
+
+const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
 
 const API = "http://localhost:5000/api";
 

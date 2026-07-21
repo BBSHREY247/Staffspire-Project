@@ -5,6 +5,7 @@ import useSWR from "swr";
 import { Chart, registerables } from "chart.js";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { 
+
     FaArrowUp, 
     FaArrowDown, 
     FaUsers, 
@@ -23,6 +24,8 @@ import {
 
 // Register Chart.js components
 Chart.register(...registerables);
+
+const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
 
 const dashboardReducer = (state, action) => {
     switch (action.type) {

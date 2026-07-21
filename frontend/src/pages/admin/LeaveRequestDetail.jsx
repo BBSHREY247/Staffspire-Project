@@ -4,9 +4,12 @@ import axios from "axios";
 import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
 import {
+
     FaArrowLeft, FaCheck, FaTimes, FaUser, FaCalendarAlt,
     FaBuilding, FaIdBadge, FaClock, FaStickyNote, FaBriefcase
 } from "react-icons/fa";
+
+const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
 
 function LeaveRequestDetail() {
     const { id } = useParams();
