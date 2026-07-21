@@ -83,11 +83,8 @@ function Settings() {
     }, [isAdmin, officeData, isOfficeLoading]);
 
     const handleSettingChange = (key, value) => {
-        setSettingsData(prev => {
-            const newData = { ...prev, [key]: value };
-            setIsDirty(true);
-            return newData;
-        });
+        setSettingsData(prev => ({ ...prev, [key]: value }));
+        setIsDirty(true);
     };
 
     const handleSave = async () => {

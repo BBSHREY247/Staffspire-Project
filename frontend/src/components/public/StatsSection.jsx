@@ -11,6 +11,7 @@ function StatsSection() {
     const countersRef = useRef([]);
 
     useEffect(() => {
+        let frameId;
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
@@ -25,7 +26,7 @@ function StatsSection() {
                             current += step;
                             if (current < target) {
                                 el.textContent = Math.floor(current).toLocaleString();
-                                requestAnimationFrame(update);
+                                frameId = requestAnimationFrame(update);
                             } else {
                                 el.textContent = target.toLocaleString() + "+";
                             }
@@ -38,9 +39,20 @@ function StatsSection() {
             { threshold: 0.3 }
         );
 
-        const els = countersRef.current;
-        els.forEach((el) => el && observer.observe(el));
-        return () => els.forEach((el) => el && observer.unobserve(el));
+        const elements = countersRef.current;
+        for (let i = 0; i < elements.length; i++) {
+            const el = elements[i];
+            if (el) {
+                observer.observe(el);
+            }
+        }
+
+        return () => {
+            observer.disconnect();
+            if (frameId) {
+                cancelAnimationFrame(frameId);
+            }
+        };
     }, []);
 
     return (
