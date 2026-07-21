@@ -33,7 +33,7 @@ function PrintReport({ reportTitle, columns, keys, data = [] }) {
                         margin: 0;
                     }
                     .print-meta {
-                        font-size: 11px;
+                        font-size: 12px;
                         color: #555;
                         margin-top: 5px;
                     }
@@ -72,7 +72,7 @@ function PrintReport({ reportTitle, columns, keys, data = [] }) {
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
                     <div>
                         <h1 style={{ margin: 0, fontSize: "24px", fontWeight: "bold" }}>Softspire</h1>
-                        <span style={{ fontSize: "11px", color: "#555" }}>Employee Management System</span>
+                        <span style={{ fontSize: "12px", color: "#555" }}>Employee Management System</span>
                     </div>
                     <div style={{ textAlign: "right" }}>
                         <div className="print-title">{reportTitle}</div>

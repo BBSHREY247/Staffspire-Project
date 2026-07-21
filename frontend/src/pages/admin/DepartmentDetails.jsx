@@ -293,7 +293,7 @@ function DepartmentDetails() {
                                                                     width: "30px", height: "30px", borderRadius: "50%",
                                                                     background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
                                                                     color: "#fff", display: "flex", alignItems: "center",
-                                                                    justifyContent: "center", fontSize: "11px", fontWeight: 700, flexShrink: 0
+                                                                    justifyContent: "center", fontSize: "12px", fontWeight: 700, flexShrink: 0
                                                                 }}>
                                                                     {(emp.first_name?.[0] || "") + (emp.last_name?.[0] || "")}
                                                                 </div>
@@ -301,7 +301,7 @@ function DepartmentDetails() {
                                                                     <div style={{ fontWeight: 600, color: "#1e293b" }}>
                                                                         {emp.first_name} {emp.last_name}
                                                                     </div>
-                                                                    <div style={{ fontSize: "11px", color: "#94a3b8" }}>
+                                                                    <div style={{ fontSize: "12px", color: "#94a3b8" }}>
                                                                         {emp.employee_id || `#${emp.id}`}
                                                                     </div>
                                                                 </div>
@@ -315,7 +315,7 @@ function DepartmentDetails() {
                                                         </td>
                                                         <td style={{ padding: "10px 14px", textAlign: "center" }}>
                                                             <span style={{
-                                                                padding: "2px 10px", borderRadius: "999px", fontSize: "11px", fontWeight: 700,
+                                                                padding: "2px 10px", borderRadius: "999px", fontSize: "12px", fontWeight: 700,
                                                                 background: (emp.status === "Active" || !emp.status) ? "#dcfce7" : "#fee2e2",
                                                                 color: (emp.status === "Active" || !emp.status) ? "#166534" : "#991b1b"
                                                             }}>

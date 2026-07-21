@@ -212,13 +212,13 @@ function AdminTaskList() {
                     </form>
                     <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
                         aria-label="Filter by status"
-                        style={{ padding: "10px 14px", border: "1px solid #e2e8f0", borderRadius: "10px", background: "#f8fafc", fontSize: "14px", color: "#475569", fontWeight: "500", outline: "none" }}>
+                        style={{ padding: "10px 14px", border: "1px solid #e2e8f0", borderRadius: "10px", background: "#f8fafc", fontSize: "14px", color: "#475569", fontWeight: "500" }}>
                         <option value="">All Statuses</option>
                         {["Pending", "In Progress", "On Hold", "Completed", "Overdue"].map(s => <option key={s}>{s}</option>)}
                     </select>
                     <select value={priorityFilter} onChange={e => setPriorityFilter(e.target.value)}
                         aria-label="Filter by priority"
-                        style={{ padding: "10px 14px", border: "1px solid #e2e8f0", borderRadius: "10px", background: "#f8fafc", fontSize: "14px", color: "#475569", fontWeight: "500", outline: "none" }}>
+                        style={{ padding: "10px 14px", border: "1px solid #e2e8f0", borderRadius: "10px", background: "#f8fafc", fontSize: "14px", color: "#475569", fontWeight: "500" }}>
                         <option value="">All Priorities</option>
                         {["High", "Medium", "Low"].map(p => <option key={p}>{p}</option>)}
                     </select>
@@ -293,7 +293,7 @@ function AdminTaskList() {
                 <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.45)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <div className="form-card" style={{ width: "90%", maxWidth: "520px", margin: 0, position: "relative", maxHeight: "90vh", overflowY: "auto" }}>
                         <button onClick={() => setShowCreate(false)} aria-label="Close modal"
-                            style={{ position: "absolute", top: "20px", right: "20px", background: "none", border: "none", cursor: "pointer", fontSize: "18px", color: "#94a3b8" }}>
+                            style={{ position: "absolute", top: "20px", right: "20px", background: "none", border: "none", cursor: "pointer", fontSize: "18px", color: "#64748b" }}>
                             <FaTimes />
                         </button>
 
@@ -310,13 +310,13 @@ function AdminTaskList() {
                                 <label>Description</label>
                                 <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
                                     placeholder="Task details and instructions..." rows="3"
-                                    style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", resize: "none", fontSize: "14px" }} />
+                                    style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", resize: "none", fontSize: "14px" }} />
                             </div>
 
                             <div className="form-group" style={{ margin: 0 }}>
                                 <label>Assign To *</label>
                                 <select value={form.assigned_to} onChange={e => setForm({ ...form, assigned_to: e.target.value })} required
-                                    style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", fontSize: "14px" }}>
+                                    style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }}>
                                     <option value="">Select Employee</option>
                                     {employees.map(emp => (
                                         <option key={emp.employee_id} value={emp.employee_id}>
@@ -330,7 +330,7 @@ function AdminTaskList() {
                                 <div className="form-group" style={{ margin: 0 }}>
                                     <label>Priority</label>
                                     <select value={form.priority} onChange={e => setForm({ ...form, priority: e.target.value })}
-                                        style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", fontSize: "14px" }}>
+                                        style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }}>
                                         <option>High</option>
                                         <option>Medium</option>
                                         <option>Low</option>

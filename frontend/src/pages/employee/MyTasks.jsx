@@ -194,9 +194,9 @@ function MyTasks() {
                                                 <button
                                                     onClick={() => navigate(`/employee/tasks/${task.id}`)}
                                                     title="View / Edit"
-                                                    style={{ background: "#eff6ff", color: "#4f8cff", border: "1.5px solid #bfdbfe", width: "34px", height: "34px", borderRadius: "8px", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}
-                                                    onMouseEnter={e => { e.currentTarget.style.background = "#4f8cff"; e.currentTarget.style.color = "white"; }}
-                                                    onMouseLeave={e => { e.currentTarget.style.background = "#eff6ff"; e.currentTarget.style.color = "#4f8cff"; }}
+                                                    style={{ background: "#eff6ff", color: "#2563eb", border: "1.5px solid #bfdbfe", width: "34px", height: "34px", borderRadius: "8px", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}
+                                                    onMouseEnter={e => { e.currentTarget.style.background = "#2563eb"; e.currentTarget.style.color = "white"; }}
+                                                    onMouseLeave={e => { e.currentTarget.style.background = "#eff6ff"; e.currentTarget.style.color = "#2563eb"; }}
                                                 ><FaEye /></button>
                                             </div>
                                         </td>

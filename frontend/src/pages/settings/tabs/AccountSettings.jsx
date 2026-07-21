@@ -23,6 +23,7 @@ const AccountSettings = ({ data, onChange, user }) => {
                 <SettingRow label="Username">
                     <input 
                         type="text"
+                        aria-label="Username"
                         value={data.username || user?.name || ""} 
                         onChange={(e) => onChange("username", e.target.value)}
                         style={inputStyle}
@@ -32,6 +33,7 @@ const AccountSettings = ({ data, onChange, user }) => {
                 <SettingRow label="Email Address">
                     <input 
                         type="email"
+                        aria-label="Email Address"
                         value={data.email || user?.email || ""} 
                         onChange={(e) => onChange("email", e.target.value)}
                         style={inputStyle}
@@ -41,6 +43,7 @@ const AccountSettings = ({ data, onChange, user }) => {
                 <SettingRow label="Phone Number">
                     <input 
                         type="text"
+                        aria-label="Phone Number"
                         value={data.phone || ""} 
                         onChange={(e) => onChange("phone", e.target.value)}
                         style={inputStyle}

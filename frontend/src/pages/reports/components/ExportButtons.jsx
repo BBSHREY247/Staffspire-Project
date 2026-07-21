@@ -20,12 +20,14 @@ function ExportButtons({ reportType, filters, onPrint }) {
 
             const blob = new Blob([response.data]);
             const link = document.createElement("a");
-            link.href = window.URL.createObjectURL(blob);
+            const objUrl = window.URL.createObjectURL(blob);
+            link.href = objUrl;
             let ext = format === "excel" ? "xlsx" : format;
             link.setAttribute("download", `${reportType}_report_${new Date().toLocaleDateString('sv')}.${ext}`);
             document.body.appendChild(link);
             link.click();
             link.remove();
+            window.URL.revokeObjectURL(objUrl);
         } catch (error) {
             console.error(`Export ${format} failed:`, error);
             alert(`Failed to export as ${format.toUpperCase()}.`);

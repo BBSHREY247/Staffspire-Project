@@ -540,7 +540,7 @@ function AddEmployee() {
                                         <span style={{ fontWeight: 600, fontSize: "0.95rem", color: "#e2e8f0" }}>Custom Credentials</span>
                                         <span style={{
                                             marginLeft: "auto",
-                                            fontSize: "11px",
+                                            fontSize: "12px",
                                             background: "rgba(124,58,237,0.15)",
                                             color: "#a78bfa",
                                             padding: "2px 10px",
@@ -558,7 +558,7 @@ function AddEmployee() {
                                         <div className="form-input-group">
                                             <label htmlFor="custom_employee_id">
                                                 Employee ID
-                                                <span style={{ marginLeft: 6, fontSize: "11px", color: "#64748b", fontWeight: 400 }}>(or leave blank)</span>
+                                                <span style={{ marginLeft: 6, fontSize: "12px", color: "#64748b", fontWeight: 400 }}>(or leave blank)</span>
                                             </label>
                                             <div className="filter-input-wrapper">
                                                 <span className="material-symbols-outlined filter-input-icon">badge</span>
@@ -579,7 +579,7 @@ function AddEmployee() {
                                             </div>
                                             {/* Format hint */}
                                             {formData.custom_employee_id && !/^EM\d{4}SS$/i.test(formData.custom_employee_id.trim()) && (
-                                                <span style={{ fontSize: "11px", color: "#ef4444", marginTop: "4px", display: "block" }}>
+                                                <span style={{ fontSize: "12px", color: "#ef4444", marginTop: "4px", display: "block" }}>
                                                     ⚠ Format must be EM + 4 digits + SS (e.g. EM1234SS)
                                                 </span>
                                             )}
@@ -589,7 +589,7 @@ function AddEmployee() {
                                         <div className="form-input-group">
                                             <label htmlFor="custom_password">
                                                 Password
-                                                <span style={{ marginLeft: 6, fontSize: "11px", color: "#64748b", fontWeight: 400 }}>(or leave blank)</span>
+                                                <span style={{ marginLeft: 6, fontSize: "12px", color: "#64748b", fontWeight: 400 }}>(or leave blank)</span>
                                             </label>
                                             <div style={{ position: "relative" }}>
                                                 <input
@@ -627,7 +627,7 @@ function AddEmployee() {
                                                         <div style={{ height: "4px", background: "#1e293b", borderRadius: "4px", overflow: "hidden" }}>
                                                             <div style={{ height: "100%", width: s.width, background: s.color, borderRadius: "4px", transition: "width 0.3s, background 0.3s" }} />
                                                         </div>
-                                                        <span style={{ fontSize: "11px", color: s.color, fontWeight: 600, marginTop: "3px", display: "block" }}>{s.label}</span>
+                                                        <span style={{ fontSize: "12px", color: s.color, fontWeight: 600, marginTop: "3px", display: "block" }}>{s.label}</span>
                                                     </div>
                                                 );
                                             })()}

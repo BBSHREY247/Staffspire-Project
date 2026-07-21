@@ -155,7 +155,7 @@ function LeaveRequestDetail() {
                                 }}>
                                     <span style={{ color: "#4f8cff", fontSize: "18px", marginTop: "2px", flexShrink: 0 }}>{icon}</span>
                                     <div>
-                                        <p style={{ margin: 0, fontSize: "12px", color: "#94a3b8", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px" }}>{label}</p>
+                                        <p style={{ margin: 0, fontSize: "12px", color: "#64748b", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px" }}>{label}</p>
                                         <p style={{ margin: "4px 0 0", fontSize: "15px", fontWeight: "700", color: "#1e293b" }}>{value}</p>
                                     </div>
                                 </div>
@@ -242,7 +242,7 @@ function LeaveRequestDetail() {
                         <button
                             aria-label="Close modal"
                             onClick={() => setShowRejectModal(false)}
-                            style={{ position: "absolute", top: "20px", right: "20px", background: "none", border: "none", cursor: "pointer", fontSize: "18px", color: "#94a3b8" }}
+                            style={{ position: "absolute", top: "20px", right: "20px", background: "none", border: "none", cursor: "pointer", fontSize: "18px", color: "#64748b" }}
                         >
                             <FaTimes />
                         </button>
@@ -264,7 +264,7 @@ function LeaveRequestDetail() {
                                 onChange={(e) => setRejectionRemarks(e.target.value)}
                                 placeholder="e.g. Insufficient staffing during this period..."
                                 rows="4"
-                                style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", resize: "none", fontSize: "14px" }}
+                                style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", resize: "none", fontSize: "14px" }}
                             />
                         </div>
 

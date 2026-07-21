@@ -17,7 +17,8 @@ function ResetPassword() {
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
+        if (isLoading) return;
         setAlertMsg("");
 
         if (newPassword !== confirmPassword) {

@@ -13,6 +13,7 @@ function Departments() {
     const [departmentName, setDepartmentName] = useState("");
     const [modalAlert, setModalAlert] = useState("");
     const [modalAlertType, setModalAlertType] = useState("error");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const fetcher = (url) => axios.get(url).then(res => res.data);
     const { data: deptData, mutate: fetchDepartments } = useSWR("http://localhost:5000/api/departments", fetcher);
@@ -25,6 +26,7 @@ function Departments() {
 
     const handleAddDepartment = async (e) => {
         e.preventDefault();
+        if (isSubmitting) return;
         setModalAlert("");
 
         if (!departmentName.trim()) {
@@ -33,6 +35,7 @@ function Departments() {
             return;
         }
 
+        setIsSubmitting(true);
         try {
             await axios.post(
                 "http://localhost:5000/api/departments",
@@ -45,6 +48,8 @@ function Departments() {
             console.log(error);
             setModalAlert(error.response?.data?.message || "Failed to add department.");
             setModalAlertType("error");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -184,9 +189,10 @@ function Departments() {
                                 <button
                                     type="submit"
                                     className="save-btn"
-                                    style={{ margin: 0, padding: "10px 20px", width: "auto" }}
+                                    disabled={isSubmitting}
+                                    style={{ margin: 0, padding: "10px 20px", width: "auto", opacity: isSubmitting ? 0.6 : 1 }}
                                 >
-                                    Save Department
+                                    {isSubmitting ? "Saving..." : "Save Department"}
                                 </button>
                             </div>
                         </form>

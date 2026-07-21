@@ -283,7 +283,7 @@ function LeaveDashboard() {
                                         aria-label="Leave Type"
                                         value={leaveTypeId}
                                         onChange={(e) => setLeaveTypeId(e.target.value)}
-                                        style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", fontSize: "14px" }}
+                                        style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }}
                                         required
                                     >
                                         <option value="">Select Leave Type</option>
@@ -332,7 +332,7 @@ function LeaveDashboard() {
                                         onChange={(e) => setReason(e.target.value)}
                                         placeholder="Please provide details about your request..."
                                         rows="4"
-                                        style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", resize: "none", fontSize: "14px" }}
+                                        style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", resize: "none", fontSize: "14px" }}
                                         required
                                     ></textarea>
                                 </div>

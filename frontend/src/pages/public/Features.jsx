@@ -179,6 +179,7 @@ function Features() {
                                         <input
                                             type="text"
                                             placeholder="Search employees..."
+                                            aria-label="Search employees"
                                             className="ft-search-input"
                                             readOnly
                                         />

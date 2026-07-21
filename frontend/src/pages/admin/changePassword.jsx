@@ -16,9 +16,11 @@ function ChangePassword() {
     const [showConfirm, setShowConfirm] = useState(false);
     const [alertMsg, setAlertMsg] = useState("");
     const [alertType, setAlertType] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (isSubmitting) return;
 
         if (newPassword !== confirmPassword) {
             setAlertMsg("Passwords do not match. Please try again.");
@@ -26,6 +28,7 @@ function ChangePassword() {
             return;
         }
 
+        setIsSubmitting(true);
         try {
             const token = localStorage.getItem("token");
             const response = await axios.put(
@@ -68,6 +71,8 @@ function ChangePassword() {
                 "Failed To Change Password"
             );
             setAlertType("error");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -230,6 +235,7 @@ function ChangePassword() {
                         <button
                             className="save-btn"
                             type="submit"
+                            disabled={isSubmitting}
                             style={{ 
                                 width: "100%", 
                                 marginTop: "12px", 
@@ -237,10 +243,11 @@ function ChangePassword() {
                                 alignItems: "center", 
                                 justifyContent: "center", 
                                 gap: "8px",
-                                padding: "14px"
+                                padding: "14px",
+                                opacity: isSubmitting ? 0.6 : 1
                             }}
                         >
-                            <FaCheck /> Update Password
+                            <FaCheck /> {isSubmitting ? "Updating..." : "Update Password"}
                         </button>
 
                     </form>

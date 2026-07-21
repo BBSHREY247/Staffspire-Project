@@ -240,9 +240,9 @@ function AttendanceList() {
                                         </td>
                                         <td style={{ textAlign: "center" }}>
                                             {record.email === loggedInUser.email ? (
-                                                <span style={{ color: "#94a3b8", fontSize: "13px", fontWeight: "500" }}>Self</span>
+                                                <span style={{ color: "#64748b", fontSize: "13px", fontWeight: "500" }}>Self</span>
                                             ) : record.status === "Absent" ? (
-                                                <span style={{ color: "#94a3b8", fontSize: "13px", fontWeight: "500" }}>--</span>
+                                                <span style={{ color: "#64748b", fontSize: "13px", fontWeight: "500" }}>--</span>
                                             ) : !record.check_out ? (
                                                 <button
                                                     onClick={() => handleForceCheckOutClick(record.employee_id, record.attendance_date, record.first_name, record.last_name)}
@@ -263,7 +263,7 @@ function AttendanceList() {
                                                     Force Check-out
                                                 </button>
                                             ) : (
-                                                <span style={{ color: "#94a3b8", fontSize: "13px", fontWeight: "600" }}>Checked Out</span>
+                                                <span style={{ color: "#64748b", fontSize: "13px", fontWeight: "600" }}>Checked Out</span>
                                             )}
                                         </td>
                                     </tr>

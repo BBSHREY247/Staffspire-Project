@@ -49,6 +49,7 @@ function Login() {
 
     const handleLogin = async (e) => {
         if (e) e.preventDefault();
+        if (isLoading) return;
         setAlertMsg("");
         setAlertType("");
 

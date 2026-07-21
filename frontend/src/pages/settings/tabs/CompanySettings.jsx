@@ -13,6 +13,7 @@ const CompanySettings = ({ data, onChange }) => {
                 <SettingRow label="Company Name">
                     <input 
                         type="text"
+                        aria-label="Company Name"
                         value={data.companyName || ""} 
                         onChange={(e) => onChange("companyName", e.target.value)}
                         style={inputStyle}
@@ -23,6 +24,7 @@ const CompanySettings = ({ data, onChange }) => {
                 <SettingRow label="Logo URL" description="Link to your company logo.">
                     <input 
                         type="text"
+                        aria-label="Logo URL"
                         value={data.logo || ""} 
                         onChange={(e) => onChange("logo", e.target.value)}
                         style={inputStyle}
@@ -33,6 +35,7 @@ const CompanySettings = ({ data, onChange }) => {
                 <SettingRow label="Contact Email">
                     <input 
                         type="email"
+                        aria-label="Contact Email"
                         value={data.email || ""} 
                         onChange={(e) => onChange("email", e.target.value)}
                         style={inputStyle}
@@ -43,6 +46,7 @@ const CompanySettings = ({ data, onChange }) => {
                 <SettingRow label="Phone Number">
                     <input 
                         type="text"
+                        aria-label="Phone Number"
                         value={data.phone || ""} 
                         onChange={(e) => onChange("phone", e.target.value)}
                         style={inputStyle}
@@ -53,6 +57,7 @@ const CompanySettings = ({ data, onChange }) => {
                 <SettingRow label="Website">
                     <input 
                         type="text"
+                        aria-label="Website"
                         value={data.website || ""} 
                         onChange={(e) => onChange("website", e.target.value)}
                         style={inputStyle}
@@ -62,6 +67,7 @@ const CompanySettings = ({ data, onChange }) => {
 
                 <SettingRow label="Address">
                     <textarea 
+                        aria-label="Address"
                         value={data.address || ""} 
                         onChange={(e) => onChange("address", e.target.value)}
                         style={{...inputStyle, resize: "vertical", minHeight: "60px"}}
@@ -75,6 +81,7 @@ const CompanySettings = ({ data, onChange }) => {
                 <SettingRow label="Registration Number">
                     <input 
                         type="text"
+                        aria-label="Registration Number"
                         value={data.registrationNumber || ""} 
                         onChange={(e) => onChange("registrationNumber", e.target.value)}
                         style={inputStyle}
@@ -84,6 +91,7 @@ const CompanySettings = ({ data, onChange }) => {
                 <SettingRow label="GST Number" description="(Optional)">
                     <input 
                         type="text"
+                        aria-label="GST Number"
                         value={data.gstNumber || ""} 
                         onChange={(e) => onChange("gstNumber", e.target.value)}
                         style={inputStyle}

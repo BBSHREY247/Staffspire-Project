@@ -176,7 +176,6 @@ function LeaveRequestsList() {
                                 background: "#f8fafc",
                                 border: "1px solid #e2e8f0",
                                 borderRadius: "10px",
-                                outline: "none",
                                 fontSize: "14px",
                                 color: "#475569",
                                 fontWeight: "500"
@@ -287,7 +286,7 @@ function LeaveRequestsList() {
                             <button
                                                 aria-label="Close modal"
                                 onClick={() => setShowRejectModal(false)}
-                                style={{ position: "absolute", top: "20px", right: "20px", background: "none", border: "none", cursor: "pointer", fontSize: "18px", color: "#94a3b8" }}
+                                style={{ position: "absolute", top: "20px", right: "20px", background: "none", border: "none", cursor: "pointer", fontSize: "18px", color: "#64748b" }}
                             >
                                 <FaTimes />
                             </button>
@@ -302,7 +301,7 @@ function LeaveRequestsList() {
                                     onChange={(e) => setRejectionRemarks(e.target.value)}
                                     placeholder="Provide feedback on why this request is being rejected..."
                                     rows="4"
-                                    style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", resize: "none", fontSize: "14px" }}
+                                    style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", resize: "none", fontSize: "14px" }}
                                     required
                                 ></textarea>
                             </div>

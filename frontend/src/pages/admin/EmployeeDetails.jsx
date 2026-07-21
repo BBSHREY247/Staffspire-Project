@@ -186,7 +186,6 @@ function EmployeeDetails() {
         fontSize: "14px",
         background: "#f8fafc",
         color: "#1e293b",
-        outline: "none",
         transition: "border 0.2s",
         boxSizing: "border-box"
     };

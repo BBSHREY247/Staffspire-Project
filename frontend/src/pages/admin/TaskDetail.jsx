@@ -136,7 +136,7 @@ function TaskDetail() {
             <div className="attendance-page-container">
                 {/* Back */}
                 <button onClick={() => navigate(backPath)}
-                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", color: "#4f8cff", fontWeight: "600", fontSize: "14px", marginBottom: "24px", padding: 0 }}>
+                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", color: "#2563eb", fontWeight: "600", fontSize: "14px", marginBottom: "24px", padding: 0 }}>
                     <FaArrowLeft /> Back to Tasks
                 </button>
 
@@ -147,7 +147,7 @@ function TaskDetail() {
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "16px" }}>
                         <div style={{ flex: 1 }}>
                             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
-                                <span style={{ fontFamily: "monospace", fontSize: "13px", fontWeight: "700", color: "#4f8cff", background: "#eff6ff", padding: "4px 10px", borderRadius: "6px" }}>
+                                <span style={{ fontFamily: "monospace", fontSize: "13px", fontWeight: "700", color: "#2563eb", background: "#eff6ff", padding: "4px 10px", borderRadius: "6px" }}>
                                     {task.task_id || `#${task.id}`}
                                 </span>
                                 <span style={{ background: priCfg.bg, color: priCfg.color, padding: "4px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: "700", whiteSpace: "nowrap" }}>
@@ -163,7 +163,7 @@ function TaskDetail() {
                             </span>
                             {(!editing && (isAdminOrManager || (isEmployee && task.status !== "Completed"))) && (
                                 <button onClick={() => setEditing(true)}
-                                    style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "#4f8cff", color: "white", border: "none", padding: "10px 18px", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "13px" }}>
+                                    style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "#2563eb", color: "white", border: "none", padding: "10px 18px", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "13px" }}>
                                     <FaEdit /> Edit Task
                                 </button>
                             )}
@@ -184,9 +184,9 @@ function TaskDetail() {
                         { icon: <FaIdBadge />, label: "Employee ID", value: task.employee_id },
                     ].map(({ icon, label, value }) => (
                         <div key={label} style={{ background: "white", borderRadius: "12px", padding: "18px 20px", boxShadow: "0 2px 10px rgba(0,0,0,0.05)", display: "flex", gap: "14px", alignItems: "flex-start" }}>
-                            <span style={{ color: "#4f8cff", fontSize: "16px", marginTop: "2px", flexShrink: 0 }}>{icon}</span>
+                            <span style={{ color: "#2563eb", fontSize: "16px", marginTop: "2px", flexShrink: 0 }}>{icon}</span>
                             <div>
-                                <p style={{ margin: 0, fontSize: "11px", color: "#94a3b8", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.5px" }}>{label}</p>
+                                <p style={{ margin: 0, fontSize: "12px", color: "#64748b", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.5px" }}>{label}</p>
                                 <p style={{ margin: "4px 0 0", fontSize: "14px", fontWeight: "700", color: "#1e293b" }}>{value}</p>
                             </div>
                         </div>
@@ -197,10 +197,10 @@ function TaskDetail() {
                 {task.description && (
                     <div style={{ background: "white", borderRadius: "12px", padding: "22px 24px", boxShadow: "0 2px 10px rgba(0,0,0,0.05)", marginBottom: "20px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
-                            <FaStickyNote style={{ color: "#4f8cff" }} />
+                            <FaStickyNote style={{ color: "#2563eb" }} />
                             <h3 style={{ margin: 0, fontSize: "15px", fontWeight: "700", color: "#1e293b" }}>Description</h3>
                         </div>
-                        <p style={{ margin: 0, color: "#475569", lineHeight: "1.8", background: "#f8fafc", padding: "16px", borderRadius: "8px", borderLeft: "4px solid #4f8cff" }}>
+                        <p style={{ margin: 0, color: "#475569", lineHeight: "1.8", background: "#f8fafc", padding: "16px", borderRadius: "8px", borderLeft: "4px solid #2563eb" }}>
                             {task.description}
                         </p>
                     </div>
@@ -220,7 +220,7 @@ function TaskDetail() {
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
                             <h2 style={{ margin: 0, fontWeight: "700", fontSize: "18px" }}>Edit Task</h2>
                             <button onClick={() => setEditing(false)}
-                                style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", fontSize: "18px" }}>
+                                style={{ background: "none", border: "none", cursor: "pointer", color: "#64748b", fontSize: "18px" }}>
                                 <FaTimes />
                             </button>
                         </div>
@@ -234,14 +234,14 @@ function TaskDetail() {
                             <div className="form-group" style={{ margin: 0 }}>
                                 <label>Description</label>
                                 <textarea aria-label="Description" value={editForm.description || ""} onChange={e => setEditForm({ ...editForm, description: e.target.value })}
-                                    rows="3" style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", resize: "none", fontSize: "14px" }} />
+                                    rows="3" style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", resize: "none", fontSize: "14px" }} />
                             </div>
 
                             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                                 <div className="form-group" style={{ margin: 0 }}>
                                     <label>Assign To</label>
                                     <select aria-label="Assign To" value={editForm.employee_id || ""} onChange={e => setEditForm({ ...editForm, assigned_to: e.target.value, employee_id: e.target.value })}
-                                        style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", fontSize: "14px" }}>
+                                        style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }}>
                                         {employees.map(emp => (
                                             <option key={emp.employee_id} value={emp.employee_id}>
                                                 {emp.first_name} {emp.last_name}
@@ -259,14 +259,14 @@ function TaskDetail() {
                                 <div className="form-group" style={{ margin: 0 }}>
                                     <label>Priority</label>
                                     <select aria-label="Priority" value={editForm.priority || "Medium"} onChange={e => setEditForm({ ...editForm, priority: e.target.value })}
-                                        style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", fontSize: "14px" }}>
+                                        style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }}>
                                         <option>High</option><option>Medium</option><option>Low</option>
                                     </select>
                                 </div>
                                 <div className="form-group" style={{ margin: 0 }}>
                                     <label>Status</label>
                                     <select aria-label="Status" value={editForm.status || "Pending"} onChange={e => setEditForm({ ...editForm, status: e.target.value })}
-                                        style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", fontSize: "14px" }}>
+                                        style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }}>
                                         {["Pending", "In Progress", "On Hold", "Completed"].map(s => <option key={s}>{s}</option>)}
                                     </select>
                                 </div>
@@ -276,12 +276,12 @@ function TaskDetail() {
                                 <label>Remarks</label>
                                 <textarea aria-label="Remarks" value={editForm.remarks || ""} onChange={e => setEditForm({ ...editForm, remarks: e.target.value })}
                                     rows="3" placeholder="Add notes or feedback..."
-                                    style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", resize: "none", fontSize: "14px" }} />
+                                    style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", resize: "none", fontSize: "14px" }} />
                             </div>
 
                             <div style={{ display: "flex", gap: "12px" }}>
                                 <button type="submit" disabled={actionLoading}
-                                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#4f8cff", color: "white", border: "none", padding: "13px 28px", borderRadius: "10px", cursor: "pointer", fontWeight: "700", fontSize: "15px", opacity: actionLoading ? 0.6 : 1 }}>
+                                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#2563eb", color: "white", border: "none", padding: "13px 28px", borderRadius: "10px", cursor: "pointer", fontWeight: "700", fontSize: "15px", opacity: actionLoading ? 0.6 : 1 }}>
                                     <FaCheck /> {actionLoading ? "Saving..." : "Save Changes"}
                                 </button>
                                 <button type="button" onClick={() => setEditing(false)}
@@ -299,7 +299,7 @@ function TaskDetail() {
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
                             <h2 style={{ margin: 0, fontWeight: "700", fontSize: "18px" }}>Edit Task</h2>
                             <button aria-label="Close modal" onClick={() => setEditing(false)}
-                                style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", fontSize: "18px" }}>
+                                style={{ background: "none", border: "none", cursor: "pointer", color: "#64748b", fontSize: "18px" }}>
                                 <FaTimes />
                             </button>
                         </div>
@@ -307,7 +307,7 @@ function TaskDetail() {
                             <div className="form-group" style={{ margin: 0 }}>
                                 <label>Update Status</label>
                                 <select aria-label="Update Status" value={empStatus} onChange={e => setEmpStatus(e.target.value)}
-                                    style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", fontSize: "14px" }}>
+                                    style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }}>
                                     {["Pending", "In Progress", "On Hold", "Completed"].map(s => <option key={s}>{s}</option>)}
                                 </select>
                             </div>
@@ -316,11 +316,11 @@ function TaskDetail() {
                                 <textarea aria-label="Completion Notes" value={empRemarks} onChange={e => setEmpRemarks(e.target.value)}
                                     placeholder="Describe what you've done, any blockers, or completion notes..."
                                     rows="4"
-                                    style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", outline: "none", resize: "none", fontSize: "14px" }} />
+                                    style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", resize: "none", fontSize: "14px" }} />
                             </div>
                             <div style={{ display: "flex", gap: "12px" }}>
                                 <button type="submit" disabled={actionLoading}
-                                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#4f8cff", color: "white", border: "none", padding: "13px 28px", borderRadius: "10px", cursor: "pointer", fontWeight: "700", fontSize: "15px", opacity: actionLoading ? 0.6 : 1 }}>
+                                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#2563eb", color: "white", border: "none", padding: "13px 28px", borderRadius: "10px", cursor: "pointer", fontWeight: "700", fontSize: "15px", opacity: actionLoading ? 0.6 : 1 }}>
                                     <FaCheck /> {actionLoading ? "Saving..." : "Save Changes"}
                                 </button>
                                 <button type="button" onClick={() => setEditing(false)}

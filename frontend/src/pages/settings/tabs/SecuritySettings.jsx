@@ -13,6 +13,7 @@ const SecuritySettings = ({ data, onChange }) => {
                 <SettingRow label="JWT Expiration (Hours)">
                     <input 
                         type="number" 
+                        aria-label="JWT Expiration"
                         value={data.jwtExpiration || "24"} 
                         onChange={(e) => onChange("jwtExpiration", e.target.value)}
                         style={inputStyle}
@@ -22,6 +23,7 @@ const SecuritySettings = ({ data, onChange }) => {
                 <SettingRow label="Minimum Password Length">
                     <input 
                         type="number" 
+                        aria-label="Minimum Password Length"
                         value={data.minPasswordLength || "8"} 
                         onChange={(e) => onChange("minPasswordLength", e.target.value)}
                         style={inputStyle}
@@ -45,6 +47,7 @@ const SecuritySettings = ({ data, onChange }) => {
                 <SettingRow label="Maximum Login Attempts" description="Lock account after X failed attempts.">
                     <input 
                         type="number" 
+                        aria-label="Maximum Login Attempts"
                         value={data.maxLoginAttempts || "5"} 
                         onChange={(e) => onChange("maxLoginAttempts", e.target.value)}
                         style={inputStyle}
@@ -54,6 +57,7 @@ const SecuritySettings = ({ data, onChange }) => {
                 <SettingRow label="Session Timeout (Minutes)" description="Log user out after inactivity.">
                     <input 
                         type="number" 
+                        aria-label="Session Timeout"
                         value={data.sessionTimeout || "60"} 
                         onChange={(e) => onChange("sessionTimeout", e.target.value)}
                         style={inputStyle}
@@ -63,6 +67,7 @@ const SecuritySettings = ({ data, onChange }) => {
                 <SettingRow label="OTP Expiration (Minutes)">
                     <input 
                         type="number" 
+                        aria-label="OTP Expiration"
                         value={data.otpExpiration || "10"} 
                         onChange={(e) => onChange("otpExpiration", e.target.value)}
                         style={inputStyle}

@@ -210,7 +210,7 @@ function Settings() {
                                 style={{
                                     width: "100%", padding: "10px 12px 10px 36px",
                                     borderRadius: "8px", border: "1px solid #cbd5e1",
-                                    outline: "none", fontSize: "0.9rem", color: "#334155",
+                                    fontSize: "0.9rem", color: "#334155",
                                     backgroundColor: "#f8fafc"
                                 }}
                             />

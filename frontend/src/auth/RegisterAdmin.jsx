@@ -40,7 +40,8 @@ function RegisterAdmin() {
     }, [adminData, adminError]);
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
+        if (isLoading) return;
         setAlertMsg("");
         setAlertType("");
 
