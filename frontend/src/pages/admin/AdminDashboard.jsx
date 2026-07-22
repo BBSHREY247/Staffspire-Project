@@ -281,6 +281,21 @@ function AdminDashboard() {
                 )}
 
                 {/* Page Header */}
+                <div className="fooddify-banner">
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div>
+                            <h2>Good Morning, Admin 👋</h2>
+                            <p>Monitor restaurants, orders, customers, revenue and platform activity from one place.</p>
+                        </div>
+                        <div style={{ background: "rgba(255,255,255,0.2)", padding: "10px 20px", borderRadius: "10px" }}>
+                            <div style={{ fontSize: "12px", opacity: 0.8 }}>Today</div>
+                            <div style={{ fontSize: "15px", fontWeight: "600" }}>
+                                {new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="dashboard-page-header">
                     <div className="dashboard-page-title">
                         <h2>Admin Command Center</h2>

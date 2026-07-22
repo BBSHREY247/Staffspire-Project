@@ -9,7 +9,7 @@ function Navbar() {
         <header className="ss-navbar">
             {/* Logo */}
             <Link to="/" className="ss-nav-logo">
-                <img className="logo_public" src="../src/assets/Softspire_Logo.jpeg" alt="" />
+                <img className="logo_public" src="../src/assets/Softspire_Logo.png" alt="" />
             </Link>
 
             {/* Nav Links */}

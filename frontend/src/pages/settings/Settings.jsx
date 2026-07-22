@@ -114,6 +114,11 @@ function Settings() {
             setOriginalData(settingsData);
             setIsDirty(false);
             showNotification("success", "Settings saved successfully.");
+            
+            // Reload the page after a short delay so the layout theme applies immediately
+            setTimeout(() => {
+                window.location.reload();
+            }, 800);
         } catch (error) {
             console.error("Failed to save settings:", error);
             showNotification("error", "Failed to save settings.");

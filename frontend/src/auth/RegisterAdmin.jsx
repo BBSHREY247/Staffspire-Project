@@ -3,7 +3,7 @@ import axios from "axios";
 import useSWR from "swr";
 import { useNavigate, Link } from "react-router-dom";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import logo from "../assets/Softspire_Logo.jpeg";
+import logo from "../assets/Softspire_Logo.png";
 import Navbar from "../components/public/Navbar";
 import InlineAlert from "../components/InlineAlert";
 
@@ -14,7 +14,7 @@ function RegisterAdmin() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    
+
     // Authorization states (if an admin already exists)
     const [adminExists, setAdminExists] = useState(false);
     const [authEmail, setAuthEmail] = useState("");
@@ -24,7 +24,7 @@ function RegisterAdmin() {
     const [alertMsg, setAlertMsg] = useState("");
     const [alertType, setAlertType] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    
+
     const navigate = useNavigate();
 
 

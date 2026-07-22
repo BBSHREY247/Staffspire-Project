@@ -28,7 +28,7 @@ const generatePDF = (res, { reportTitle, generatedBy, filters, headers, keys, ro
             doc.switchToPage(i);
 
             // 1. Header (Logo & Company Title)
-            const logoPath = path.join(__dirname, "../../frontend/src/assets/Softspire_Logo.jpeg");
+            const logoPath = path.join(__dirname, "../../frontend/src/assets/Softspire_Logo.png");
             if (fs.existsSync(logoPath)) {
                 try {
                     doc.image(logoPath, 40, 25, { width: 45 });

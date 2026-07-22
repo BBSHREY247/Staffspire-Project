@@ -2,26 +2,26 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import useSWR from "swr";
-import { 
-    FaBell, 
-    FaCog, 
-    FaUserCircle, 
-    FaSearch, 
-    FaSignOutAlt, 
-    FaChevronDown, 
-    FaCheckCircle, 
-    FaCalendarTimes, 
-    FaBirthdayCake, 
-    FaKey 
+import {
+    FaBell,
+    FaCog,
+    FaUserCircle,
+    FaSearch,
+    FaSignOutAlt,
+    FaChevronDown,
+    FaCheckCircle,
+    FaCalendarTimes,
+    FaBirthdayCake,
+    FaKey
 } from "react-icons/fa";
-import profilePic from "../../assets/Softspire_Logo.jpeg"
+import profilePic from "../../assets/Softspire_Logo.png"
 
 const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
 
 function Header() {
     const navigate = useNavigate();
     const location = useLocation();
-    
+
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const [showNotifMenu, setShowNotifMenu] = useState(false);
     const [notifications, setNotifications] = useState([]);
@@ -134,7 +134,7 @@ function Header() {
         <header className="header">
             {/* Left Brand and Title */}
             <div className="header-left">
-                <div className="logo-brand" onClick={() => navigate(user.role === "Admin" ? "/admin/dashboard" : "/employee/dashboard")} style={{cursor: "pointer"}}>
+                <div className="logo-brand" onClick={() => navigate(user.role === "Admin" ? "/admin/dashboard" : "/employee/dashboard")} style={{ cursor: "pointer" }}>
                     <img className="logo" src={profilePic} alt="" />
                 </div>
                 <div className="header-title-divider"></div>
@@ -156,9 +156,9 @@ function Header() {
             {/* Right Side Actions */}
             <div className="header-right">
                 {/* Notifications Bell */}
-                <div style={{position: "relative"}}>
-                    <button type="button" 
-                        className="header-action-btn" 
+                <div style={{ position: "relative" }}>
+                    <button type="button"
+                        className="header-action-btn"
                         aria-label="Notifications"
                         onClick={() => {
                             setShowNotifMenu(!showNotifMenu);
@@ -177,7 +177,7 @@ function Header() {
                         <div className="notifications-dropdown">
                             <div className="notif-header">
                                 <h4>Notifications</h4>
-                                <span onClick={handleClearAll} style={{ cursor: "pointer", color: "red"}}>Clear All</span>
+                                <span onClick={handleClearAll} style={{ cursor: "pointer", color: "red" }}>Clear All</span>
                             </div>
                             <div className="notif-list">
                                 {notifications.length === 0 ? (
@@ -186,16 +186,16 @@ function Header() {
                                     notifications.map((n) => {
                                         const details = getNotifDetails(n.title);
                                         return (
-                                            <div 
-                                                key={n.id} 
+                                            <div
+                                                key={n.id}
                                                 className={`notif-item ${!n.is_read ? 'unread' : ''}`}
                                                 onClick={() => handleMarkAsRead(n.id)}
                                             >
-                                                <div className="notif-icon-wrapper" style={{background: details.bg}}>
+                                                <div className="notif-icon-wrapper" style={{ background: details.bg }}>
                                                     {details.icon}
                                                 </div>
                                                 <div className="notif-content">
-                                                    <strong style={{fontSize: '12.5px', textAlign: 'left', display: 'block', color: '#1e293b'}}>{n.title}</strong>
+                                                    <strong style={{ fontSize: '12.5px', textAlign: 'left', display: 'block', color: '#1e293b' }}>{n.title}</strong>
                                                     <span className="notif-text">{n.message}</span>
                                                     <span className="notif-time">{formatTime(n.created_at)}</span>
                                                 </div>
@@ -209,8 +209,8 @@ function Header() {
                 </div>
 
                 {/* Settings Cog */}
-                <button type="button" 
-                    className="header-action-btn" 
+                <button type="button"
+                    className="header-action-btn"
                     aria-label="Settings"
                     onClick={() => {
                         navigate("/settings");
@@ -222,8 +222,8 @@ function Header() {
                 </button>
 
                 {/* Profile Widget Dropdown */}
-                <div style={{position: "relative"}}>
-                    <div 
+                <div style={{ position: "relative" }}>
+                    <div
                         className="profile-widget"
                         onClick={() => {
                             setShowProfileMenu(!showProfileMenu);
@@ -235,14 +235,14 @@ function Header() {
                             <span className="profile-name">{user.name}</span>
                             <span className="profile-role">{user.role}</span>
                         </div>
-                        <FaChevronDown className="profile-chevron" style={{transform: showProfileMenu ? "rotate(180deg)" : "rotate(0)"}} />
+                        <FaChevronDown className="profile-chevron" style={{ transform: showProfileMenu ? "rotate(180deg)" : "rotate(0)" }} />
                     </div>
 
                     {showProfileMenu && (
                         <ul className="dropdown-menu">
                             <div className="dropdown-header-name">{user.name}</div>
                             <div className="dropdown-header-role">{user.role}</div>
-                            
+
                             <li onClick={() => { navigate("/employee/profile"); setShowProfileMenu(false); }}>
                                 <FaUserCircle /> My Profile
                             </li>
@@ -253,8 +253,8 @@ function Header() {
                                 <FaKey /> Change Password
                             </li>
                             <div className="dropdown-divider"></div>
-                            <li onClick={handleLogout} style={{color: "#ef4444"}}>
-                                <FaSignOutAlt style={{color: "#ef4444"}} /> Logout
+                            <li onClick={handleLogout} style={{ color: "#ef4444" }}>
+                                <FaSignOutAlt style={{ color: "#ef4444" }} /> Logout
                             </li>
                         </ul>
                     )}

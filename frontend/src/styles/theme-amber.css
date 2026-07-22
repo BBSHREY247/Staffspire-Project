@@ -1,0 +1,207 @@
+/* Fooddify Theme */
+.theme-fooddify {
+    --primary: #FF8C00;
+    --primary-hover: #e67e00;
+    --sidebar-bg: #131722;
+    --bg-color: #f8fafc;
+    --card-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.theme-fooddify .sidebar {
+    background: var(--sidebar-bg);
+    color: #a0aec0;
+    border-right: none;
+}
+
+.theme-fooddify .sidebar-menu li {
+    color: #a0aec0;
+}
+
+.theme-fooddify .sidebar-menu li:hover {
+    background: rgba(255, 140, 0, 0.1);
+    color: white;
+    border-left-color: var(--primary);
+}
+
+.theme-fooddify .sidebar-menu li:hover svg {
+    color: var(--primary);
+}
+
+.theme-fooddify .active-menu {
+    background: rgba(255, 140, 0, 0.15) !important;
+    color: white !important;
+    border-left-color: var(--primary) !important;
+}
+
+.theme-fooddify .active-menu svg {
+    color: var(--primary) !important;
+}
+
+/* Header Styling */
+.theme-fooddify .header {
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.theme-fooddify .header-action-btn:hover {
+    background: rgba(255, 140, 0, 0.1);
+    color: var(--primary);
+}
+
+.theme-fooddify .badge-count {
+    background: var(--primary);
+}
+
+.theme-fooddify .profile-widget:hover {
+    border-color: var(--primary);
+    background: rgba(255, 140, 0, 0.05);
+}
+
+/* Primary Buttons Overrides */
+.theme-fooddify .btn-add-employee,
+.theme-fooddify .add-btn,
+.theme-fooddify .primary-btn,
+.theme-fooddify .save-btn,
+.theme-fooddify .btn-generate-report:hover,
+.theme-fooddify .department-form button {
+    background-color: var(--primary) !important;
+    color: white !important;
+    border-color: var(--primary) !important;
+}
+
+.theme-fooddify .btn-add-employee:hover,
+.theme-fooddify .add-btn:hover,
+.theme-fooddify .primary-btn:hover,
+.theme-fooddify .save-btn:hover,
+.theme-fooddify .department-form button:hover {
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+}
+
+/* Table styling for Fooddify */
+.theme-fooddify .employee-table th,
+.theme-fooddify .department-table th,
+.theme-fooddify .pending-table th {
+    background-color: rgba(255, 140, 0, 0.1) !important;
+    color: var(--primary) !important;
+    border-bottom: 2px solid var(--primary);
+}
+
+/* Form Inputs Focus */
+.theme-fooddify .form-group input:focus,
+.theme-fooddify .password-field input:focus,
+.theme-fooddify .detail-group input:focus,
+.theme-fooddify .search-bar-input:focus,
+.theme-fooddify .form-group select:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.15) !important;
+}
+
+/* Badges & Icons */
+.theme-fooddify .status-badge.pending {
+    background-color: #fff7ed;
+    color: #ea580c;
+}
+.theme-fooddify .activity-timeline-dot.blue { background-color: var(--primary); }
+.theme-fooddify .kpi-icon-wrapper.blue { background-color: rgba(255, 140, 0, 0.1); color: var(--primary); }
+
+/* Colorful KPI Cards */
+.theme-fooddify .kpi-card:nth-child(1) { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; }
+.theme-fooddify .kpi-card:nth-child(2) { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; }
+.theme-fooddify .kpi-card:nth-child(3) { background: linear-gradient(135deg, #f97316, #ea580c); color: white; border: none; }
+.theme-fooddify .kpi-card:nth-child(4) { background: linear-gradient(135deg, #a855f7, #9333ea); color: white; border: none; }
+.theme-fooddify .kpi-card:nth-child(5) { background: linear-gradient(135deg, #f43f5e, #e11d48); color: white; border: none; }
+.theme-fooddify .kpi-card:nth-child(6) { background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; border: none; }
+.theme-fooddify .kpi-card:nth-child(7) { background: linear-gradient(135deg, #64748b, #475569); color: white; border: none; }
+.theme-fooddify .kpi-card:nth-child(8) { background: linear-gradient(135deg, #ec4899, #db2777); color: white; border: none; }
+
+.theme-fooddify .kpi-card .kpi-card-label,
+.theme-fooddify .kpi-card .kpi-card-value,
+.theme-fooddify .kpi-card .trend-badge {
+    color: white !important;
+}
+
+.theme-fooddify .kpi-card .kpi-icon-wrapper {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+}
+
+/* Add Fooddify Banner style */
+.fooddify-banner {
+    display: none;
+}
+
+.theme-fooddify .fooddify-banner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(90deg, #ff8c00, #ffb347);
+    border-radius: 16px;
+    padding: 30px;
+    color: white;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
+}
+
+.theme-fooddify .fooddify-banner h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.theme-fooddify .fooddify-banner p {
+    font-size: 15px;
+    opacity: 0.9;
+}
+
+/* Transactional Page (Add Employee, etc) */
+.theme-fooddify .header-title-wrapper h1,
+.theme-fooddify .text-primary {
+    color: var(--primary) !important;
+}
+
+.theme-fooddify .stepper-line-active {
+    background-color: var(--primary);
+}
+
+.theme-fooddify .step-node.active .step-circle {
+    background-color: var(--primary);
+}
+
+.theme-fooddify .step-node.active .step-label {
+    color: var(--primary);
+}
+
+.theme-fooddify .form-textbox:focus,
+.theme-fooddify .form-select-custom:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.15);
+}
+
+.theme-fooddify .role-interactive-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.05);
+}
+
+.theme-fooddify .role-interactive-card.selected {
+    border-color: var(--primary);
+    background-color: rgba(255, 140, 0, 0.04);
+}
+
+.theme-fooddify .role-interactive-card.selected .radio-indicator {
+    border-color: var(--primary);
+}
+
+.theme-fooddify .role-interactive-card.selected .radio-indicator-dot {
+    background-color: var(--primary);
+}
+
+.theme-fooddify .btn-form-submit {
+    background-color: var(--primary);
+    box-shadow: 0 2px 8px rgba(255, 140, 0, 0.2);
+}
+
+.theme-fooddify .btn-form-submit:hover {
+    background-color: var(--primary-hover);
+}

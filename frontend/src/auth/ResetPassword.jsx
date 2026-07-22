@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import logo from "../assets/Softspire_Logo.jpeg";
+import logo from "../assets/Softspire_Logo.png";
 import Navbar from "../components/public/Navbar";
 import InlineAlert from "../components/InlineAlert";
 

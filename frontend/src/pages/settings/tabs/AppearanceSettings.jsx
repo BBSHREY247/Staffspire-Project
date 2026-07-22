@@ -39,6 +39,15 @@ const AppearanceSettings = ({ data, onChange }) => {
                                 onChange={(e) => onChange("theme", e.target.value)} 
                             /> System
                         </label>
+                        <label style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "0.9rem" }}>
+                            <input 
+                                type="radio" 
+                                name="theme" 
+                                value="fooddify" 
+                                checked={data.theme === "fooddify"} 
+                                onChange={(e) => onChange("theme", e.target.value)} 
+                            /> Fooddify
+                        </label>
                     </div>
                 </SettingRow>
 

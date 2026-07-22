@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import logo from "../assets/Softspire_Logo.jpeg";
+import logo from "../assets/Softspire_Logo.png";
 import Navbar from "../components/public/Navbar";
 import InlineAlert from "../components/InlineAlert";
 
