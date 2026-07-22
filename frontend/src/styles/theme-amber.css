@@ -205,3 +205,64 @@
 .theme-amber .btn-form-submit:hover {
     background-color: var(--primary-hover);
 }
+
+/* Reports Page Overrides */
+.theme-amber .reports-tab-btn.active {
+    background-color: var(--primary) !important;
+    color: white !important;
+}
+
+.theme-amber .btn-export-action,
+.theme-amber .btn-filter-reset {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
+
+.theme-amber .btn-export-action:hover,
+.theme-amber .btn-filter-reset:hover {
+    background-color: var(--primary-hover) !important;
+}
+
+/* Tasks Page Overrides */
+.theme-amber .btn-new-task {
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover)) !important;
+    box-shadow: 0 4px 14px rgba(255, 140, 0, 0.35) !important;
+}
+
+.theme-amber .btn-task-search {
+    background-color: var(--primary) !important;
+}
+
+.theme-amber .task-id-text {
+    color: var(--primary) !important;
+}
+
+.theme-amber .btn-view {
+    color: var(--primary) !important;
+    border-color: rgba(255, 140, 0, 0.4) !important;
+    background-color: rgba(255, 140, 0, 0.1) !important;
+}
+
+.theme-amber .btn-view:hover {
+    background-color: var(--primary) !important;
+    color: white !important;
+}
+
+/* Settings Page Overrides */
+.theme-amber .settings-tab-btn.active {
+    background-color: rgba(255, 140, 0, 0.15) !important;
+    color: var(--primary) !important;
+}
+
+.theme-amber .settings-tab-btn:not(.active):hover {
+    background-color: rgba(255, 140, 0, 0.08) !important;
+}
+
+.theme-amber .btn-settings-save {
+    background-color: var(--primary) !important;
+    box-shadow: 0 4px 6px -1px rgba(255, 140, 0, 0.2) !important;
+}
+
+.theme-amber .btn-settings-save:hover {
+    background-color: var(--primary-hover) !important;
+}

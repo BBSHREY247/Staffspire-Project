@@ -172,6 +172,7 @@ function AdminTaskList() {
                 <div className="employee-header" style={{ marginBottom: "24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <h1 className="page-title" style={{ margin: 0 }}>Task Management</h1>
                     <button type="button"
+                        className="btn-new-task"
                         onClick={() => setShowCreate(true)}
                         style={{
                             display: "inline-flex", alignItems: "center", gap: "8px",
@@ -212,7 +213,7 @@ function AdminTaskList() {
                                 value={search} onChange={e => setSearch(e.target.value)}
                             />
                         </div>
-                        <button type="submit" style={{ background: "#4f8cff", color: "white", border: "none", padding: "0 16px", borderRadius: "8px", cursor: "pointer", fontWeight: "600" }}>Search</button>
+                        <button type="submit" className="btn-task-search" style={{ background: "#4f8cff", color: "white", border: "none", padding: "0 16px", borderRadius: "8px", cursor: "pointer", fontWeight: "600" }}>Search</button>
                     </form>
                     <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
                         aria-label="Filter by status"
@@ -251,7 +252,7 @@ function AdminTaskList() {
                                 <tr><td colSpan="9" style={{ textAlign: "center", color: "#64748b", padding: "40px" }}>No tasks found.</td></tr>
                             ) : tasks.map(task => (
                                 <tr key={task.id}>
-                                    <td><span style={{ fontFamily: "monospace", fontWeight: "700", color: "#4f8cff", fontSize: "13px" }}>{task.task_id || `#${task.id}`}</span></td>
+                                    <td><span className="task-id-text" style={{ fontFamily: "monospace", fontWeight: "700", color: "#4f8cff", fontSize: "13px" }}>{task.task_id || `#${task.id}`}</span></td>
                                     <td style={{ maxWidth: "200px" }}>
                                         <span style={{ fontWeight: "600", color: "#1e293b", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                                             {task.task_title}
@@ -268,6 +269,7 @@ function AdminTaskList() {
                                     <td style={{ textAlign: "center" }}>
                                         <div style={{ display: "flex", gap: "6px", justifyContent: "center" }}>
                                             <button type="button"
+                                                className="btn-task-action btn-view"
                                                 onClick={() => navigate(`/admin/tasks/${task.id}`)}
                                                 title="View / Edit"
                                                 aria-label="View or edit task"
@@ -276,6 +278,7 @@ function AdminTaskList() {
                                                 onMouseLeave={e => { e.currentTarget.style.background = "#eff6ff"; e.currentTarget.style.color = "#2563eb"; }}
                                             ><FaEye /></button>
                                             <button type="button"
+                                                className="btn-task-action btn-delete"
                                                 onClick={() => handleDeleteClick(task.id, task.task_title)}
                                                 title="Delete"
                                                 aria-label="Delete task"

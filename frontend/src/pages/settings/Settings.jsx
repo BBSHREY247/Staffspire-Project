@@ -161,6 +161,7 @@ function Settings() {
                     {isDirty && (
                         <div style={{ display: "flex", gap: "12px" }}>
                             <button type="button" 
+                                className="btn-settings-discard"
                                 onClick={handleDiscard}
                                 style={{
                                     display: "flex", alignItems: "center", gap: "8px",
@@ -171,6 +172,7 @@ function Settings() {
                                 <FaUndo /> Discard
                             </button>
                             <button type="button" 
+                                className="btn-settings-save"
                                 onClick={handleSave}
                                 style={{
                                     display: "flex", alignItems: "center", gap: "8px",
@@ -237,6 +239,7 @@ function Settings() {
                                 {filteredTabs.map(tab => (
                                     <li key={tab.id}>
                                         <button type="button"
+                                            className={`settings-tab-btn ${activeTab === tab.id ? 'active' : ''}`}
                                             onClick={() => handleTabChange(tab.id)}
                                             style={{
                                                 width: "100%",
