@@ -43,10 +43,10 @@ const AppearanceSettings = ({ data, onChange }) => {
                             <input 
                                 type="radio" 
                                 name="theme" 
-                                value="fooddify" 
-                                checked={data.theme === "fooddify"} 
+                                value="amber" 
+                                checked={data.theme === "amber"} 
                                 onChange={(e) => onChange("theme", e.target.value)} 
-                            /> Fooddify
+                            /> Amber
                         </label>
                     </div>
                 </SettingRow>

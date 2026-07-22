@@ -281,7 +281,7 @@ function AdminDashboard() {
                 )}
 
                 {/* Page Header */}
-                <div className="fooddify-banner">
+                <div className="amber-banner">
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <div>
                             <h2>Good Morning, Admin 👋</h2>

@@ -69,7 +69,8 @@ function Settings() {
         
         let initialData = {};
         // Mock fetching from API / LocalStorage for other settings
-        const savedSettings = JSON.parse(localStorage.getItem("staffspire_settings:v1")) || {};
+        const userKey = user.email || user.id || user._id || "default";
+        const savedSettings = JSON.parse(localStorage.getItem(`staffspire_settings:v1:${userKey}`)) || JSON.parse(localStorage.getItem("staffspire_settings:v1")) || {};
         initialData = { ...initialData, ...savedSettings };
 
         if (isAdmin && officeData?.data) {
@@ -95,7 +96,8 @@ function Settings() {
         setIsSaving(true);
         try {
             // Save non-geofence settings locally for now
-            localStorage.setItem("staffspire_settings:v1", JSON.stringify(settingsData));
+            const userKey = user.email || user.id || user._id || "default";
+            localStorage.setItem(`staffspire_settings:v1:${userKey}`, JSON.stringify(settingsData));
 
             if (isAdmin && (settingsData.officeName || settingsData.latitude)) {
                 const token = localStorage.getItem("token");
