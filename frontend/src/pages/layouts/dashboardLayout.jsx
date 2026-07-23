@@ -21,8 +21,11 @@ function DashboardLayout({ children }) {
         const settings = JSON.parse(localStorage.getItem(`staffspire_settings:v1:${userKey}`)) || JSON.parse(localStorage.getItem("staffspire_settings:v1")) || {};
         const theme = settings.theme || "system";
         
+        document.body.classList.remove('theme-light', 'theme-dark', 'theme-amber');
+
         if (theme !== "system") {
             setThemeClass(`theme-${theme}`);
+            document.body.classList.add(`theme-${theme}`);
         } else {
             setThemeClass("");
         }
