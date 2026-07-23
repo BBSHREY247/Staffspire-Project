@@ -39,6 +39,7 @@ import MyTasks from "./pages/employee/MyTasks";
 import ReportsDashboard from "./pages/reports/ReportsDashboard";
 import AlertsShowcase from "./pages/admin/AlertsShowcase";
 import ProjectDashboard from "./pages/admin/ProjectDashboard";
+import Projects from "./pages/admin/Projects";
 
 
 function App() {
@@ -113,8 +114,13 @@ function App() {
                 />
 
                 <Route
-                    path="/admin/projects"
+                    path="/admin/projects/dashboard"
                     element={<ProjectDashboard />}
+                />
+
+                <Route
+                    path="/admin/projects"
+                    element={<Projects />}
                 />
 
                 <Route

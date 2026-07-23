@@ -12,7 +12,10 @@ import {
     FaCheckCircle,
     FaCalendarTimes,
     FaBirthdayCake,
-    FaKey
+    FaKey,
+    FaPlus,
+    FaUserPlus,
+    FaTasks
 } from "react-icons/fa";
 import profilePic from "../../assets/Softspire_Logo.png";
 import "../../styles/header.css";
@@ -25,6 +28,7 @@ function Header() {
 
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const [showNotifMenu, setShowNotifMenu] = useState(false);
+    const [showQuickMenu, setShowQuickMenu] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [isClearing, setIsClearing] = useState(false);
     const [isMarkingRead, setIsMarkingRead] = useState(false);
@@ -143,7 +147,69 @@ function Header() {
             </div>
 
             {/* Right Side Actions */}
-            <div className="header-right-premium">
+            <div className="header-right-premium" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                
+                {/* Global Search */}
+                <div className="header-search-container" style={{ position: "relative", marginRight: "8px", display: "none", '@media (minWidth: 768px)': { display: 'block' } }}>
+                    <FaSearch style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }} />
+                    <input 
+                        type="text" 
+                        placeholder="Search..." 
+                        style={{
+                            padding: "10px 12px 10px 36px",
+                            borderRadius: "20px",
+                            border: "1px solid #e2e8f0",
+                            backgroundColor: "#f8fafc",
+                            outline: "none",
+                            width: "220px",
+                            fontSize: "14px",
+                            transition: "all 0.3s ease"
+                        }}
+                        onFocus={(e) => {
+                            e.target.style.boxShadow = "0 0 0 2px rgba(79, 70, 229, 0.2)";
+                            e.target.style.width = "260px";
+                        }}
+                        onBlur={(e) => {
+                            e.target.style.boxShadow = "none";
+                            e.target.style.width = "220px";
+                        }}
+                    />
+                </div>
+
+                {/* Quick Actions (+) */}
+                <div style={{ position: "relative" }}>
+                    <button type="button"
+                        className="action-btn-premium"
+                        aria-label="Quick Actions"
+                        style={{ background: "var(--primary, #4f46e5)", color: "white", border: "none" }}
+                        onClick={() => {
+                            setShowQuickMenu(!showQuickMenu);
+                            setShowNotifMenu(false);
+                            setShowProfileMenu(false);
+                        }}
+                    >
+                        <FaPlus />
+                    </button>
+
+                    {showQuickMenu && (
+                        <div className="dropdown-menu-premium" style={{ width: "200px", top: "50px", right: "0" }}>
+                            <div className="dropdown-header-premium flex-header">
+                                <h4>Quick Actions</h4>
+                            </div>
+                            <div className="profile-menu-items">
+                                {user.role === "Admin" && (
+                                    <div className="profile-menu-item" onClick={() => { navigate("/admin/employees"); setShowQuickMenu(false); }}>
+                                        <FaUserPlus /> Add Employee
+                                    </div>
+                                )}
+                                <div className="profile-menu-item" onClick={() => { navigate(user.role === "Admin" ? "/admin/tasks" : "/employee/tasks"); setShowQuickMenu(false); }}>
+                                    <FaTasks /> Assign Task
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
                 {/* Notifications Bell */}
                 <div style={{ position: "relative" }}>
                     <button type="button"
@@ -152,6 +218,7 @@ function Header() {
                         onClick={() => {
                             setShowNotifMenu(!showNotifMenu);
                             setShowProfileMenu(false);
+                            setShowQuickMenu(false);
                         }}
                     >
                         <FaBell />
@@ -198,15 +265,16 @@ function Header() {
                 </div>
 
                 {/* Settings Cog */}
-                <button type="button"
-                    className="action-btn-premium settings-btn"
-                    aria-label="Settings"
-                    onClick={() => {
-                        navigate("/settings");
-                        setShowNotifMenu(false);
-                        setShowProfileMenu(false);
-                    }}
-                >
+                    <button type="button"
+                        className="action-btn-premium settings-btn"
+                        aria-label="Settings"
+                        onClick={() => {
+                            navigate("/settings");
+                            setShowNotifMenu(false);
+                            setShowProfileMenu(false);
+                            setShowQuickMenu(false);
+                        }}
+                    >
                     <FaCog />
                 </button>
 
@@ -217,6 +285,7 @@ function Header() {
                         onClick={() => {
                             setShowProfileMenu(!showProfileMenu);
                             setShowNotifMenu(false);
+                            setShowQuickMenu(false);
                         }}
                     >
                         <div className="profile-avatar-premium">

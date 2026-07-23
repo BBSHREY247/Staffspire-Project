@@ -13,12 +13,23 @@ const getManagerDepartment = async (userId) => {
 const getEmployees = async (req, res) => {
     try {
         const role = req.user.role;
-        let query = "SELECT * FROM employees";
+        let query = `
+            SELECT e.*, r.role_name AS role
+            FROM employees e
+            LEFT JOIN users u ON e.employee_id = u.login_id OR e.email = u.email
+            LEFT JOIN roles r ON u.role_id = r.id
+        `;
         const params = [];
         if (role === "Manager") {
             const dept = await getManagerDepartment(req.user.id);
             if (dept) {
-                query = "SELECT * FROM employees WHERE department = ?";
+                query = `
+                    SELECT e.*, r.role_name AS role
+                    FROM employees e
+                    LEFT JOIN users u ON e.employee_id = u.login_id OR e.email = u.email
+                    LEFT JOIN roles r ON u.role_id = r.id
+                    WHERE e.department = ?
+                `;
                 params.push(dept);
             } else {
                 return res.status(200).json({ success: true, employees: [] });

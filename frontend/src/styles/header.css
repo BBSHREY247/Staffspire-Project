@@ -25,7 +25,6 @@
 .brand-logo-premium {
     width: 250px;
     height: 100px;
-    transition: transform 0.3s ease;
 }
 
 .brand-logo-premium:hover {
