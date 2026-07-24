@@ -120,7 +120,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }) {
             }}>
                 <div style={{ padding: "20px 24px", borderBottom: "1px solid #e2e8f0", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#f8fafc" }}>
                     <h2 style={{ margin: 0, fontSize: "1.25rem", color: "#0f172a", display: "flex", alignItems: "center", gap: "10px" }}>
-                        <FaProjectDiagram style={{ color: "#4f46e5" }} /> Create New Project
+                        <FaProjectDiagram style={{ color: "var(--primary, #4f46e5)" }} /> Create New Project
                     </h2>
                     <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "#64748b", fontSize: "1.2rem" }}>
                         <FaTimes />
@@ -196,7 +196,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }) {
                             <div>
                                 <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "600", color: "#334155", marginBottom: "6px" }}>Project Color</label>
                                 <div style={{ display: "flex", gap: "8px" }}>
-                                    {['#4f46e5', '#2563eb', '#10b981', '#f59e0b', '#f43f5e', '#8b5cf6', '#0f172a'].map(color => (
+                                    {['var(--primary, #4f46e5)', '#2563eb', '#10b981', '#f59e0b', '#f43f5e', '#8b5cf6', '#0f172a'].map(color => (
                                         <div 
                                             key={color} 
                                             onClick={() => setFormData({...formData, project_color: color})}
@@ -286,7 +286,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }) {
                     <button type="button" onClick={onClose} style={{ padding: "10px 16px", backgroundColor: "white", border: "1px solid #cbd5e1", borderRadius: "8px", color: "#475569", fontWeight: "600", cursor: "pointer" }}>
                         Cancel
                     </button>
-                    <button type="submit" form="projectForm" disabled={isSubmitting} style={{ padding: "10px 20px", backgroundColor: "#4f46e5", border: "none", borderRadius: "8px", color: "white", fontWeight: "600", cursor: isSubmitting ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: "8px" }}>
+                    <button type="submit" form="projectForm" disabled={isSubmitting} style={{ padding: "10px 20px", backgroundColor: "var(--primary, #4f46e5)", border: "none", borderRadius: "8px", color: "white", fontWeight: "600", cursor: isSubmitting ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: "8px" }}>
                         {isSubmitting ? "Creating..." : <><FaPlus /> Create Project</>}
                     </button>
                 </div>

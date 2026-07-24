@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
-import { FaPlus, FaSearch, FaEllipsisH, FaFolder, FaFilter, FaUserCircle, FaSort } from "react-icons/fa";
+import { FaPlus, FaSearch, FaEye, FaFolder, FaFilter, FaUserCircle, FaSort } from "react-icons/fa";
 import CreateProjectModal from "./components/CreateProjectModal";
 
 const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
 
 function Projects() {
     const token = localStorage.getItem("token");
+    const navigate = useNavigate();
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [search, setSearch] = useState("");
@@ -144,7 +146,10 @@ function Projects() {
                                 ) : paginatedProjects.length === 0 ? (
                                     <tr><td colSpan="9" style={{ textAlign: "center", padding: "40px", color: "#64748b" }}>No projects found matching the criteria.</td></tr>
                                 ) : paginatedProjects.map(p => (
-                                    <tr key={p.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                                    <tr key={p.id} style={{ borderBottom: "1px solid #f1f5f9", cursor: "pointer", transition: "background-color 0.2s" }} 
+                                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#f8fafc"} 
+                                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                                        onClick={() => navigate(`/admin/projects/${p.id}`)}>
                                         <td style={{ padding: "16px" }}>
                                             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                                                 <div style={{ backgroundColor: p.project_color || "#4f46e5", width: "40px", height: "40px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", color: "white", flexShrink: 0 }}>
@@ -207,8 +212,12 @@ function Projects() {
                                             {new Date(p.end_date).toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' })}
                                         </td>
                                         <td style={{ padding: "16px" }}>
-                                            <button style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", padding: "4px" }}>
-                                                <FaEllipsisH size={18} />
+                                            <button 
+                                                className="table-action-btn"
+                                                onClick={(e) => { e.stopPropagation(); navigate(`/admin/projects/${p.id}`); }} 
+                                                title="View Details"
+                                            >
+                                                <FaEye size={18} />
                                             </button>
                                         </td>
                                     </tr>
