@@ -5,7 +5,7 @@ import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { 
     FaArrowLeft, FaCheckCircle, FaTasks, FaExclamationCircle, 
-    FaUsers, FaClock, FaFolderOpen, FaProjectDiagram, FaHistory, FaFlag, FaUserCircle
+    FaUsers, FaClock, FaFolderOpen, FaProjectDiagram, FaHistory, FaFlag, FaUserCircle, FaPlus, FaTimes
 } from "react-icons/fa";
 
 const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
@@ -17,9 +17,28 @@ export default function ProjectDetails() {
 
     const [activeTab, setActiveTab] = useState("Overview");
 
-    const { data: projectRes, isLoading } = useSWR(token ? `http://localhost:5000/api/projects/${id}` : null, fetcher);
+    const { data: projectRes, isLoading, mutate } = useSWR(token ? `http://localhost:5000/api/projects/${id}` : null, fetcher);
     const { data: deptData } = useSWR(token ? "http://localhost:5000/api/departments" : null, fetcher);
     const { data: empData } = useSWR(token ? "http://localhost:5000/api/employees" : null, fetcher);
+
+    const [showTaskModal, setShowTaskModal] = useState(false);
+    const [taskForm, setTaskForm] = useState({ task_title: "", description: "", assigned_to: "", priority: "Medium", deadline: "" });
+    const [isSubmittingTask, setIsSubmittingTask] = useState(false);
+
+    const handleCreateTask = async (e) => {
+        e.preventDefault();
+        try {
+            setIsSubmittingTask(true);
+            await axios.post("http://localhost:5000/api/tasks", { ...taskForm, project_id: id }, { headers: { Authorization: `Bearer ${token}` } });
+            setShowTaskModal(false);
+            setTaskForm({ task_title: "", description: "", assigned_to: "", priority: "Medium", deadline: "" });
+            mutate();
+        } catch (err) {
+            alert(err.response?.data?.message || "Failed to create task.");
+        } finally {
+            setIsSubmittingTask(false);
+        }
+    };
 
     if (isLoading) {
         return (
@@ -52,7 +71,7 @@ export default function ProjectDetails() {
     
     const today = new Date();
     today.setHours(0,0,0,0);
-    const overdueTasks = tasks.filter(t => new Date(t.due_date) < today && t.status !== "Completed").length;
+    const overdueTasks = tasks.filter(t => new Date(t.deadline) < today && t.status !== "Completed").length;
     
     const endDate = new Date(project.end_date);
     const remainingDays = Math.max(0, Math.ceil((endDate - today) / (1000 * 60 * 60 * 24)));
@@ -179,6 +198,13 @@ export default function ProjectDetails() {
                             <div>
                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
                                     <h3 style={{ margin: 0, color: "#1e293b" }}>Project Tasks</h3>
+                                    <button 
+                                        onClick={() => setShowTaskModal(true)}
+                                        className="primary-btn"
+                                        style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px", backgroundColor: "var(--primary, #4f46e5)", color: "white", border: "none", borderRadius: "8px", fontWeight: "600", cursor: "pointer" }}
+                                    >
+                                        <FaPlus /> Add Task
+                                    </button>
                                 </div>
                                 {tasks.length === 0 ? (
                                     <div style={{ padding: "40px", textAlign: "center", color: "#64748b", backgroundColor: "#f8fafc", borderRadius: "8px" }}>No tasks assigned to this project yet.</div>
@@ -195,12 +221,12 @@ export default function ProjectDetails() {
                                         <tbody>
                                             {tasks.map(t => (
                                                 <tr key={t.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                                                    <td style={{ padding: "12px", fontWeight: "500", color: "#1e293b" }}>{t.title}</td>
+                                                    <td style={{ padding: "12px", fontWeight: "500", color: "#1e293b" }}>{t.task_title}</td>
                                                     <td style={{ padding: "12px", color: "#475569" }}>{t.employee_name || "Unassigned"}</td>
                                                     <td style={{ padding: "12px" }}>
                                                         <span style={{ padding: "4px 8px", borderRadius: "4px", fontSize: "0.8rem", fontWeight: "600", backgroundColor: t.status === "Completed" ? "#dcfce7" : "#f1f5f9", color: t.status === "Completed" ? "#166534" : "#475569" }}>{t.status}</span>
                                                     </td>
-                                                    <td style={{ padding: "12px", color: "#475569" }}>{new Date(t.due_date).toLocaleDateString()}</td>
+                                                    <td style={{ padding: "12px", color: "#475569" }}>{new Date(t.deadline).toLocaleDateString()}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
@@ -274,6 +300,69 @@ export default function ProjectDetails() {
                 </div>
 
             </div>
+
+            {/* Create Task Modal */}
+            {showTaskModal && (
+                <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.45)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div className="form-card" style={{ width: "90%", maxWidth: "520px", margin: 0, position: "relative", maxHeight: "90vh", overflowY: "auto", backgroundColor: "white", padding: "32px", borderRadius: "16px", boxShadow: "0 10px 25px rgba(0,0,0,0.1)" }}>
+                        <button type="button" onClick={() => setShowTaskModal(false)} aria-label="Close modal"
+                            style={{ position: "absolute", top: "20px", right: "20px", background: "none", border: "none", cursor: "pointer", fontSize: "18px", color: "#64748b" }}>
+                            <FaTimes />
+                        </button>
+
+                        <h2 style={{ margin: "0 0 6px", fontWeight: "700", fontSize: "20px", color: "#0f172a" }}>Assign New Task</h2>
+                        <p style={{ margin: "0 0 24px", fontSize: "14px", color: "#64748b" }}>Create a task specifically for this project.</p>
+
+                        <form onSubmit={handleCreateTask} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                            <div className="form-group" style={{ margin: 0 }}>
+                                <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", fontSize: "14px", color: "#334155" }}>Task Title *</label>
+                                <input aria-label="Task Title" type="text" value={taskForm.task_title} onChange={e => setTaskForm({ ...taskForm, task_title: e.target.value })} placeholder="e.g. Prepare monthly report" required style={{ width: "100%", padding: "10px", border: "1px solid #cbd5e1", borderRadius: "8px", boxSizing: "border-box" }} />
+                            </div>
+
+                            <div className="form-group" style={{ margin: 0 }}>
+                                <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", fontSize: "14px", color: "#334155" }}>Description</label>
+                                <textarea aria-label="Description" value={taskForm.description} onChange={e => setTaskForm({ ...taskForm, description: e.target.value })}
+                                    placeholder="Task details and instructions..." rows="3"
+                                    style={{ width: "100%", padding: "12px", border: "1px solid #cbd5e1", borderRadius: "8px", resize: "none", fontSize: "14px", boxSizing: "border-box", fontFamily: "inherit" }} />
+                            </div>
+
+                            <div className="form-group" style={{ margin: 0 }}>
+                                <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", fontSize: "14px", color: "#334155" }}>Assign To *</label>
+                                <select value={taskForm.assigned_to} onChange={e => setTaskForm({ ...taskForm, assigned_to: e.target.value })} required
+                                    style={{ width: "100%", padding: "12px", border: "1px solid #cbd5e1", borderRadius: "8px", fontSize: "14px", boxSizing: "border-box", backgroundColor: "white" }}>
+                                    <option value="">Select Employee</option>
+                                    {employees.map(emp => (
+                                        <option key={emp.employee_id} value={emp.employee_id}>
+                                            {emp.first_name} {emp.last_name} — {emp.department}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                                <div className="form-group" style={{ margin: 0 }}>
+                                    <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", fontSize: "14px", color: "#334155" }}>Priority</label>
+                                    <select value={taskForm.priority} onChange={e => setTaskForm({ ...taskForm, priority: e.target.value })}
+                                        style={{ width: "100%", padding: "12px", border: "1px solid #cbd5e1", borderRadius: "8px", fontSize: "14px", boxSizing: "border-box", backgroundColor: "white" }}>
+                                        <option>High</option>
+                                        <option>Medium</option>
+                                        <option>Low</option>
+                                    </select>
+                                </div>
+                                <div className="form-group" style={{ margin: 0 }}>
+                                    <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", fontSize: "14px", color: "#334155" }}>Due Date *</label>
+                                    <input type="date" value={taskForm.deadline} onChange={e => setTaskForm({ ...taskForm, deadline: e.target.value })} required style={{ width: "100%", padding: "10px", border: "1px solid #cbd5e1", borderRadius: "8px", boxSizing: "border-box" }} />
+                                </div>
+                            </div>
+
+                            <button type="submit" disabled={isSubmittingTask}
+                                style={{ background: "var(--primary, #4f46e5)", color: "white", border: "none", padding: "14px", borderRadius: "10px", fontWeight: "700", fontSize: "15px", cursor: "pointer", opacity: isSubmittingTask ? 0.6 : 1, marginTop: "10px", transition: "all 0.2s" }}>
+                                {isSubmittingTask ? "Creating..." : "Assign Task"}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
         </DashboardLayout>
     );
 }
