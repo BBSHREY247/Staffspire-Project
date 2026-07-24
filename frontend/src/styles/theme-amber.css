@@ -39,7 +39,7 @@
 
 /* Header Styling */
 .theme-amber .header-premium {
-    background-color: #7da4be;
+    background-color: #cbdae4;
     /* background: linear-gradient(90deg, #4eb4ef) !important; */
     border-bottom: none !important;
     box-shadow: 0 4px 15px rgba(255, 140, 0, 0.15) !important;
@@ -57,7 +57,7 @@
 .theme-amber .action-btn-premium {
     background: rgba(255, 255, 255, 0.2) !important;
     border-color: transparent !important;
-    color: white !important;
+    color: rgb(0, 0, 0) !important;
 }
 
 .theme-amber .action-btn-premium:hover {
@@ -66,12 +66,12 @@
 }
 
 .theme-amber .profile-name-premium {
-    color: white !important;
+    color: rgb(0, 0, 0) !important;
 }
 
 .theme-amber .profile-role-premium,
 .theme-amber .profile-chevron-premium {
-    color: rgba(255, 255, 255, 0.9) !important;
+    color: rgba(0, 0, 0, 0.9) !important;
 }
 
 .theme-amber .profile-widget-premium:hover {
