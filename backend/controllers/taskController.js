@@ -273,9 +273,11 @@ const getEmployeesForAssignment = async (req, res) => {
 const getTaskById = async (req, res) => {
     try {
         const [rows] = await db.promise().query(
-            `SELECT t.*, CONCAT(e.first_name, ' ', e.last_name) AS employee_name, e.designation, e.department AS emp_dept
+            `SELECT t.*, CONCAT(e.first_name, ' ', e.last_name) AS employee_name, e.designation, e.department AS emp_dept, d.department_name AS proj_dept
              FROM tasks t
              LEFT JOIN employees e ON t.employee_id = e.employee_id
+             LEFT JOIN projects p ON t.project_id = p.id
+             LEFT JOIN departments d ON p.department_id = d.id
              WHERE t.id = ?`,
             [req.params.id]
         );

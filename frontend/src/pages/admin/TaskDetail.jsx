@@ -78,6 +78,11 @@ function TaskDetail() {
         }
     }, [empData]);
 
+    const targetDept = task?.proj_dept || task?.department || task?.emp_dept || "";
+    const assignableEmployees = targetDept
+        ? employees.filter(emp => emp.department === targetDept || emp.employee_id === task?.employee_id)
+        : employees;
+
     const handleAdminUpdate = async (e) => {
         e.preventDefault();
         try {
@@ -245,9 +250,9 @@ function TaskDetail() {
                                     <label>Assign To</label>
                                     <select aria-label="Assign To" value={editForm.employee_id || ""} onChange={e => setEditForm({ ...editForm, assigned_to: e.target.value, employee_id: e.target.value })}
                                         style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }}>
-                                        {employees.map(emp => (
+                                        {assignableEmployees.map(emp => (
                                             <option key={emp.employee_id} value={emp.employee_id}>
-                                                {emp.first_name} {emp.last_name}
+                                                {emp.first_name} {emp.last_name} ({emp.department || "No Dept"})
                                             </option>
                                         ))}
                                     </select>

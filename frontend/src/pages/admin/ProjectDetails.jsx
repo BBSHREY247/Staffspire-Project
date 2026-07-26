@@ -31,7 +31,7 @@ export default function ProjectDetails() {
         }
         try {
             setIsSubmittingTask(true);
-            await axios.post("http://localhost:5000/api/tasks", { ...inlineTask, project_id: id }, { headers: { Authorization: `Bearer ${token}` } });
+            await axios.post("http://localhost:5000/api/tasks", { ...inlineTask, project_id: id, department: deptName }, { headers: { Authorization: `Bearer ${token}` } });
             setInlineTask(null);
             mutate();
         } catch (err) {
