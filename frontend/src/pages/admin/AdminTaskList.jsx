@@ -320,17 +320,29 @@ function AdminTaskList() {
                                     style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", resize: "none", fontSize: "14px" }} />
                             </div>
 
-                            <div className="form-group" style={{ margin: 0 }}>
-                                <label>Assign To *</label>
-                                <select value={form.assigned_to} onChange={e => setForm({ ...form, assigned_to: e.target.value })} required
-                                    style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }}>
-                                    <option value="">Select Employee</option>
-                                    {employees.map(emp => (
-                                        <option key={emp.employee_id} value={emp.employee_id}>
-                                            {emp.first_name} {emp.last_name} — {emp.department}
-                                        </option>
-                                    ))}
-                                </select>
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                                <div className="form-group" style={{ margin: 0 }}>
+                                    <label>Department Filter</label>
+                                    <select value={form.department_filter || ""} onChange={e => setForm({ ...form, department_filter: e.target.value, assigned_to: "" })}
+                                        style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }}>
+                                        <option value="">All Departments</option>
+                                        {Array.from(new Set(employees.map(emp => emp.department).filter(Boolean))).map(d => (
+                                            <option key={d} value={d}>{d}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="form-group" style={{ margin: 0 }}>
+                                    <label>Assign To *</label>
+                                    <select value={form.assigned_to} onChange={e => setForm({ ...form, assigned_to: e.target.value })} required
+                                        style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }}>
+                                        <option value="">Select Employee</option>
+                                        {employees.filter(emp => !form.department_filter || emp.department === form.department_filter).map(emp => (
+                                            <option key={emp.employee_id} value={emp.employee_id}>
+                                                {emp.first_name} {emp.last_name} — {emp.department}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
 
                             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>

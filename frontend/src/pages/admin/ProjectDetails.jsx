@@ -65,6 +65,9 @@ export default function ProjectDetails() {
     const manager = employees.find(e => e.employee_id === project.manager_id);
     const managerName = manager ? `${manager.first_name} ${manager.last_name}` : "Unassigned";
 
+    const projectEmployees = employees.filter(emp => emp.department === deptName || members.some(m => m.employee_id === emp.employee_id));
+    const assignableEmployees = projectEmployees.length > 0 ? projectEmployees : employees;
+
     // Widget calculations
     const totalTasks = tasks.length;
     const completedTasks = tasks.filter(t => t.status === "Completed").length;
@@ -298,9 +301,9 @@ export default function ProjectDetails() {
                                                             style={{ width: "100%", padding: "8px", border: "1px solid #60a5fa", borderRadius: "6px", fontSize: "0.85rem", boxSizing: "border-box", outline: "none", backgroundColor: "white" }}
                                                         >
                                                             <option value="">Select Employee *</option>
-                                                            {employees.map(emp => (
+                                                            {assignableEmployees.map(emp => (
                                                                 <option key={emp.employee_id} value={emp.employee_id}>
-                                                                    {emp.first_name} {emp.last_name}
+                                                                    {emp.first_name} {emp.last_name} ({emp.department || "No Dept"})
                                                                 </option>
                                                             ))}
                                                         </select>

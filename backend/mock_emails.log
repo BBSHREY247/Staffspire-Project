@@ -1,0 +1,41 @@
+
+============================================================
+TIMESTAMP: 2026-07-26T15:22:59.907Z
+TO:        shreyashanawane@gmail.com
+SUBJECT:   [Task Assigned] azsvszdx (ID: TK0046)
+BODY (HTML):
+
+                <div style="font-family: sans-serif; padding: 20px; color: #1e293b; max-width: 600px; border: 1px solid #e2e8f0; border-radius: 12px;">
+                    <h2 style="color: #4f7df0; margin-top: 0;">New Task Assigned</h2>
+                    <p>Hello Shreyash,</p>
+                    <p>You have been assigned a new task on Softspire.</p>
+                    
+                    <div style="background: #f8fafc; border-left: 4px solid #4f7df0; padding: 16px; margin: 20px 0; border-radius: 4px;">
+                        <strong style="font-size: 16px;">azsvszdx</strong>
+                        <p style="margin: 8px 0 0 0; color: #475569;">WRSHDBx</p>
+                    </div>
+                    
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                        <tr>
+                            <td style="padding: 6px 0; color: #64748b; width: 120px;">Task ID:</td>
+                            <td style="padding: 6px 0; font-weight: 600;">TK0046</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 6px 0; color: #64748b;">Assigned By:</td>
+                            <td style="padding: 6px 0; font-weight: 600;">Admin</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 6px 0; color: #64748b;">Priority:</td>
+                            <td style="padding: 6px 0; font-weight: 600;">Medium</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 6px 0; color: #64748b;">Due Date:</td>
+                            <td style="padding: 6px 0; font-weight: 600; color: #ef4444;">2026-07-30</td>
+                        </tr>
+                    </table>
+                    
+                    <a href="http://localhost:5173/employee/tasks" style="display: inline-block; background: #4f7df0; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; text-align: center;">View Task Dashboard</a>
+                    <p style="margin-top: 24px; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 16px;">This is an automated message from Staffspire Solutions. Please do not reply.</p>
+                </div>
+            
+============================================================

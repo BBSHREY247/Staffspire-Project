@@ -13,7 +13,6 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }) {
 
     const departments = Array.isArray(deptData) ? deptData : (deptData?.departments || []);
     const employees = Array.isArray(empData) ? empData : (empData?.employees || []);
-    const managers = employees.filter(e => e.role === "Manager" || e.role === "Admin");
 
     const [formData, setFormData] = useState({
         project_name: "",
@@ -58,10 +57,35 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }) {
         setSelectedMembers(selectedMembers.filter(m => m.employee_id !== id));
     };
 
+    const selectedDeptObj = departments.find(d => String(d.id) === String(formData.department_id));
+    const selectedDeptName = selectedDeptObj ? selectedDeptObj.department_name : "";
+
+    const availableManagers = formData.department_id
+        ? employees.filter(e => e.department === selectedDeptName || e.role === "Manager" || e.role === "Admin" || e.designation?.toLowerCase().includes("manager"))
+        : employees.filter(e => e.role === "Manager" || e.role === "Admin" || e.designation?.toLowerCase().includes("manager"));
+
+    const handleDepartmentChange = (e) => {
+        const deptId = e.target.value;
+        const deptObj = departments.find(d => String(d.id) === String(deptId));
+        const deptName = deptObj ? deptObj.department_name : "";
+
+        let autoManagerId = "";
+        if (deptName) {
+            const inDept = employees.filter(emp => emp.department === deptName);
+            const deptMgr = inDept.find(emp => emp.role === "Manager" || emp.role === "Admin" || emp.designation?.toLowerCase().includes("manager")) || inDept[0];
+            if (deptMgr) {
+                autoManagerId = deptMgr.employee_id;
+            }
+        }
+        setFormData({ ...formData, department_id: deptId, manager_id: autoManagerId });
+    };
+
     const filteredEmployees = employees.filter(emp => 
         (emp.first_name + " " + emp.last_name).toLowerCase().includes(memberSearch.toLowerCase()) ||
-        emp.department?.toLowerCase().includes(memberSearch.toLowerCase())
-    ).filter(emp => !selectedMembers.find(m => m.employee_id === emp.employee_id));
+        emp.department?.toLowerCase().includes(memberSearch.toLowerCase()) ||
+        emp.designation?.toLowerCase().includes(memberSearch.toLowerCase())
+    ).filter(emp => !selectedMembers.find(m => m.employee_id === emp.employee_id))
+     .filter(emp => !formData.department_id || !selectedDeptName || emp.department === selectedDeptName);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -153,7 +177,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }) {
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                             <div>
                                 <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "600", color: "#334155", marginBottom: "6px" }}>Department *</label>
-                                <select value={formData.department_id} onChange={e => setFormData({...formData, department_id: e.target.value})} style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid #cbd5e1" }} required>
+                                <select value={formData.department_id} onChange={handleDepartmentChange} style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid #cbd5e1" }} required>
                                     <option value="">Select Department</option>
                                     {departments.map(d => <option key={d.id} value={d.id}>{d.department_name}</option>)}
                                 </select>
@@ -162,7 +186,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }) {
                                 <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "600", color: "#334155", marginBottom: "6px" }}>Project Manager *</label>
                                 <select value={formData.manager_id} onChange={e => setFormData({...formData, manager_id: e.target.value})} style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid #cbd5e1" }} required>
                                     <option value="">Select Manager</option>
-                                    {managers.map(m => <option key={m.employee_id} value={m.employee_id}>{m.first_name} {m.last_name}</option>)}
+                                    {availableManagers.map(m => <option key={m.employee_id} value={m.employee_id}>{m.first_name} {m.last_name} ({m.department || "No Dept"})</option>)}
                                 </select>
                             </div>
                             <div>
