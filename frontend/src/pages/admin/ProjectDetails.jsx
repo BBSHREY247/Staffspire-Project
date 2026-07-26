@@ -8,6 +8,8 @@ import {
     FaUsers, FaClock, FaFolderOpen, FaProjectDiagram, FaHistory, FaFlag, FaUserCircle, FaPlus, FaTimes, FaEdit, FaTrash, FaUserPlus, FaEye
 } from "react-icons/fa";
 import EditProjectModal from "./components/EditProjectModal";
+import CustomConfirmModal from "../../components/CustomConfirmModal";
+import InlineAlert from "../../components/InlineAlert";
 
 const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
 
@@ -24,10 +26,12 @@ export default function ProjectDetails() {
 
     const [inlineTask, setInlineTask] = useState(null);
     const [isSubmittingTask, setIsSubmittingTask] = useState(false);
+    const [alertMsg, setAlertMsg] = useState(null);
+    const [confirmModal, setConfirmModal] = useState({ isOpen: false, type: "", count: 0, empId: null });
 
     const handleSaveInlineTask = async () => {
         if (!inlineTask.task_title || !inlineTask.assigned_to || !inlineTask.deadline) {
-            alert("Please enter Title, Assignee, and Due Date!");
+            setAlertMsg({ type: "warning", text: "Please enter Title, Assignee, and Due Date!" });
             return;
         }
         try {
@@ -35,8 +39,9 @@ export default function ProjectDetails() {
             await axios.post("http://localhost:5000/api/tasks", { ...inlineTask, project_id: id, department: deptName }, { headers: { Authorization: `Bearer ${token}` } });
             setInlineTask(null);
             mutate();
+            setAlertMsg({ type: "success", text: "Task successfully added to project!" });
         } catch (err) {
-            alert(err.response?.data?.message || "Failed to create task.");
+            setAlertMsg({ type: "error", text: err.response?.data?.message || "Failed to create task." });
         } finally {
             setIsSubmittingTask(false);
         }
@@ -54,33 +59,45 @@ export default function ProjectDetails() {
             setNewMemberId("");
             setIsAddMemberOpen(false);
             mutate();
+            setAlertMsg({ type: "success", text: "Employee successfully added to project team!" });
         } catch (err) {
-            alert(err.response?.data?.message || "Failed to add team member.");
+            setAlertMsg({ type: "error", text: err.response?.data?.message || "Failed to add team member." });
         }
     };
 
-    const handleRemoveMember = async (empId) => {
-        if (!window.confirm("Are you sure you want to remove this employee from the project?")) return;
-        try {
-            await axios.delete(`http://localhost:5000/api/projects/members?project_id=${id}&employee_id=${empId}`, { headers: { Authorization: `Bearer ${token}` } });
-            setSelectedMemberIds(selectedMemberIds.filter(itemId => itemId !== empId));
-            mutate();
-        } catch (err) {
-            alert(err.response?.data?.message || "Failed to remove team member.");
-        }
+    const handleRemoveMember = (empId) => {
+        setConfirmModal({ isOpen: true, type: "single", count: 1, empId });
     };
 
-    const handleBulkRemoveMembers = async () => {
-        if (!window.confirm(`Are you sure you want to remove ${selectedMemberIds.length} selected employee(s) from the project?`)) return;
-        try {
-            for (let empId of selectedMemberIds) {
-                await axios.delete(`http://localhost:5000/api/projects/members?project_id=${id}&employee_id=${empId}`, { headers: { Authorization: `Bearer ${token}` } });
+    const handleBulkRemoveMembers = () => {
+        setConfirmModal({ isOpen: true, type: "bulk", count: selectedMemberIds.length, empId: null });
+    };
+
+    const handleConfirmAction = async () => {
+        const currentModal = { ...confirmModal };
+        setConfirmModal({ isOpen: false, type: "", count: 0, empId: null });
+
+        if (currentModal.type === "single" && currentModal.empId) {
+            try {
+                await axios.delete(`http://localhost:5000/api/projects/members?project_id=${id}&employee_id=${currentModal.empId}`, { headers: { Authorization: `Bearer ${token}` } });
+                setSelectedMemberIds(selectedMemberIds.filter(itemId => itemId !== currentModal.empId));
+                mutate();
+                setAlertMsg({ type: "success", text: "Team member removed from project." });
+            } catch (err) {
+                setAlertMsg({ type: "error", text: err.response?.data?.message || "Failed to remove team member." });
             }
-            setSelectedMemberIds([]);
-            mutate();
-        } catch (err) {
-            alert("Some removals may have failed. Refreshing list.");
-            mutate();
+        } else if (currentModal.type === "bulk") {
+            try {
+                for (let empId of selectedMemberIds) {
+                    await axios.delete(`http://localhost:5000/api/projects/members?project_id=${id}&employee_id=${empId}`, { headers: { Authorization: `Bearer ${token}` } });
+                }
+                setSelectedMemberIds([]);
+                mutate();
+                setAlertMsg({ type: "success", text: "Selected team member(s) removed from project." });
+            } catch (err) {
+                setAlertMsg({ type: "error", text: "Some removals may have failed. Refreshing list." });
+                mutate();
+            }
         }
     };
 
@@ -130,6 +147,9 @@ export default function ProjectDetails() {
     return (
         <DashboardLayout>
             <div style={{ padding: "24px", maxWidth: "1400px", margin: "0 auto" }}>
+                {alertMsg && (
+                    <InlineAlert type={alertMsg.type} message={alertMsg.text} onClose={() => setAlertMsg(null)} />
+                )}
                 {/* Back Button and Edit Button */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "12px" }}>
                     <button onClick={() => navigate("/admin/projects")} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "#64748b", cursor: "pointer", fontSize: "0.95rem", fontWeight: "600" }}>
@@ -518,6 +538,17 @@ export default function ProjectDetails() {
                     onClose={() => setIsEditModalOpen(false)}
                     onSuccess={() => mutate()}
                     project={project}
+                />
+
+                <CustomConfirmModal
+                    isOpen={confirmModal.isOpen}
+                    onClose={() => setConfirmModal({ isOpen: false, type: "", count: 0, empId: null })}
+                    onConfirm={handleConfirmAction}
+                    title="Confirm Removal"
+                    message={confirmModal.type === "bulk" ? `Are you sure you want to remove ${confirmModal.count} selected employee(s) from this project?` : "Are you sure you want to remove this employee from the project?"}
+                    confirmText="Remove"
+                    cancelText="Cancel"
+                    type="danger"
                 />
             </div>
 
