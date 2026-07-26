@@ -21,17 +21,18 @@ export default function ProjectDetails() {
     const { data: deptData } = useSWR(token ? "http://localhost:5000/api/departments" : null, fetcher);
     const { data: empData } = useSWR(token ? "http://localhost:5000/api/employees" : null, fetcher);
 
-    const [showTaskModal, setShowTaskModal] = useState(false);
-    const [taskForm, setTaskForm] = useState({ task_title: "", description: "", assigned_to: "", priority: "Medium", deadline: "" });
+    const [inlineTask, setInlineTask] = useState(null);
     const [isSubmittingTask, setIsSubmittingTask] = useState(false);
 
-    const handleCreateTask = async (e) => {
-        e.preventDefault();
+    const handleSaveInlineTask = async () => {
+        if (!inlineTask.task_title || !inlineTask.assigned_to || !inlineTask.deadline) {
+            alert("Please enter Title, Assignee, and Due Date!");
+            return;
+        }
         try {
             setIsSubmittingTask(true);
-            await axios.post("http://localhost:5000/api/tasks", { ...taskForm, project_id: id }, { headers: { Authorization: `Bearer ${token}` } });
-            setShowTaskModal(false);
-            setTaskForm({ task_title: "", description: "", assigned_to: "", priority: "Medium", deadline: "" });
+            await axios.post("http://localhost:5000/api/tasks", { ...inlineTask, project_id: id }, { headers: { Authorization: `Bearer ${token}` } });
+            setInlineTask(null);
             mutate();
         } catch (err) {
             alert(err.response?.data?.message || "Failed to create task.");
@@ -197,41 +198,151 @@ export default function ProjectDetails() {
                         {activeTab === "Tasks" && (
                             <div>
                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-                                    <h3 style={{ margin: 0, color: "#1e293b" }}>Project Tasks</h3>
+                                    <div>
+                                        <h3 style={{ margin: "0 0 4px 0", color: "#1e293b", fontSize: "1.3rem" }}>Project Tasks</h3>
+                                        <p style={{ margin: 0, color: "#64748b", fontSize: "0.85rem" }}>Manage tasks inline like a spreadsheet. Click "+ Add Row" at the bottom to insert new tasks.</p>
+                                    </div>
                                     <button 
-                                        onClick={() => setShowTaskModal(true)}
+                                        onClick={() => setInlineTask({ task_title: "", description: "", status: "Pending", start_date: new Date().toISOString().split("T")[0], deadline: "", assigned_to: "", priority: "Medium" })}
                                         className="primary-btn"
-                                        style={{ display: "flex", alignItems: "center", gap: "8px", padding: "8px 16px", backgroundColor: "var(--primary, #4f46e5)", color: "white", border: "none", borderRadius: "8px", fontWeight: "600", cursor: "pointer" }}
+                                        style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 18px", backgroundColor: "var(--primary, #4f46e5)", color: "white", border: "none", borderRadius: "8px", fontWeight: "600", cursor: "pointer", boxShadow: "0 2px 4px rgba(79, 70, 229, 0.2)" }}
                                     >
-                                        <FaPlus /> Add Task
+                                        <FaPlus /> Add Row
                                     </button>
                                 </div>
-                                {tasks.length === 0 ? (
-                                    <div style={{ padding: "40px", textAlign: "center", color: "#64748b", backgroundColor: "#f8fafc", borderRadius: "8px" }}>No tasks assigned to this project yet.</div>
-                                ) : (
-                                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                                <div style={{ overflowX: "auto", border: "1px solid #cbd5e1", borderRadius: "10px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+                                    <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "900px" }}>
                                         <thead>
-                                            <tr style={{ borderBottom: "2px solid #e2e8f0" }}>
-                                                <th style={{ padding: "12px", textAlign: "left", color: "#475569" }}>Task Title</th>
-                                                <th style={{ padding: "12px", textAlign: "left", color: "#475569" }}>Assigned To</th>
-                                                <th style={{ padding: "12px", textAlign: "left", color: "#475569" }}>Status</th>
-                                                <th style={{ padding: "12px", textAlign: "left", color: "#475569" }}>Due Date</th>
+                                            <tr style={{ borderBottom: "2px solid #cbd5e1", backgroundColor: "#f8fafc", textAlign: "left" }}>
+                                                <th style={{ padding: "14px 12px", width: "70px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Sr. No.</th>
+                                                <th style={{ padding: "14px 12px", minWidth: "180px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Title</th>
+                                                <th style={{ padding: "14px 12px", minWidth: "200px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Description</th>
+                                                <th style={{ padding: "14px 12px", width: "130px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Status</th>
+                                                <th style={{ padding: "14px 12px", width: "130px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Start Date</th>
+                                                <th style={{ padding: "14px 12px", width: "130px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Due Date</th>
+                                                <th style={{ padding: "14px 12px", minWidth: "160px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Assigned To</th>
+                                                <th style={{ padding: "14px 12px", width: "100px", textAlign: "center", color: "#334155", fontWeight: "700", fontSize: "0.85rem" }}>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {tasks.map(t => (
-                                                <tr key={t.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                                                    <td style={{ padding: "12px", fontWeight: "500", color: "#1e293b" }}>{t.task_title}</td>
-                                                    <td style={{ padding: "12px", color: "#475569" }}>{t.employee_name || "Unassigned"}</td>
-                                                    <td style={{ padding: "12px" }}>
-                                                        <span style={{ padding: "4px 8px", borderRadius: "4px", fontSize: "0.8rem", fontWeight: "600", backgroundColor: t.status === "Completed" ? "#dcfce7" : "#f1f5f9", color: t.status === "Completed" ? "#166534" : "#475569" }}>{t.status}</span>
+                                            {tasks.map((t, idx) => (
+                                                <tr key={t.id} style={{ borderBottom: "1px solid #e2e8f0", backgroundColor: idx % 2 === 0 ? "white" : "#fcfcfd" }}>
+                                                    <td style={{ padding: "12px", color: "#64748b", fontWeight: "600", borderRight: "1px solid #e2e8f0", fontSize: "0.9rem" }}>{idx + 1}</td>
+                                                    <td style={{ padding: "12px", fontWeight: "600", color: "#0f172a", borderRight: "1px solid #e2e8f0", fontSize: "0.9rem" }}>{t.task_title}</td>
+                                                    <td style={{ padding: "12px", color: "#475569", borderRight: "1px solid #e2e8f0", fontSize: "0.85rem" }}>{t.description || "—"}</td>
+                                                    <td style={{ padding: "12px", borderRight: "1px solid #e2e8f0" }}>
+                                                        <span style={{ padding: "4px 8px", borderRadius: "4px", fontSize: "0.8rem", fontWeight: "600", backgroundColor: t.status === "Completed" ? "#dcfce7" : t.status === "In Progress" ? "#dbeafe" : t.status === "On Hold" ? "#f3f4f6" : "#fef9c3", color: t.status === "Completed" ? "#166534" : t.status === "In Progress" ? "#1e40af" : t.status === "On Hold" ? "#374151" : "#854d0e" }}>{t.status}</span>
                                                     </td>
-                                                    <td style={{ padding: "12px", color: "#475569" }}>{new Date(t.deadline).toLocaleDateString()}</td>
+                                                    <td style={{ padding: "12px", color: "#475569", borderRight: "1px solid #e2e8f0", fontSize: "0.85rem" }}>{t.start_date ? new Date(t.start_date).toLocaleDateString() : "—"}</td>
+                                                    <td style={{ padding: "12px", color: "#475569", borderRight: "1px solid #e2e8f0", fontSize: "0.85rem" }}>{t.deadline ? new Date(t.deadline).toLocaleDateString() : "—"}</td>
+                                                    <td style={{ padding: "12px", color: "#334155", borderRight: "1px solid #e2e8f0", fontSize: "0.9rem", fontWeight: "500" }}>{t.employee_name || "Unassigned"}</td>
+                                                    <td style={{ padding: "12px", textAlign: "center" }}>
+                                                        <button onClick={() => navigate(`/admin/tasks/${t.id}`)} style={{ background: "none", border: "none", color: "var(--primary, #3b82f6)", cursor: "pointer", fontWeight: "600", fontSize: "0.85rem", textDecoration: "underline" }}>View</button>
+                                                    </td>
                                                 </tr>
                                             ))}
+                                            {inlineTask ? (
+                                                <tr style={{ backgroundColor: "#eff6ff", borderBottom: "2px solid #3b82f6" }}>
+                                                    <td style={{ padding: "10px 12px", fontWeight: "700", color: "#1e3a8a", borderRight: "1px solid #bfdbfe" }}>{tasks.length + 1}</td>
+                                                    <td style={{ padding: "8px", borderRight: "1px solid #bfdbfe" }}>
+                                                        <input 
+                                                            type="text" 
+                                                            placeholder="Task Title *" 
+                                                            value={inlineTask.task_title} 
+                                                            onChange={e => setInlineTask({ ...inlineTask, task_title: e.target.value })}
+                                                            style={{ width: "100%", padding: "8px 10px", border: "1px solid #60a5fa", borderRadius: "6px", fontSize: "0.9rem", boxSizing: "border-box", outline: "none", backgroundColor: "white" }}
+                                                            autoFocus
+                                                        />
+                                                    </td>
+                                                    <td style={{ padding: "8px", borderRight: "1px solid #bfdbfe" }}>
+                                                        <input 
+                                                            type="text" 
+                                                            placeholder="Description..." 
+                                                            value={inlineTask.description} 
+                                                            onChange={e => setInlineTask({ ...inlineTask, description: e.target.value })}
+                                                            style={{ width: "100%", padding: "8px 10px", border: "1px solid #93c5fd", borderRadius: "6px", fontSize: "0.85rem", boxSizing: "border-box", outline: "none", backgroundColor: "white" }}
+                                                        />
+                                                    </td>
+                                                    <td style={{ padding: "8px", borderRight: "1px solid #bfdbfe" }}>
+                                                        <select 
+                                                            value={inlineTask.status} 
+                                                            onChange={e => setInlineTask({ ...inlineTask, status: e.target.value })}
+                                                            style={{ width: "100%", padding: "8px", border: "1px solid #93c5fd", borderRadius: "6px", fontSize: "0.85rem", boxSizing: "border-box", outline: "none", backgroundColor: "white", fontWeight: "600" }}
+                                                        >
+                                                            <option>Pending</option>
+                                                            <option>In Progress</option>
+                                                            <option>On Hold</option>
+                                                            <option>Completed</option>
+                                                        </select>
+                                                    </td>
+                                                    <td style={{ padding: "8px", borderRight: "1px solid #bfdbfe" }}>
+                                                        <input 
+                                                            type="date" 
+                                                            value={inlineTask.start_date} 
+                                                            onChange={e => setInlineTask({ ...inlineTask, start_date: e.target.value })}
+                                                            style={{ width: "100%", padding: "8px", border: "1px solid #93c5fd", borderRadius: "6px", fontSize: "0.85rem", boxSizing: "border-box", outline: "none", backgroundColor: "white" }}
+                                                        />
+                                                    </td>
+                                                    <td style={{ padding: "8px", borderRight: "1px solid #bfdbfe" }}>
+                                                        <input 
+                                                            type="date" 
+                                                            value={inlineTask.deadline} 
+                                                            onChange={e => setInlineTask({ ...inlineTask, deadline: e.target.value })}
+                                                            style={{ width: "100%", padding: "8px", border: "1px solid #93c5fd", borderRadius: "6px", fontSize: "0.85rem", boxSizing: "border-box", outline: "none", backgroundColor: "white" }}
+                                                        />
+                                                    </td>
+                                                    <td style={{ padding: "8px", borderRight: "1px solid #bfdbfe" }}>
+                                                        <select 
+                                                            value={inlineTask.assigned_to} 
+                                                            onChange={e => setInlineTask({ ...inlineTask, assigned_to: e.target.value })}
+                                                            style={{ width: "100%", padding: "8px", border: "1px solid #60a5fa", borderRadius: "6px", fontSize: "0.85rem", boxSizing: "border-box", outline: "none", backgroundColor: "white" }}
+                                                        >
+                                                            <option value="">Select Employee *</option>
+                                                            {employees.map(emp => (
+                                                                <option key={emp.employee_id} value={emp.employee_id}>
+                                                                    {emp.first_name} {emp.last_name}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                    </td>
+                                                    <td style={{ padding: "8px", textAlign: "center", whiteSpace: "nowrap" }}>
+                                                        <button 
+                                                            type="button"
+                                                            onClick={handleSaveInlineTask} 
+                                                            disabled={isSubmittingTask}
+                                                            style={{ backgroundColor: "#10b981", color: "white", border: "none", borderRadius: "6px", padding: "8px 12px", cursor: "pointer", fontWeight: "600", marginRight: "6px", fontSize: "0.85rem" }}
+                                                            title="Save Row"
+                                                        >
+                                                            {isSubmittingTask ? "..." : "Save"}
+                                                        </button>
+                                                        <button 
+                                                            type="button"
+                                                            onClick={() => setInlineTask(null)}
+                                                            style={{ backgroundColor: "#ef4444", color: "white", border: "none", borderRadius: "6px", padding: "8px 10px", cursor: "pointer", fontWeight: "600", fontSize: "0.85rem" }}
+                                                            title="Cancel"
+                                                        >
+                                                            ✕
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ) : (
+                                                <tr>
+                                                    <td colSpan={8} style={{ padding: "14px", textAlign: "left", backgroundColor: "#f8fafc" }}>
+                                                        <button 
+                                                            type="button" 
+                                                            onClick={() => setInlineTask({ task_title: "", description: "", status: "Pending", start_date: new Date().toISOString().split("T")[0], deadline: "", assigned_to: "", priority: "Medium" })}
+                                                            style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "none", border: "1px dashed #94a3b8", color: "#475569", fontWeight: "600", cursor: "pointer", fontSize: "0.9rem", padding: "8px 16px", borderRadius: "8px", width: "100%", justifyContent: "center", transition: "all 0.2s" }}
+                                                            onMouseOver={e => { e.currentTarget.style.backgroundColor = "#eff6ff"; e.currentTarget.style.borderColor = "#3b82f6"; e.currentTarget.style.color = "#2563eb"; }}
+                                                            onMouseOut={e => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.borderColor = "#94a3b8"; e.currentTarget.style.color = "#475569"; }}
+                                                        >
+                                                            <FaPlus /> + Add New Task Row
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            )}
                                         </tbody>
                                     </table>
-                                )}
+                                </div>
                             </div>
                         )}
 
@@ -301,68 +412,6 @@ export default function ProjectDetails() {
 
             </div>
 
-            {/* Create Task Modal */}
-            {showTaskModal && (
-                <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.45)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <div className="form-card" style={{ width: "90%", maxWidth: "520px", margin: 0, position: "relative", maxHeight: "90vh", overflowY: "auto", backgroundColor: "white", padding: "32px", borderRadius: "16px", boxShadow: "0 10px 25px rgba(0,0,0,0.1)" }}>
-                        <button type="button" onClick={() => setShowTaskModal(false)} aria-label="Close modal"
-                            style={{ position: "absolute", top: "20px", right: "20px", background: "none", border: "none", cursor: "pointer", fontSize: "18px", color: "#64748b" }}>
-                            <FaTimes />
-                        </button>
-
-                        <h2 style={{ margin: "0 0 6px", fontWeight: "700", fontSize: "20px", color: "#0f172a" }}>Assign New Task</h2>
-                        <p style={{ margin: "0 0 24px", fontSize: "14px", color: "#64748b" }}>Create a task specifically for this project.</p>
-
-                        <form onSubmit={handleCreateTask} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                            <div className="form-group" style={{ margin: 0 }}>
-                                <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", fontSize: "14px", color: "#334155" }}>Task Title *</label>
-                                <input aria-label="Task Title" type="text" value={taskForm.task_title} onChange={e => setTaskForm({ ...taskForm, task_title: e.target.value })} placeholder="e.g. Prepare monthly report" required style={{ width: "100%", padding: "10px", border: "1px solid #cbd5e1", borderRadius: "8px", boxSizing: "border-box" }} />
-                            </div>
-
-                            <div className="form-group" style={{ margin: 0 }}>
-                                <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", fontSize: "14px", color: "#334155" }}>Description</label>
-                                <textarea aria-label="Description" value={taskForm.description} onChange={e => setTaskForm({ ...taskForm, description: e.target.value })}
-                                    placeholder="Task details and instructions..." rows="3"
-                                    style={{ width: "100%", padding: "12px", border: "1px solid #cbd5e1", borderRadius: "8px", resize: "none", fontSize: "14px", boxSizing: "border-box", fontFamily: "inherit" }} />
-                            </div>
-
-                            <div className="form-group" style={{ margin: 0 }}>
-                                <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", fontSize: "14px", color: "#334155" }}>Assign To *</label>
-                                <select value={taskForm.assigned_to} onChange={e => setTaskForm({ ...taskForm, assigned_to: e.target.value })} required
-                                    style={{ width: "100%", padding: "12px", border: "1px solid #cbd5e1", borderRadius: "8px", fontSize: "14px", boxSizing: "border-box", backgroundColor: "white" }}>
-                                    <option value="">Select Employee</option>
-                                    {employees.map(emp => (
-                                        <option key={emp.employee_id} value={emp.employee_id}>
-                                            {emp.first_name} {emp.last_name} — {emp.department}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-                                <div className="form-group" style={{ margin: 0 }}>
-                                    <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", fontSize: "14px", color: "#334155" }}>Priority</label>
-                                    <select value={taskForm.priority} onChange={e => setTaskForm({ ...taskForm, priority: e.target.value })}
-                                        style={{ width: "100%", padding: "12px", border: "1px solid #cbd5e1", borderRadius: "8px", fontSize: "14px", boxSizing: "border-box", backgroundColor: "white" }}>
-                                        <option>High</option>
-                                        <option>Medium</option>
-                                        <option>Low</option>
-                                    </select>
-                                </div>
-                                <div className="form-group" style={{ margin: 0 }}>
-                                    <label style={{ display: "block", marginBottom: "8px", fontWeight: "600", fontSize: "14px", color: "#334155" }}>Due Date *</label>
-                                    <input type="date" value={taskForm.deadline} onChange={e => setTaskForm({ ...taskForm, deadline: e.target.value })} required style={{ width: "100%", padding: "10px", border: "1px solid #cbd5e1", borderRadius: "8px", boxSizing: "border-box" }} />
-                                </div>
-                            </div>
-
-                            <button type="submit" disabled={isSubmittingTask}
-                                style={{ background: "var(--primary, #4f46e5)", color: "white", border: "none", padding: "14px", borderRadius: "10px", fontWeight: "700", fontSize: "15px", cursor: "pointer", opacity: isSubmittingTask ? 0.6 : 1, marginTop: "10px", transition: "all 0.2s" }}>
-                                {isSubmittingTask ? "Creating..." : "Assign Task"}
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            )}
         </DashboardLayout>
     );
 }
