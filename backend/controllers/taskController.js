@@ -49,7 +49,7 @@ const createTask = async (req, res) => {
         const [result] = await db.promise().query(
             `INSERT INTO tasks (task_title, description, assigned_by, assigned_by_user_id, employee_id, department, priority, status, deadline, project_id, start_date)
              VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending', ?, ?, ?)`,
-            [task_title, description || null, assignedByName, req.user.id, assigned_to, dept, priority || "Medium", deadline, project_id || null, start_date || null]
+            [task_title, description || null, assignedByName, req.user.id, assigned_to, dept, priority || "Medium", deadline, project_id || null, start_date || new Date().toLocaleDateString('en-CA')]
         );
 
         // Generate task_id from insert ID

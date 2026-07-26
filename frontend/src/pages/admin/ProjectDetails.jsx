@@ -203,7 +203,7 @@ export default function ProjectDetails() {
                                         <p style={{ margin: 0, color: "#64748b", fontSize: "0.85rem" }}>Manage tasks inline like a spreadsheet. Click "+ Add Row" at the bottom to insert new tasks.</p>
                                     </div>
                                     <button 
-                                        onClick={() => setInlineTask({ task_title: "", description: "", status: "Pending", start_date: new Date().toISOString().split("T")[0], deadline: "", assigned_to: "", priority: "Medium" })}
+                                        onClick={() => setInlineTask({ task_title: "", description: "", status: "Pending", start_date: new Date().toLocaleDateString('en-CA'), deadline: "", assigned_to: "", priority: "Medium" })}
                                         className="primary-btn"
                                         style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 18px", backgroundColor: "var(--primary, #4f46e5)", color: "white", border: "none", borderRadius: "8px", fontWeight: "600", cursor: "pointer", boxShadow: "0 2px 4px rgba(79, 70, 229, 0.2)" }}
                                     >
@@ -330,7 +330,7 @@ export default function ProjectDetails() {
                                                     <td colSpan={8} style={{ padding: "14px", textAlign: "left", backgroundColor: "#f8fafc" }}>
                                                         <button 
                                                             type="button" 
-                                                            onClick={() => setInlineTask({ task_title: "", description: "", status: "Pending", start_date: new Date().toISOString().split("T")[0], deadline: "", assigned_to: "", priority: "Medium" })}
+                                                            onClick={() => setInlineTask({ task_title: "", description: "", status: "Pending", start_date: new Date().toLocaleDateString('en-CA'), deadline: "", assigned_to: "", priority: "Medium" })}
                                                             style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "none", border: "1px dashed #94a3b8", color: "#475569", fontWeight: "600", cursor: "pointer", fontSize: "0.9rem", padding: "8px 16px", borderRadius: "8px", width: "100%", justifyContent: "center", transition: "all 0.2s" }}
                                                             onMouseOver={e => { e.currentTarget.style.backgroundColor = "#eff6ff"; e.currentTarget.style.borderColor = "#3b82f6"; e.currentTarget.style.color = "#2563eb"; }}
                                                             onMouseOut={e => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.borderColor = "#94a3b8"; e.currentTarget.style.color = "#475569"; }}
