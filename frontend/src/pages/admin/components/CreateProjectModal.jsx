@@ -60,8 +60,10 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }) {
     const selectedDeptObj = departments.find(d => String(d.id) === String(formData.department_id));
     const selectedDeptName = selectedDeptObj ? selectedDeptObj.department_name : "";
 
+    const deptEmployees = employees.filter(e => e.department === selectedDeptName);
+    const deptManagers = deptEmployees.filter(e => e.role === "Manager" || e.role === "Admin" || e.designation?.toLowerCase().includes("manager"));
     const availableManagers = formData.department_id
-        ? employees.filter(e => e.department === selectedDeptName || e.role === "Manager" || e.role === "Admin" || e.designation?.toLowerCase().includes("manager"))
+        ? (deptManagers.length > 0 ? deptManagers : deptEmployees)
         : employees.filter(e => e.role === "Manager" || e.role === "Admin" || e.designation?.toLowerCase().includes("manager"));
 
     const handleDepartmentChange = (e) => {
