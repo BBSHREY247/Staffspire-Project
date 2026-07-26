@@ -5,8 +5,9 @@ import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { 
     FaArrowLeft, FaCheckCircle, FaTasks, FaExclamationCircle, 
-    FaUsers, FaClock, FaFolderOpen, FaProjectDiagram, FaHistory, FaFlag, FaUserCircle, FaPlus, FaTimes
+    FaUsers, FaClock, FaFolderOpen, FaProjectDiagram, FaHistory, FaFlag, FaUserCircle, FaPlus, FaTimes, FaEdit, FaTrash, FaUserPlus
 } from "react-icons/fa";
+import EditProjectModal from "./components/EditProjectModal";
 
 const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
 
@@ -41,6 +42,48 @@ export default function ProjectDetails() {
         }
     };
 
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedMemberIds, setSelectedMemberIds] = useState([]);
+    const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
+    const [newMemberId, setNewMemberId] = useState("");
+
+    const handleAddMember = async () => {
+        if (!newMemberId) return;
+        try {
+            await axios.post("http://localhost:5000/api/projects/members", { project_id: id, employee_id: newMemberId }, { headers: { Authorization: `Bearer ${token}` } });
+            setNewMemberId("");
+            setIsAddMemberOpen(false);
+            mutate();
+        } catch (err) {
+            alert(err.response?.data?.message || "Failed to add team member.");
+        }
+    };
+
+    const handleRemoveMember = async (empId) => {
+        if (!window.confirm("Are you sure you want to remove this employee from the project?")) return;
+        try {
+            await axios.delete(`http://localhost:5000/api/projects/members?project_id=${id}&employee_id=${empId}`, { headers: { Authorization: `Bearer ${token}` } });
+            setSelectedMemberIds(selectedMemberIds.filter(itemId => itemId !== empId));
+            mutate();
+        } catch (err) {
+            alert(err.response?.data?.message || "Failed to remove team member.");
+        }
+    };
+
+    const handleBulkRemoveMembers = async () => {
+        if (!window.confirm(`Are you sure you want to remove ${selectedMemberIds.length} selected employee(s) from the project?`)) return;
+        try {
+            for (let empId of selectedMemberIds) {
+                await axios.delete(`http://localhost:5000/api/projects/members?project_id=${id}&employee_id=${empId}`, { headers: { Authorization: `Bearer ${token}` } });
+            }
+            setSelectedMemberIds([]);
+            mutate();
+        } catch (err) {
+            alert("Some removals may have failed. Refreshing list.");
+            mutate();
+        }
+    };
+
     if (isLoading) {
         return (
             <DashboardLayout>
@@ -57,7 +100,7 @@ export default function ProjectDetails() {
         );
     }
 
-    const { project, members, milestones, tasks } = projectRes;
+    const { project, members, tasks } = projectRes;
     const departments = Array.isArray(deptData) ? deptData : (deptData?.departments || []);
     const employees = Array.isArray(empData) ? empData : (empData?.employees || []);
 
@@ -82,15 +125,20 @@ export default function ProjectDetails() {
     
     const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-    const tabs = ["Overview", "Tasks", "Members", "Milestones", "Activity"];
+    const tabs = ["Overview", "Tasks", "Members"];
 
     return (
         <DashboardLayout>
             <div style={{ padding: "24px", maxWidth: "1400px", margin: "0 auto" }}>
-                {/* Back Button */}
-                <button onClick={() => navigate("/admin/projects")} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "#64748b", cursor: "pointer", marginBottom: "20px", fontSize: "0.95rem", fontWeight: "600" }}>
-                    <FaArrowLeft /> Back to Projects
-                </button>
+                {/* Back Button and Edit Button */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "12px" }}>
+                    <button onClick={() => navigate("/admin/projects")} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "#64748b", cursor: "pointer", fontSize: "0.95rem", fontWeight: "600" }}>
+                        <FaArrowLeft /> Back to Projects
+                    </button>
+                    <button onClick={() => setIsEditModalOpen(true)} style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "var(--primary, #3b82f6)", border: "none", color: "white", padding: "10px 18px", borderRadius: "10px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "600", boxShadow: "0 2px 4px rgba(59, 130, 246, 0.2)" }}>
+                        <FaEdit /> Edit Project Details
+                    </button>
+                </div>
 
                 {/* Top Section */}
                 <div style={{ backgroundColor: "white", borderRadius: "16px", padding: "24px", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)", marginBottom: "24px" }}>
@@ -351,68 +399,137 @@ export default function ProjectDetails() {
 
                         {activeTab === "Members" && (
                             <div>
-                                <h3 style={{ margin: "0 0 20px 0", color: "#1e293b" }}>Project Team ({members.length})</h3>
-                                {members.length === 0 ? (
-                                    <div style={{ padding: "40px", textAlign: "center", color: "#64748b", backgroundColor: "#f8fafc", borderRadius: "8px" }}>No team members assigned yet.</div>
-                                ) : (
-                                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "20px" }}>
-                                        {members.map(m => (
-                                            <div key={m.id} style={{ display: "flex", alignItems: "center", gap: "16px", padding: "16px", backgroundColor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
-                                                <FaUserCircle size={48} color="#94a3b8" />
-                                                <div>
-                                                    <div style={{ fontWeight: "bold", color: "#1e293b" }}>{m.first_name} {m.last_name}</div>
-                                                    <div style={{ fontSize: "0.85rem", color: "#64748b" }}>{m.designation}</div>
-                                                    <div style={{ fontSize: "0.8rem", color: "#94a3b8", marginTop: "4px" }}>{m.department}</div>
-                                                </div>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "12px" }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                                        <h3 style={{ margin: 0, color: "#1e293b" }}>Project Team ({members.length})</h3>
+                                        {selectedMemberIds.length > 0 && (
+                                            <div style={{ display: "flex", alignItems: "center", gap: "12px", backgroundColor: "#fef2f2", border: "1px solid #fca5a5", padding: "6px 14px", borderRadius: "8px" }}>
+                                                <span style={{ fontSize: "0.85rem", color: "#b91c1c", fontWeight: "600" }}>{selectedMemberIds.length} Selected</span>
+                                                <button onClick={handleBulkRemoveMembers} style={{ backgroundColor: "#ef4444", color: "white", border: "none", padding: "6px 12px", borderRadius: "6px", fontSize: "0.8rem", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
+                                                    <FaTrash /> Remove Selected
+                                                </button>
                                             </div>
-                                        ))}
+                                        )}
                                     </div>
-                                )}
-                            </div>
-                        )}
-
-                        {activeTab === "Milestones" && (
-                            <div>
-                                <h3 style={{ margin: "0 0 20px 0", color: "#1e293b" }}>Project Milestones</h3>
-                                {milestones.length === 0 ? (
-                                    <div style={{ padding: "40px", textAlign: "center", color: "#64748b", backgroundColor: "#f8fafc", borderRadius: "8px" }}>No milestones created yet.</div>
-                                ) : (
-                                    <div style={{ position: "relative", paddingLeft: "24px" }}>
-                                        {milestones.map((m, i) => (
-                                            <div key={m.id} style={{ position: "relative", paddingBottom: "32px", borderLeft: i === milestones.length - 1 ? "none" : "2px solid #e2e8f0", marginLeft: "10px", paddingLeft: "24px" }}>
-                                                <div style={{ position: "absolute", left: "-35px", top: 0, width: "24px", height: "24px", backgroundColor: m.status === 'Completed' ? "#10b981" : "white", border: m.status === 'Completed' ? "none" : "2px solid #cbd5e1", borderRadius: "50%", display: "flex", justifyContent: "center", alignItems: "center", color: "white", zIndex: 1 }}>
-                                                    {m.status === 'Completed' && <FaCheckCircle size={16} />}
-                                                </div>
-                                                <div style={{ backgroundColor: "#f8fafc", padding: "16px", borderRadius: "12px", border: "1px solid #e2e8f0", marginTop: "-4px" }}>
-                                                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                                                        <h4 style={{ margin: 0, color: "#1e293b", fontSize: "1.1rem" }}>{m.title}</h4>
-                                                        <span style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: "600", padding: "4px 8px", backgroundColor: "white", borderRadius: "6px", border: "1px solid #e2e8f0" }}>{new Date(m.due_date).toLocaleDateString()}</span>
-                                                    </div>
-                                                    <p style={{ margin: 0, color: "#475569", fontSize: "0.95rem" }}>{m.description}</p>
-                                                    <div style={{ marginTop: "12px" }}>
-                                                        <span style={{ fontSize: "0.8rem", fontWeight: "600", color: m.status === "Completed" ? "#10b981" : "#f59e0b" }}>{m.status}</span>
-                                                    </div>
-                                                </div>
+                                    <div>
+                                        {!isAddMemberOpen ? (
+                                            <button onClick={() => setIsAddMemberOpen(true)} style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "var(--primary, #3b82f6)", color: "white", border: "none", padding: "10px 16px", borderRadius: "8px", fontWeight: "600", fontSize: "0.9rem", cursor: "pointer", boxShadow: "0 2px 4px rgba(59, 130, 246, 0.15)" }}>
+                                                <FaUserPlus /> + Add Employee to Project
+                                            </button>
+                                        ) : (
+                                            <div style={{ display: "flex", alignItems: "center", gap: "8px", backgroundColor: "#f8fafc", padding: "8px", borderRadius: "8px", border: "1px solid #cbd5e1" }}>
+                                                <select value={newMemberId} onChange={e => setNewMemberId(e.target.value)} style={{ padding: "8px", borderRadius: "6px", border: "1px solid #cbd5e1", fontSize: "0.85rem", minWidth: "220px", outline: "none" }}>
+                                                    <option value="">Select employee to add...</option>
+                                                    {employees.filter(emp => !members.some(m => m.employee_id === emp.employee_id)).map(emp => (
+                                                        <option key={emp.employee_id} value={emp.employee_id}>
+                                                            {emp.first_name} {emp.last_name} ({emp.department || "No Dept"})
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <button onClick={handleAddMember} disabled={!newMemberId} style={{ backgroundColor: "#10b981", color: "white", border: "none", padding: "8px 14px", borderRadius: "6px", fontWeight: "600", fontSize: "0.85rem", cursor: !newMemberId ? "not-allowed" : "pointer", opacity: !newMemberId ? 0.6 : 1 }}>
+                                                    Add
+                                                </button>
+                                                <button onClick={() => { setIsAddMemberOpen(false); setNewMemberId(""); }} style={{ background: "none", border: "none", color: "#64748b", cursor: "pointer", padding: "6px", display: "flex", alignItems: "center" }}>
+                                                    <FaTimes />
+                                                </button>
                                             </div>
-                                        ))}
+                                        )}
                                     </div>
-                                )}
-                            </div>
-                        )}
-
-                        {activeTab === "Activity" && (
-                            <div>
-                                <h3 style={{ margin: "0 0 20px 0", color: "#1e293b" }}>Recent Activity</h3>
-                                <div style={{ padding: "40px", textAlign: "center", color: "#64748b", backgroundColor: "#f8fafc", borderRadius: "8px", border: "1px dashed #cbd5e1" }}>
-                                    <FaHistory size={32} color="#cbd5e1" style={{ marginBottom: "12px" }} />
-                                    <div>No recent activity logged for this project.</div>
-                                    <div style={{ fontSize: "0.85rem", marginTop: "8px" }}>Activity feed will display project updates, task completions, and milestone progress.</div>
                                 </div>
+
+                                {members.length === 0 ? (
+                                    <div style={{ padding: "40px", textAlign: "center", color: "#64748b", backgroundColor: "#f8fafc", borderRadius: "8px" }}>No team members assigned yet. Add employees above to start collaborating.</div>
+                                ) : (
+                                    <div style={{ overflowX: "auto", border: "1px solid #e2e8f0", borderRadius: "12px", backgroundColor: "white" }}>
+                                        <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+                                            <thead style={{ backgroundColor: "#f8fafc", borderBottom: "2px solid #e2e8f0" }}>
+                                                <tr>
+                                                    <th style={{ padding: "14px 12px", width: "40px", textAlign: "center", borderRight: "1px solid #e2e8f0" }}>
+                                                        <input 
+                                                            type="checkbox" 
+                                                            checked={members.length > 0 && selectedMemberIds.length === members.length}
+                                                            onChange={e => {
+                                                                if (e.target.checked) setSelectedMemberIds(members.map(m => m.employee_id));
+                                                                else setSelectedMemberIds([]);
+                                                            }}
+                                                            style={{ cursor: "pointer" }}
+                                                        />
+                                                    </th>
+                                                    <th style={{ padding: "14px 12px", width: "60px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Sr. No.</th>
+                                                    <th style={{ padding: "14px 12px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Employee Name</th>
+                                                    <th style={{ padding: "14px 12px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Department</th>
+                                                    <th style={{ padding: "14px 12px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Designation</th>
+                                                    <th style={{ padding: "14px 12px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Role</th>
+                                                    <th style={{ padding: "14px 12px", width: "140px", textAlign: "center", color: "#334155", fontWeight: "700", fontSize: "0.85rem" }}>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {members.map((m, idx) => {
+                                                    const isSelected = selectedMemberIds.includes(m.employee_id);
+                                                    const isManager = m.employee_id === project.manager_id;
+                                                    return (
+                                                        <tr key={m.id || m.employee_id} style={{ borderBottom: "1px solid #e2e8f0", backgroundColor: isSelected ? "#fef2f2" : idx % 2 === 0 ? "white" : "#fcfcfd" }}>
+                                                            <td style={{ padding: "12px", textAlign: "center", borderRight: "1px solid #e2e8f0" }}>
+                                                                <input 
+                                                                    type="checkbox" 
+                                                                    checked={isSelected}
+                                                                    onChange={e => {
+                                                                        if (e.target.checked) setSelectedMemberIds([...selectedMemberIds, m.employee_id]);
+                                                                        else setSelectedMemberIds(selectedMemberIds.filter(id => id !== m.employee_id));
+                                                                    }}
+                                                                    style={{ cursor: "pointer" }}
+                                                                />
+                                                            </td>
+                                                            <td style={{ padding: "12px", color: "#64748b", fontWeight: "600", borderRight: "1px solid #e2e8f0", fontSize: "0.9rem" }}>{idx + 1}</td>
+                                                            <td style={{ padding: "12px", fontWeight: "600", color: "#0f172a", borderRight: "1px solid #e2e8f0", fontSize: "0.9rem" }}>
+                                                                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                                                    <FaUserCircle size={24} color="#94a3b8" />
+                                                                    <span>{m.first_name} {m.last_name}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td style={{ padding: "12px", color: "#475569", borderRight: "1px solid #e2e8f0", fontSize: "0.85rem" }}>{m.department || "—"}</td>
+                                                            <td style={{ padding: "12px", color: "#475569", borderRight: "1px solid #e2e8f0", fontSize: "0.85rem" }}>{m.designation || "—"}</td>
+                                                            <td style={{ padding: "12px", borderRight: "1px solid #e2e8f0", fontSize: "0.85rem" }}>
+                                                                <span style={{ padding: "4px 8px", borderRadius: "4px", fontSize: "0.75rem", fontWeight: "700", backgroundColor: isManager ? "#fef3c7" : "#f1f5f9", color: isManager ? "#92400e" : "#475569" }}>
+                                                                    {isManager ? "Project Manager" : "Team Member"}
+                                                                </span>
+                                                            </td>
+                                                            <td style={{ padding: "12px", textAlign: "center" }}>
+                                                                <div style={{ display: "flex", justifyContent: "center", gap: "12px", alignItems: "center" }}>
+                                                                    <button 
+                                                                        onClick={() => navigate(`/admin/employees/${m.employee_id}`)} 
+                                                                        style={{ background: "none", border: "none", color: "var(--primary, #3b82f6)", cursor: "pointer", fontWeight: "600", fontSize: "0.85rem", textDecoration: "underline" }}
+                                                                        title="View Employee Details"
+                                                                    >
+                                                                        View
+                                                                    </button>
+                                                                    <button 
+                                                                        onClick={() => handleRemoveMember(m.employee_id)} 
+                                                                        style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", display: "flex", alignItems: "center", padding: "4px" }}
+                                                                        title="Remove from Project"
+                                                                    >
+                                                                        <FaTrash size={14} />
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
                 </div>
 
+                <EditProjectModal
+                    isOpen={isEditModalOpen}
+                    onClose={() => setIsEditModalOpen(false)}
+                    onSuccess={() => mutate()}
+                    project={project}
+                />
             </div>
 
         </DashboardLayout>
