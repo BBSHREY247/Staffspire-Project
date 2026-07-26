@@ -15,15 +15,7 @@ router.use(authMiddleware);
 // Analytics
 router.get("/analytics", getProjectAnalytics);
 
-// Projects CRUD
-router.post("/", createProject);
-router.get("/", getAllProjects);
-router.get("/:id", getProjectById);
-router.put("/:id", updateProject);
-router.delete("/:id", deleteProject);
-router.put("/:id/archive", archiveProject);
-
-// Members
+// Members (Must be defined before /:id routes)
 router.post("/members", addMember);
 router.delete("/members", removeMember);
 
@@ -31,5 +23,13 @@ router.delete("/members", removeMember);
 router.post("/milestones", createMilestone);
 router.put("/milestones/:id", updateMilestone);
 router.delete("/milestones/:id", deleteMilestone);
+
+// Projects CRUD
+router.post("/", createProject);
+router.get("/", getAllProjects);
+router.get("/:id", getProjectById);
+router.put("/:id", updateProject);
+router.delete("/:id", deleteProject);
+router.put("/:id/archive", archiveProject);
 
 module.exports = router;

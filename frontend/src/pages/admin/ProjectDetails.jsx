@@ -5,7 +5,7 @@ import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { 
     FaArrowLeft, FaCheckCircle, FaTasks, FaExclamationCircle, 
-    FaUsers, FaClock, FaFolderOpen, FaProjectDiagram, FaHistory, FaFlag, FaUserCircle, FaPlus, FaTimes, FaEdit, FaTrash, FaUserPlus
+    FaUsers, FaClock, FaFolderOpen, FaProjectDiagram, FaHistory, FaFlag, FaUserCircle, FaPlus, FaTimes, FaEdit, FaTrash, FaUserPlus, FaEye
 } from "react-icons/fa";
 import EditProjectModal from "./components/EditProjectModal";
 
@@ -288,7 +288,15 @@ export default function ProjectDetails() {
                                                     <td style={{ padding: "12px", color: "#475569", borderRight: "1px solid #e2e8f0", fontSize: "0.85rem" }}>{t.deadline ? new Date(t.deadline).toLocaleDateString() : "—"}</td>
                                                     <td style={{ padding: "12px", color: "#334155", borderRight: "1px solid #e2e8f0", fontSize: "0.9rem", fontWeight: "500" }}>{t.employee_name || "Unassigned"}</td>
                                                     <td style={{ padding: "12px", textAlign: "center" }}>
-                                                        <button onClick={() => navigate(`/admin/tasks/${t.id}`)} style={{ background: "none", border: "none", color: "var(--primary, #3b82f6)", cursor: "pointer", fontWeight: "600", fontSize: "0.85rem", textDecoration: "underline" }}>View</button>
+                                                        <button 
+                                                            onClick={() => navigate(`/admin/tasks/${t.id}`)} 
+                                                            style={{ background: "none", border: "none", color: "var(--primary, #3b82f6)", cursor: "pointer", display: "inline-flex", alignItems: "center", padding: "6px", borderRadius: "6px", transition: "all 0.2s" }}
+                                                            onMouseOver={e => e.currentTarget.style.backgroundColor = "#eff6ff"}
+                                                            onMouseOut={e => e.currentTarget.style.backgroundColor = "transparent"}
+                                                            title="View Task Details"
+                                                        >
+                                                            <FaEye size={18} />
+                                                        </button>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -459,8 +467,7 @@ export default function ProjectDetails() {
                                                     <th style={{ padding: "14px 12px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Employee Name</th>
                                                     <th style={{ padding: "14px 12px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Department</th>
                                                     <th style={{ padding: "14px 12px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Designation</th>
-                                                    <th style={{ padding: "14px 12px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Role</th>
-                                                    <th style={{ padding: "14px 12px", width: "140px", textAlign: "center", color: "#334155", fontWeight: "700", fontSize: "0.85rem" }}>Actions</th>
+                                                    <th style={{ padding: "14px 12px", color: "#334155", fontWeight: "700", fontSize: "0.85rem" }}>Role</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -489,28 +496,10 @@ export default function ProjectDetails() {
                                                             </td>
                                                             <td style={{ padding: "12px", color: "#475569", borderRight: "1px solid #e2e8f0", fontSize: "0.85rem" }}>{m.department || "—"}</td>
                                                             <td style={{ padding: "12px", color: "#475569", borderRight: "1px solid #e2e8f0", fontSize: "0.85rem" }}>{m.designation || "—"}</td>
-                                                            <td style={{ padding: "12px", borderRight: "1px solid #e2e8f0", fontSize: "0.85rem" }}>
+                                                            <td style={{ padding: "12px", fontSize: "0.85rem" }}>
                                                                 <span style={{ padding: "4px 8px", borderRadius: "4px", fontSize: "0.75rem", fontWeight: "700", backgroundColor: isManager ? "#fef3c7" : "#f1f5f9", color: isManager ? "#92400e" : "#475569" }}>
                                                                     {isManager ? "Project Manager" : "Team Member"}
                                                                 </span>
-                                                            </td>
-                                                            <td style={{ padding: "12px", textAlign: "center" }}>
-                                                                <div style={{ display: "flex", justifyContent: "center", gap: "12px", alignItems: "center" }}>
-                                                                    <button 
-                                                                        onClick={() => navigate(`/admin/employees/${m.employee_id}`)} 
-                                                                        style={{ background: "none", border: "none", color: "var(--primary, #3b82f6)", cursor: "pointer", fontWeight: "600", fontSize: "0.85rem", textDecoration: "underline" }}
-                                                                        title="View Employee Details"
-                                                                    >
-                                                                        View
-                                                                    </button>
-                                                                    <button 
-                                                                        onClick={() => handleRemoveMember(m.employee_id)} 
-                                                                        style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer", display: "flex", alignItems: "center", padding: "4px" }}
-                                                                        title="Remove from Project"
-                                                                    >
-                                                                        <FaTrash size={14} />
-                                                                    </button>
-                                                                </div>
                                                             </td>
                                                         </tr>
                                                     );
