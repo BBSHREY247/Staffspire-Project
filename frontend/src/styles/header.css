@@ -23,8 +23,10 @@
 }
 
 .brand-logo-premium {
-    width: 250px;
-    height: 100px;
+    width: auto;
+    max-height: 64px;
+    object-fit: contain;
+    transition: transform 0.2s ease;
 }
 
 .brand-logo-premium:hover {

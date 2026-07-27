@@ -140,7 +140,7 @@ function Header() {
             {/* Left Brand and Title */}
             <div className="header-left-premium">
                 <div onClick={() => navigate(user.role === "Admin" ? "/admin/dashboard" : "/employee/dashboard")} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
-                    <img className="brand-logo-premium" src={profilePic} alt="StaffSpire Logo" style={{ height: '48px', marginLeft: '-24px' }} />
+                    <img className="brand-logo-premium" src={profilePic} alt="StaffSpire Logo" style={{ height: '58px', marginLeft: '-24px', objectFit: 'contain' }} />
                 </div>
                 <div className="header-divider-premium"></div>
                 <h2 className="header-title-premium">{getPageTitle()}</h2>
