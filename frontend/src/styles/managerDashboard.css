@@ -389,3 +389,73 @@
     color: #737686;
     font-weight: 500;
 }
+
+/* Department Projects & Performance Section (Light Theme Default) */
+.perf-dashboard-section {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04) !important;
+    color: #0f172a !important;
+    padding: 24px !important;
+}
+
+.perf-header-title {
+    color: #0f172a !important;
+}
+
+.perf-header-sub {
+    color: #64748b !important;
+}
+
+.perf-manage-btn {
+    background: var(--primary, #2563eb) !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2) !important;
+    transition: all 0.2s ease !important;
+}
+
+.perf-manage-btn:hover {
+    background: #1d4ed8 !important;
+    transform: translateY(-1px);
+}
+
+.perf-stat-card.stat-1 {
+    background: #eff6ff !important;
+    border: 1px solid #bfdbfe !important;
+    color: #1e3a8a !important;
+}
+.perf-stat-card.stat-1 .perf-stat-val {
+    color: #2563eb !important;
+}
+
+.perf-stat-card.stat-2 {
+    background: #f0fdf4 !important;
+    border: 1px solid #bbf7d0 !important;
+    color: #14532d !important;
+}
+.perf-stat-card.stat-2 .perf-stat-val {
+    color: #16a34a !important;
+}
+
+.perf-stat-card.stat-3 {
+    background: #fff1f2 !important;
+    border: 1px solid #fecdd3 !important;
+    color: #881337 !important;
+}
+.perf-stat-card.stat-3 .perf-stat-val {
+    color: #e11d48 !important;
+}
+
+.perf-deliverable-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02) !important;
+}
+
+.perf-deliverable-card:hover {
+    border-color: var(--primary, #2563eb) !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08) !important;
+    transform: translateY(-2px);
+}
+

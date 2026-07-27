@@ -184,20 +184,63 @@ const getManagerDashboardInfo = async (req, res) => {
             trendData.push(count || 0);
         }
 
-        // 7. Project Progress (Key Project Progress)
-        const [deptTasks] = await db.promise().query(
-            "SELECT task_title, status FROM tasks WHERE department = ? ORDER BY created_at DESC LIMIT 3",
-            [deptName]
+        // 7. Project Progress & Deliverables
+        const [deptRows] = await db.promise().query("SELECT id FROM departments WHERE department_name = ?", [deptName]);
+        const deptId = deptRows.length ? deptRows[0].id : -1;
+        
+        let [projects] = await db.promise().query(
+            `SELECT id, project_name, project_code, status, priority, completion_percentage, end_date, start_date, project_color 
+             FROM projects WHERE department_id = ? OR manager_id = ? ORDER BY created_at DESC LIMIT 6`,
+            [deptId, emp.employee_id]
         );
 
         let projectProgress = [];
-        if (deptTasks.length > 0) {
-            projectProgress = deptTasks.map(t => ({
-                name: t.task_title,
-                progress: t.status === "Completed" ? 100 : t.status === "In Progress" ? 60 : 20
+        let departmentProjects = [];
+        let totalProj = 0;
+        let activeProj = 0;
+        let completedProj = 0;
+        let avgProg = 0;
+
+        if (projects.length > 0) {
+            departmentProjects = projects;
+            projectProgress = projects.slice(0, 4).map(p => ({
+                name: p.project_name,
+                progress: p.completion_percentage || 0
             }));
+
+            const [[pStats]] = await db.promise().query(
+                `SELECT COUNT(*) as total,
+                        SUM(IF(status != 'Completed', 1, 0)) as active,
+                        SUM(IF(status = 'Completed', 1, 0)) as completed,
+                        AVG(IFNULL(completion_percentage, 0)) as avgProgress
+                 FROM projects WHERE department_id = ? OR manager_id = ?`,
+                [deptId, emp.employee_id]
+            );
+            totalProj = pStats.total || 0;
+            activeProj = pStats.active || 0;
+            completedProj = pStats.completed || 0;
+            avgProg = Math.round(pStats.avgProgress || 0);
         } else {
-            projectProgress = [];
+            // Fallback: Use department tasks as active deliverables if no projects exist yet
+            const [deptTasks] = await db.promise().query(
+                `SELECT id, task_title as project_name, CONCAT('TSK-', id) as project_code, status, priority, 
+                        IF(status='Completed', 100, IF(status='In Progress', 60, 20)) as completion_percentage, 
+                        deadline as end_date, created_at as start_date, '#3b82f6' as project_color 
+                 FROM tasks WHERE department = ? ORDER BY created_at DESC LIMIT 6`,
+                [deptName]
+            );
+            if (deptTasks.length > 0) {
+                departmentProjects = deptTasks;
+                projectProgress = deptTasks.slice(0, 4).map(t => ({
+                    name: t.project_name,
+                    progress: t.completion_percentage
+                }));
+                totalProj = deptTasks.length;
+                activeProj = deptTasks.filter(t => t.status !== 'Completed').length;
+                completedProj = deptTasks.filter(t => t.status === 'Completed').length;
+                const sumProg = deptTasks.reduce((acc, t) => acc + t.completion_percentage, 0);
+                avgProg = Math.round(sumProg / deptTasks.length);
+            }
         }
 
         return res.status(200).json({
@@ -216,6 +259,13 @@ const getManagerDashboardInfo = async (req, res) => {
                 activeTasks: activeTasks,
                 completedTasks: completedTasks
             },
+            projectStats: {
+                total: totalProj,
+                active: activeProj,
+                completed: completedProj,
+                avgProgress: avgProg
+            },
+            departmentProjects: departmentProjects,
             activities: finalActivities,
             attendanceTrend: {
                 labels: trendLabels,

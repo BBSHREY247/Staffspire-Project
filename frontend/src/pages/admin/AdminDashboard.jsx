@@ -46,6 +46,7 @@ function AdminDashboard() {
 
     const [state, dispatch] = useReducer(dashboardReducer, {
         stats: { totalEmployees: 0, departmentsCount: 0, presentToday: 0, absentToday: 0, lateToday: 0, pendingLeaves: 0, activeTasks: 0, attendanceRate: 0 },
+        projectStats: { total: 0, active: 0, completed: 0, avgProgress: 0 },
         deptDist: [],
         leavesList: [],
         activities: [],
@@ -53,7 +54,7 @@ function AdminDashboard() {
         loading: true,
         actionMessage: ""
     });
-    const { stats, deptDist, leavesList, activities, attendanceTrend, loading, actionMessage } = state;
+    const { stats, projectStats, deptDist, leavesList, activities, attendanceTrend, loading, actionMessage } = state;
 
     const attendanceChartRef = useRef(null);
     const deptChartRef = useRef(null);
@@ -102,6 +103,7 @@ function AdminDashboard() {
                         activeTasks: data.stats.activeTasks !== undefined ? data.stats.activeTasks : 0,
                         attendanceRate: data.stats.attendanceRate || 0
                     },
+                    projectStats: data.projectStats || { total: 0, active: 0, completed: 0, avgProgress: 0 },
                     deptDist: data.deptDist || [],
                     leavesList: (data.leavesList || []).map(l => ({
                         id: l.id, employee_name: l.employee_name, email: l.email, department: l.department, leave_type: l.leave_type,
@@ -412,6 +414,37 @@ function AdminDashboard() {
                         <span className="kpi-card-label">Attendance Rate</span>
                         <span className="kpi-card-value">{stats.attendanceRate}%</span>
                         <FaPercentage className="kpi-card-bg-icon" />
+                    </div>
+                </div>
+
+                {/* Projects Command Center Widget (Phase 18) */}
+                <div className="bento-card" style={{ marginBottom: "24px", background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)", color: "#ffffff", border: "none", boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.2)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                        <div>
+                            <h3 style={{ fontSize: "18px", fontWeight: "700", color: "#ffffff", margin: 0 }}>Projects Command Center</h3>
+                            <p style={{ fontSize: "13px", color: "#94a3b8", margin: "4px 0 0 0" }}>Live progress and status breakdown across all organizational projects</p>
+                        </div>
+                        <button type="button" onClick={() => navigate("/admin/projects")} style={{ background: "rgba(255, 255, 255, 0.1)", border: "1px solid rgba(255, 255, 255, 0.2)", padding: "8px 16px", borderRadius: "8px", color: "#ffffff", fontSize: "13px", fontWeight: "600", cursor: "pointer", transition: "all 0.2s" }}>
+                            View Projects →
+                        </button>
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", paddingTop: "16px", borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}>
+                        <div style={{ background: "rgba(255, 255, 255, 0.05)", padding: "16px", borderRadius: "12px", textAlign: "center" }}>
+                            <div style={{ fontSize: "12px", color: "#94a3b8", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px" }}>Projects</div>
+                            <div style={{ fontSize: "32px", fontWeight: "800", color: "#38bdf8", marginTop: "6px" }}>{projectStats.total}</div>
+                        </div>
+                        <div style={{ background: "rgba(255, 255, 255, 0.05)", padding: "16px", borderRadius: "12px", textAlign: "center" }}>
+                            <div style={{ fontSize: "12px", color: "#94a3b8", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px" }}>Active</div>
+                            <div style={{ fontSize: "32px", fontWeight: "800", color: "#4ade80", marginTop: "6px" }}>{projectStats.active}</div>
+                        </div>
+                        <div style={{ background: "rgba(255, 255, 255, 0.05)", padding: "16px", borderRadius: "12px", textAlign: "center" }}>
+                            <div style={{ fontSize: "12px", color: "#94a3b8", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px" }}>Completed</div>
+                            <div style={{ fontSize: "32px", fontWeight: "800", color: "#c084fc", marginTop: "6px" }}>{projectStats.completed}</div>
+                        </div>
+                        <div style={{ background: "rgba(255, 255, 255, 0.05)", padding: "16px", borderRadius: "12px", textAlign: "center" }}>
+                            <div style={{ fontSize: "12px", color: "#94a3b8", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px" }}>Average Progress</div>
+                            <div style={{ fontSize: "32px", fontWeight: "800", color: "#facc15", marginTop: "6px" }}>{projectStats.avgProgress}%</div>
+                        </div>
                     </div>
                 </div>
 

@@ -14,10 +14,57 @@ const createNotification = async (userId, title, message) => {
     }
 };
 
+const checkApproachingDeadlines = async (userId, role) => {
+    try {
+        const today = new Date();
+        const threeDaysLater = new Date();
+        threeDaysLater.setDate(today.getDate() + 3);
+        const todayStr = today.toISOString().slice(0, 10);
+        const targetStr = threeDaysLater.toISOString().slice(0, 10);
+
+        if (role === "Employee") {
+            const [users] = await db.promise().query("SELECT email FROM users WHERE id = ?", [userId]);
+            if (users.length) {
+                const [emps] = await db.promise().query("SELECT employee_id FROM employees WHERE email = ?", [users[0].email]);
+                if (emps.length) {
+                    const empId = emps[0].employee_id;
+                    const [tasks] = await db.promise().query(
+                        `SELECT task_title, deadline FROM tasks WHERE employee_id = ? AND status NOT IN ('Completed') AND deadline BETWEEN ? AND ?`,
+                        [empId, todayStr, targetStr]
+                    );
+                    for (const t of tasks) {
+                        const msg = `Reminder: Task "${t.task_title}" is due soon (${t.deadline}).`;
+                        const [exist] = await db.promise().query("SELECT id FROM notifications WHERE user_id = ? AND message = ? AND created_at >= CURDATE()", [userId, msg]);
+                        if (!exist.length) {
+                            await createNotification(userId, "Deadline Approaching", msg);
+                        }
+                    }
+                }
+            }
+        } else {
+            const [projects] = await db.promise().query(
+                `SELECT project_name, end_date FROM projects WHERE status NOT IN ('Completed', 'Archived') AND end_date BETWEEN ? AND ?`,
+                [todayStr, targetStr]
+            );
+            for (const p of projects) {
+                const endStr = new Date(p.end_date).toISOString().slice(0, 10);
+                const msg = `Reminder: Project "${p.project_name}" deadline is approaching (${endStr}).`;
+                const [exist] = await db.promise().query("SELECT id FROM notifications WHERE user_id = ? AND message = ? AND created_at >= CURDATE()", [userId, msg]);
+                if (!exist.length) {
+                    await createNotification(userId, "Deadline Approaching", msg);
+                }
+            }
+        }
+    } catch (e) {
+        console.error("Deadline check error:", e);
+    }
+};
+
 // GET /api/notifications
 const getNotifications = async (req, res) => {
     try {
         const userId = req.user.id;
+        await checkApproachingDeadlines(userId, req.user.role);
         const [rows] = await db.promise().query(
             "SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 50",
             [userId]

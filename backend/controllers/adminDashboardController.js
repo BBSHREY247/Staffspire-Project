@@ -159,6 +159,14 @@ const getAdminDashboardStats = async (req, res) => {
             trendData.push(count || 0);
         }
 
+        const [[pStats]] = await db.promise().query(
+            `SELECT COUNT(*) as total,
+                    SUM(IF(status != 'Completed', 1, 0)) as active,
+                    SUM(IF(status = 'Completed', 1, 0)) as completed,
+                    AVG(IFNULL(completion_percentage, 0)) as avgProgress
+             FROM projects`
+        );
+
         return res.status(200).json({
             success: true,
             stats: {
@@ -170,6 +178,12 @@ const getAdminDashboardStats = async (req, res) => {
                 attendanceRate,
                 pendingLeaves,
                 activeTasks
+            },
+            projectStats: {
+                total: pStats.total || 0,
+                active: pStats.active || 0,
+                completed: pStats.completed || 0,
+                avgProgress: Math.round(pStats.avgProgress || 0)
             },
             deptDist,
             leavesList,

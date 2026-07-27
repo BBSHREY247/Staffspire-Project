@@ -5,7 +5,7 @@ import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { 
     FaArrowLeft, FaCheckCircle, FaTasks, FaExclamationCircle, 
-    FaUsers, FaClock, FaFolderOpen, FaProjectDiagram, FaHistory, FaFlag, FaUserCircle, FaPlus, FaTimes, FaEdit, FaTrash, FaUserPlus, FaEye
+    FaUsers, FaClock, FaFolderOpen, FaProjectDiagram, FaHistory, FaFlag, FaUserCircle, FaPlus, FaTimes, FaEdit, FaTrash, FaUserPlus, FaEye, FaExclamationTriangle
 } from "react-icons/fa";
 import EditProjectModal from "./components/EditProjectModal";
 import CustomConfirmModal from "../../components/CustomConfirmModal";
@@ -117,7 +117,7 @@ export default function ProjectDetails() {
         );
     }
 
-    const { project, members, tasks } = projectRes;
+    const { project, members = [], tasks = [], milestones = [] } = projectRes;
     const departments = Array.isArray(deptData) ? deptData : (deptData?.departments || []);
     const employees = Array.isArray(empData) ? empData : (empData?.employees || []);
 
@@ -143,7 +143,100 @@ export default function ProjectDetails() {
     
     const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-    const tabs = ["Overview", "Tasks", "Members"];
+    // Workload calculation
+    const workloadMap = {};
+    members.forEach(m => {
+        workloadMap[m.employee_id] = {
+            name: `${m.first_name || ''} ${m.last_name || ''}`.trim() || `Employee ${m.employee_id}`,
+            id: m.employee_id,
+            department: m.department || deptName || "—",
+            tasksCount: 0,
+            completedCount: 0
+        };
+    });
+    tasks.forEach(t => {
+        if (t.employee_id) {
+            if (!workloadMap[t.employee_id]) {
+                workloadMap[t.employee_id] = {
+                    name: t.employee_name || `Employee ${t.employee_id}`,
+                    id: t.employee_id,
+                    department: t.department || deptName || "—",
+                    tasksCount: 0,
+                    completedCount: 0
+                };
+            }
+            workloadMap[t.employee_id].tasksCount += 1;
+            if (t.status === "Completed") workloadMap[t.employee_id].completedCount += 1;
+        }
+    });
+    const workloadList = Object.values(workloadMap);
+
+    // Timeline calculation
+    const timelineEvents = [
+        {
+            id: "proj-create",
+            title: "Project Created",
+            date: project.created_at ? new Date(project.created_at) : new Date(project.start_date || Date.now()),
+            desc: `Project "${project.project_name}" was initialized in ${deptName}.`,
+            icon: <FaProjectDiagram color="#4f46e5" />,
+            bg: "#e0e7ff"
+        }
+    ];
+    members.forEach(m => {
+        timelineEvents.push({
+            id: `mem-${m.employee_id}`,
+            title: "Member Added",
+            date: m.joined_at ? new Date(m.joined_at) : (project.created_at ? new Date(new Date(project.created_at).getTime() + 1000 * 60 * 5) : new Date()),
+            desc: `${m.first_name || ''} ${m.last_name || ''} joined the project team.`,
+            icon: <FaUserPlus color="#0284c7" />,
+            bg: "#e0f2fe"
+        });
+    });
+    tasks.forEach(t => {
+        timelineEvents.push({
+            id: `task-${t.id}`,
+            title: "Task Assigned",
+            date: t.created_at ? new Date(t.created_at) : (t.start_date ? new Date(t.start_date) : new Date()),
+            desc: `Task "${t.task_title}" was assigned to ${t.employee_name || 'an employee'} (Priority: ${t.priority || 'Medium'}).`,
+            icon: <FaTasks color="#d97706" />,
+            bg: "#fef3c7"
+        });
+        if (t.status === "Completed") {
+            timelineEvents.push({
+                id: `task-comp-${t.id}`,
+                title: "Task Completed",
+                date: t.completion_date ? new Date(t.completion_date) : (t.updated_at ? new Date(t.updated_at) : new Date()),
+                desc: `Task "${t.task_title}" was marked as Completed by ${t.employee_name || 'an employee'}.`,
+                icon: <FaCheckCircle color="#16a34a" />,
+                bg: "#dcfce7"
+            });
+        }
+    });
+    milestones.forEach(ms => {
+        if (ms.status === "Completed") {
+            timelineEvents.push({
+                id: `ms-comp-${ms.id}`,
+                title: "Milestone Completed",
+                date: ms.updated_at ? new Date(ms.updated_at) : new Date(),
+                desc: `Milestone "${ms.title || ms.name}" reached 100% completion!`,
+                icon: <FaFlag color="#9333ea" />,
+                bg: "#f3e8ff"
+            });
+        }
+    });
+    if (project.status === "Completed" || progress === 100) {
+        timelineEvents.push({
+            id: "proj-comp",
+            title: "Project Completed",
+            date: project.updated_at ? new Date(project.updated_at) : new Date(project.end_date || Date.now()),
+            desc: `Project "${project.project_name}" has reached 100% completion!`,
+            icon: <FaCheckCircle color="#15803d" />,
+            bg: "#dcfce7"
+        });
+    }
+    timelineEvents.sort((a, b) => a.date - b.date);
+
+    const tabs = ["Overview", "Tasks", "Members", "Workload", "Timeline"];
 
     return (
         <DashboardLayout>
@@ -467,36 +560,35 @@ export default function ProjectDetails() {
                                 </div>
 
                                 {members.length === 0 ? (
-                                    <div style={{ padding: "40px", textAlign: "center", color: "#64748b", backgroundColor: "#f8fafc", borderRadius: "8px" }}>No team members assigned yet. Add employees above to start collaborating.</div>
+                                    <div style={{ padding: "40px", textAlign: "center", color: "#64748b", backgroundColor: "#f8fafc", borderRadius: "10px", border: "1px dashed #cbd5e1" }}>
+                                        No members added to this project yet.
+                                    </div>
                                 ) : (
-                                    <div style={{ overflowX: "auto", border: "1px solid #e2e8f0", borderRadius: "12px", backgroundColor: "white" }}>
-                                        <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
-                                            <thead style={{ backgroundColor: "#f8fafc", borderBottom: "2px solid #e2e8f0" }}>
-                                                <tr>
-                                                    <th style={{ padding: "14px 12px", width: "40px", textAlign: "center", borderRight: "1px solid #e2e8f0" }}>
+                                    <div style={{ overflowX: "auto", border: "1px solid #cbd5e1", borderRadius: "10px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+                                        <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "700px" }}>
+                                            <thead>
+                                                <tr style={{ borderBottom: "2px solid #cbd5e1", backgroundColor: "#f8fafc", textAlign: "left" }}>
+                                                    <th style={{ padding: "14px 12px", width: "50px", textAlign: "center", borderRight: "1px solid #e2e8f0" }}>
                                                         <input 
                                                             type="checkbox" 
                                                             checked={members.length > 0 && selectedMemberIds.length === members.length}
-                                                            onChange={e => {
-                                                                if (e.target.checked) setSelectedMemberIds(members.map(m => m.employee_id));
-                                                                else setSelectedMemberIds([]);
-                                                            }}
+                                                            onChange={e => handleSelectAllMembers(e.target.checked)}
                                                             style={{ cursor: "pointer" }}
                                                         />
                                                     </th>
-                                                    <th style={{ padding: "14px 12px", width: "60px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Sr. No.</th>
-                                                    <th style={{ padding: "14px 12px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Employee Name</th>
-                                                    <th style={{ padding: "14px 12px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Department</th>
-                                                    <th style={{ padding: "14px 12px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Designation</th>
-                                                    <th style={{ padding: "14px 12px", color: "#334155", fontWeight: "700", fontSize: "0.85rem" }}>Role</th>
+                                                    <th style={{ padding: "14px 12px", width: "60px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Sr.</th>
+                                                    <th style={{ padding: "14px 12px", minWidth: "200px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Employee Name</th>
+                                                    <th style={{ padding: "14px 12px", minWidth: "160px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Department</th>
+                                                    <th style={{ padding: "14px 12px", minWidth: "160px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Designation</th>
+                                                    <th style={{ padding: "14px 12px", width: "140px", color: "#334155", fontWeight: "700", fontSize: "0.85rem" }}>Role</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {members.map((m, idx) => {
                                                     const isSelected = selectedMemberIds.includes(m.employee_id);
-                                                    const isManager = m.employee_id === project.manager_id;
+                                                    const isManager = String(m.employee_id) === String(project.manager_id);
                                                     return (
-                                                        <tr key={m.id || m.employee_id} style={{ borderBottom: "1px solid #e2e8f0", backgroundColor: isSelected ? "#fef2f2" : idx % 2 === 0 ? "white" : "#fcfcfd" }}>
+                                                        <tr key={m.id || m.employee_id} style={{ borderBottom: "1px solid #e2e8f0", backgroundColor: idx % 2 === 0 ? "white" : "#fcfcfd" }}>
                                                             <td style={{ padding: "12px", textAlign: "center", borderRight: "1px solid #e2e8f0" }}>
                                                                 <input 
                                                                     type="checkbox" 
@@ -527,6 +619,103 @@ export default function ProjectDetails() {
                                                 })}
                                             </tbody>
                                         </table>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {activeTab === "Workload" && (
+                            <div>
+                                <div style={{ marginBottom: "20px" }}>
+                                    <h3 style={{ margin: "0 0 4px 0", color: "#1e293b", fontSize: "1.3rem" }}>Team Workload & Task Distribution</h3>
+                                    <p style={{ margin: 0, color: "#64748b", fontSize: "0.85rem" }}>Monitor individual capacity, active task distribution, and identify overloaded team members.</p>
+                                </div>
+                                {workloadList.length === 0 ? (
+                                    <div style={{ padding: "40px", textAlign: "center", color: "#64748b", backgroundColor: "#f8fafc", borderRadius: "12px", border: "1px dashed #cbd5e1" }}>
+                                        No team members or tasks found for workload analysis.
+                                    </div>
+                                ) : (
+                                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "20px" }}>
+                                        {workloadList.map(emp => {
+                                            const activeCount = emp.tasksCount - emp.completedCount;
+                                            const isOverloaded = emp.tasksCount >= 5;
+                                            const blockBar = "█".repeat(Math.min(emp.tasksCount, 15)) || "—";
+                                            const compPct = emp.tasksCount > 0 ? Math.round((emp.completedCount / emp.tasksCount) * 100) : 0;
+                                            
+                                            return (
+                                                <div key={emp.id} style={{ backgroundColor: "white", border: isOverloaded ? "2px solid #f87171" : "1px solid #e2e8f0", borderRadius: "14px", padding: "20px", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)", position: "relative", transition: "all 0.2s" }}>
+                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+                                                        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                                                            <FaUserCircle size={36} color={isOverloaded ? "#ef4444" : "#64748b"} />
+                                                            <div>
+                                                                <h4 style={{ margin: "0 0 2px 0", color: "#0f172a", fontSize: "1.05rem" }}>{emp.name}</h4>
+                                                                <span style={{ fontSize: "0.8rem", color: "#64748b" }}>{emp.department}</span>
+                                                            </div>
+                                                        </div>
+                                                        <span style={{ backgroundColor: isOverloaded ? "#fee2e2" : "#f1f5f9", color: isOverloaded ? "#dc2626" : "#334155", padding: "4px 10px", borderRadius: "20px", fontSize: "0.85rem", fontWeight: "700" }}>
+                                                            {emp.tasksCount} Tasks
+                                                        </span>
+                                                    </div>
+
+                                                    <div style={{ marginBottom: "16px", backgroundColor: "#f8fafc", padding: "10px", borderRadius: "8px", border: "1px solid #f1f5f9" }}>
+                                                        <div style={{ fontSize: "0.75rem", color: "#64748b", marginBottom: "4px", display: "flex", justifyContent: "space-between" }}>
+                                                            <span>Workload Bar</span>
+                                                            <span style={{ fontWeight: "600", color: "#334155" }}>{compPct}% Completed</span>
+                                                        </div>
+                                                        <div style={{ fontFamily: "monospace", color: isOverloaded ? "#dc2626" : "var(--primary, #4f46e5)", fontSize: "1rem", letterSpacing: "1px", wordBreak: "break-all" }}>
+                                                            {blockBar}
+                                                        </div>
+                                                    </div>
+
+                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #f1f5f9", paddingTop: "12px", fontSize: "0.85rem" }}>
+                                                        <span style={{ color: "#16a34a", fontWeight: "600" }}>✓ {emp.completedCount} Done</span>
+                                                        <span style={{ color: "#d97706", fontWeight: "600" }}>⏳ {activeCount} Active</span>
+                                                    </div>
+
+                                                    {isOverloaded && (
+                                                        <div style={{ marginTop: "14px", backgroundColor: "#fef2f2", border: "1px solid #fca5a5", color: "#b91c1c", padding: "8px 12px", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "8px", justifyContent: "center" }}>
+                                                            <FaExclamationTriangle color="#ef4444" /> Employee Overloaded
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {activeTab === "Timeline" && (
+                            <div>
+                                <div style={{ marginBottom: "24px" }}>
+                                    <h3 style={{ margin: "0 0 4px 0", color: "#1e293b", fontSize: "1.3rem" }}>Project Activity Timeline</h3>
+                                    <p style={{ margin: 0, color: "#64748b", fontSize: "0.85rem" }}>Chronological log of project lifecycle events, assignments, and milestone achievements.</p>
+                                </div>
+                                {timelineEvents.length === 0 ? (
+                                    <div style={{ padding: "40px", textAlign: "center", color: "#64748b", backgroundColor: "#f8fafc", borderRadius: "12px", border: "1px dashed #cbd5e1" }}>
+                                        No activity recorded yet.
+                                    </div>
+                                ) : (
+                                    <div style={{ position: "relative", paddingLeft: "36px", borderLeft: "3px solid #e2e8f0", marginLeft: "16px" }}>
+                                        {timelineEvents.map((ev, idx) => (
+                                            <div key={ev.id + idx} style={{ position: "relative", marginBottom: "28px" }}>
+                                                <div style={{ position: "absolute", left: "-52px", top: "0", width: "32px", height: "32px", borderRadius: "50%", backgroundColor: ev.bg, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 0 4px white, 0 2px 4px rgba(0,0,0,0.1)", zIndex: 2 }}>
+                                                    {ev.icon}
+                                                </div>
+                                                <div style={{ backgroundColor: "white", padding: "16px 20px", borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 2px 4px rgba(0,0,0,0.02)", maxWidth: "700px", transition: "all 0.2s" }}>
+                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                                                        <span style={{ fontWeight: "700", color: "#0f172a", fontSize: "1rem" }}>{ev.title}</span>
+                                                        <span style={{ fontSize: "0.75rem", color: "#64748b", backgroundColor: "#f8fafc", padding: "2px 8px", borderRadius: "12px", border: "1px solid #f1f5f9" }}>
+                                                            {ev.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                                        </span>
+                                                    </div>
+                                                    <p style={{ margin: 0, color: "#475569", fontSize: "0.9rem", lineHeight: "1.5" }}>{ev.desc}</p>
+                                                </div>
+                                                {idx < timelineEvents.length - 1 && (
+                                                    <div style={{ color: "#94a3b8", fontWeight: "700", marginLeft: "10px", marginTop: "8px", fontSize: "1.1rem" }}>↓</div>
+                                                )}
+                                            </div>
+                                        ))}
                                     </div>
                                 )}
                             </div>

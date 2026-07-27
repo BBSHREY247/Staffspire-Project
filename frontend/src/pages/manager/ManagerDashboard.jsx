@@ -44,7 +44,8 @@ function ManagerDashboard() {
             labels: [],
             data: []
         },
-        projectProgress: []
+        projectProgress: [],
+        projectStats: { total: 0, active: 0, completed: 0, avgProgress: 0 }
     });
 
 
@@ -72,6 +73,7 @@ function ManagerDashboard() {
                         activeTasks: resData.widgets?.activeTasks !== undefined ? resData.widgets.activeTasks : 0,
                         completedTasks: resData.widgets?.completedTasks !== undefined ? resData.widgets.completedTasks : 0
                     },
+                    projectStats: resData.projectStats || { total: 0, active: 0, completed: 0, avgProgress: 0 },
                     activities: resData.activities || [],
                     attendanceTrend: resData.attendanceTrend || {
                         labels: [],
@@ -175,7 +177,7 @@ function ManagerDashboard() {
         );
     }
 
-    const { departmentInfo, widgets, activities, attendanceTrend, projectProgress } = data;
+    const { departmentInfo, widgets, activities, attendanceTrend, projectProgress = [], projectStats, departmentProjects = [] } = data;
 
     return (
         <DashboardLayout>
@@ -295,6 +297,115 @@ function ManagerDashboard() {
                             <p className="manager-kpi-value">{widgets.activeTasks}</p>
                             <p className="manager-kpi-label">Active Tasks</p>
                         </div>
+                    </div>
+                </div>
+
+                {/* Projects & Team Performance Section (Completed Module - Phase 13, 14 & 18) */}
+                <div className="manager-bento-card perf-dashboard-section" style={{ marginBottom: "24px" }}>
+                    <div className="perf-header-bar" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "12px" }}>
+                        <div>
+                            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                <h3 className="perf-header-title" style={{ fontSize: "20px", fontWeight: "800", margin: 0 }}>Department Projects & Performance</h3>
+                                <span className="perf-status-badge" style={{ fontSize: "11px", fontWeight: "700", padding: "4px 10px", borderRadius: "20px", background: "#e0f2fe", color: "#0369a1" }}>Real-time Workload</span>
+                            </div>
+                            <p className="perf-header-sub" style={{ fontSize: "13.5px", margin: "4px 0 0 0" }}>Live tracking of active team deliverables, completion percentages, and upcoming milestones</p>
+                        </div>
+                        <button type="button" onClick={() => navigate("/admin/projects")} className="perf-manage-btn" style={{ padding: "10px 18px", borderRadius: "10px", fontSize: "13px", fontWeight: "700", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                            Manage Projects →
+                        </button>
+                    </div>
+
+                    {/* KPI Stat Cards */}
+                    <div className="perf-stat-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px", marginBottom: "24px" }}>
+                        <div className="perf-stat-card stat-1" style={{ padding: "18px", borderRadius: "14px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                                <span style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.5px", opacity: "0.8" }}>My Projects</span>
+                                <span style={{ fontSize: "18px" }}>📁</span>
+                            </div>
+                            <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
+                                <span className="perf-stat-val" style={{ fontSize: "28px", fontWeight: "800" }}>{projectStats ? projectStats.total : 0} Total</span>
+                                <span style={{ fontSize: "13px", fontWeight: "700", opacity: "0.85" }}>({projectStats ? projectStats.active : 0} Active)</span>
+                            </div>
+                        </div>
+
+                        <div className="perf-stat-card stat-2" style={{ padding: "18px", borderRadius: "14px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                                <span style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.5px", opacity: "0.8" }}>Team Progress</span>
+                                <span style={{ fontSize: "18px" }}>⚡</span>
+                            </div>
+                            <div className="perf-stat-val" style={{ fontSize: "28px", fontWeight: "800" }}>{projectStats ? projectStats.avgProgress : 0}% <span style={{ fontSize: "14px", fontWeight: "600", opacity: "0.8" }}>Avg Rate</span></div>
+                        </div>
+
+                        <div className="perf-stat-card stat-3" style={{ padding: "18px", borderRadius: "14px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                                <span style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.5px", opacity: "0.8" }}>Upcoming Deadlines</span>
+                                <span style={{ fontSize: "18px" }}>⏰</span>
+                            </div>
+                            <div className="perf-stat-val" style={{ fontSize: "28px", fontWeight: "800" }}>{projectStats ? projectStats.active : 0} <span style={{ fontSize: "14px", fontWeight: "600", opacity: "0.8" }}>Due Soon</span></div>
+                        </div>
+                    </div>
+
+                    {/* Active Deliverables & Workload List (Completed Module) */}
+                    <div className="perf-deliverables-section">
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                            <h4 style={{ fontSize: "15px", fontWeight: "700", margin: 0 }}>Active Team Deliverables & Workload</h4>
+                            <span style={{ fontSize: "12px", fontWeight: "600", cursor: "pointer", color: "var(--primary, #2563eb)" }} onClick={() => navigate("/admin/projects")}>View All Projects ({departmentProjects ? departmentProjects.length : 0})</span>
+                        </div>
+                        
+                        {(!departmentProjects || departmentProjects.length === 0) ? (
+                            <div style={{ padding: "32px", textAlign: "center", background: "#f8fafc", borderRadius: "12px", border: "1px dashed #cbd5e1" }}>
+                                <div style={{ fontSize: "24px", marginBottom: "8px" }}>🚀</div>
+                                <div style={{ fontSize: "15px", fontWeight: "700", color: "#334155", marginBottom: "4px" }}>No active deliverables initialized</div>
+                                <p style={{ fontSize: "13px", color: "#64748b", margin: "0 0 16px 0" }}>Create new projects or assign tasks to begin tracking department workload real-time.</p>
+                                <button type="button" onClick={() => navigate("/admin/projects")} style={{ background: "var(--primary, #2563eb)", color: "#ffffff", border: "none", padding: "8px 18px", borderRadius: "8px", fontWeight: "600", fontSize: "13px", cursor: "pointer" }}>
+                                    + Initialize First Project
+                                </button>
+                            </div>
+                        ) : (
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
+                                {departmentProjects.slice(0, 6).map((item, idx) => {
+                                    const prog = item.completion_percentage || 0;
+                                    const badgeColor = item.status === 'Completed' ? '#16a34a' : item.status === 'On Hold' ? '#64748b' : '#2563eb';
+                                    const badgeBg = item.status === 'Completed' ? '#dcfce7' : item.status === 'On Hold' ? '#f1f5f9' : '#e0f2fe';
+                                    const priorityColor = item.priority === 'High' ? '#ef4444' : item.priority === 'Medium' ? '#f59e0b' : '#3b82f6';
+                                    
+                                    return (
+                                        <div key={idx} className="perf-deliverable-card" style={{ padding: "16px", borderRadius: "12px", border: "1px solid #e2e8f0", background: "#ffffff", transition: "all 0.2s ease", display: "flex", flexDirection: "column", justify: "space-between" }}>
+                                            <div>
+                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px", gap: "8px" }}>
+                                                    <div>
+                                                        <div style={{ fontSize: "15px", fontWeight: "700", color: "#0f172a", marginBottom: "2px" }}>{item.project_name}</div>
+                                                        <div style={{ fontSize: "12px", color: "#64748b", fontWeight: "600" }}>{item.project_code || `PRJ-00${idx+1}`}</div>
+                                                    </div>
+                                                    <span style={{ fontSize: "11px", fontWeight: "700", padding: "3px 8px", borderRadius: "6px", background: badgeBg, color: badgeColor, whiteSpace: "nowrap" }}>
+                                                        {item.status || "In Progress"}
+                                                    </span>
+                                                </div>
+
+                                                <div style={{ display: "flex", alignItems: "center", gap: "12px", fontSize: "12px", color: "#64748b", marginBottom: "14px" }}>
+                                                    <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                                        <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: priorityColor }}></span>
+                                                        <strong style={{ color: "#334155" }}>{item.priority || "Medium"}</strong> Priority
+                                                    </span>
+                                                    <span>•</span>
+                                                    <span>Due: {item.end_date ? new Date(item.end_date).toLocaleDateString() : "Ongoing"}</span>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "12px", fontWeight: "700", marginBottom: "6px" }}>
+                                                    <span style={{ color: "#475569" }}>Workload Progress</span>
+                                                    <span style={{ color: prog === 100 ? "#16a34a" : "var(--primary, #2563eb)" }}>{prog}%</span>
+                                                </div>
+                                                <div style={{ width: "100%", height: "8px", background: "#f1f5f9", borderRadius: "4px", overflow: "hidden" }}>
+                                                    <div style={{ width: `${prog}%`, height: "100%", background: prog === 100 ? "#10b981" : "var(--primary, #3b82f6)", borderRadius: "4px", transition: "width 0.5s ease" }}></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
                 </div>
 

@@ -143,8 +143,8 @@ function TaskDetail() {
         <DashboardLayout>
             <div className="attendance-page-container">
                 {/* Back */}
-                <button type="button" onClick={() => navigate(backPath)}
-                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", color: "#2563eb", fontWeight: "600", fontSize: "14px", marginBottom: "24px", padding: 0 }}>
+                <button type="button" onClick={() => navigate(backPath)} className="back-link-btn"
+                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", color: "var(--primary, #2563eb)", fontWeight: "600", fontSize: "14px", marginBottom: "24px", padding: 0 }}>
                     <FaArrowLeft /> Back to Tasks
                 </button>
 
@@ -155,7 +155,7 @@ function TaskDetail() {
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "16px" }}>
                         <div style={{ flex: 1 }}>
                             <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
-                                <span style={{ fontFamily: "monospace", fontSize: "13px", fontWeight: "700", color: "#2563eb", background: "#eff6ff", padding: "4px 10px", borderRadius: "6px" }}>
+                                <span className="task-id-badge" style={{ fontFamily: "monospace", fontSize: "13px", fontWeight: "700", color: "var(--primary, #2563eb)", background: "rgba(37, 99, 235, 0.1)", padding: "4px 10px", borderRadius: "6px" }}>
                                     {task.task_id || `#${task.id}`}
                                 </span>
                                 <span style={{ background: priCfg.bg, color: priCfg.color, padding: "4px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: "700", whiteSpace: "nowrap" }}>
@@ -170,8 +170,8 @@ function TaskDetail() {
                                 {task.status}
                             </span>
                             {(!editing && (isAdminOrManager || (isEmployee && task.status !== "Completed"))) && (
-                                <button type="button" onClick={() => setEditing(true)}
-                                    style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "#2563eb", color: "white", border: "none", padding: "10px 18px", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "13px" }}>
+                                <button type="button" onClick={() => setEditing(true)} className="btn-edit-task"
+                                    style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--primary, #2563eb)", color: "white", border: "none", padding: "10px 18px", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "13px" }}>
                                     <FaEdit /> Edit Task
                                 </button>
                             )}
@@ -192,7 +192,7 @@ function TaskDetail() {
                         { icon: <FaIdBadge />, label: "Employee ID", value: task.employee_id },
                     ].map(({ icon, label, value }) => (
                         <div key={label} style={{ background: "white", borderRadius: "12px", padding: "18px 20px", boxShadow: "0 2px 10px rgba(0,0,0,0.05)", display: "flex", gap: "14px", alignItems: "flex-start" }}>
-                            <span style={{ color: "#2563eb", fontSize: "16px", marginTop: "2px", flexShrink: 0 }}>{icon}</span>
+                            <span className="task-detail-icon" style={{ color: "var(--primary, #2563eb)", fontSize: "16px", marginTop: "2px", flexShrink: 0 }}>{icon}</span>
                             <div>
                                 <p style={{ margin: 0, fontSize: "12px", color: "#64748b", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.5px" }}>{label}</p>
                                 <p style={{ margin: "4px 0 0", fontSize: "14px", fontWeight: "700", color: "#1e293b" }}>{value}</p>
@@ -205,10 +205,10 @@ function TaskDetail() {
                 {task.description && (
                     <div style={{ background: "white", borderRadius: "12px", padding: "22px 24px", boxShadow: "0 2px 10px rgba(0,0,0,0.05)", marginBottom: "20px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
-                            <FaStickyNote style={{ color: "#2563eb" }} />
+                            <FaStickyNote className="task-detail-icon" style={{ color: "var(--primary, #2563eb)" }} />
                             <h3 style={{ margin: 0, fontSize: "15px", fontWeight: "700", color: "#1e293b" }}>Description</h3>
                         </div>
-                        <p style={{ margin: 0, color: "#475569", lineHeight: "1.8", background: "#f8fafc", padding: "16px", borderRadius: "8px", borderLeft: "4px solid #2563eb" }}>
+                        <p className="task-desc-box" style={{ margin: 0, color: "#475569", lineHeight: "1.8", background: "#f8fafc", padding: "16px", borderRadius: "8px", borderLeft: "4px solid var(--primary, #2563eb)" }}>
                             {task.description}
                         </p>
                     </div>
@@ -288,8 +288,8 @@ function TaskDetail() {
                             </div>
 
                             <div style={{ display: "flex", gap: "12px" }}>
-                                <button type="submit" disabled={actionLoading}
-                                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#2563eb", color: "white", border: "none", padding: "13px 28px", borderRadius: "10px", cursor: "pointer", fontWeight: "700", fontSize: "15px", opacity: actionLoading ? 0.6 : 1 }}>
+                                <button type="submit" disabled={actionLoading} className="btn-save-task"
+                                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--primary, #2563eb)", color: "white", border: "none", padding: "13px 28px", borderRadius: "10px", cursor: "pointer", fontWeight: "700", fontSize: "15px", opacity: actionLoading ? 0.6 : 1 }}>
                                     <FaCheck /> {actionLoading ? "Saving..." : "Save Changes"}
                                 </button>
                                 <button type="button" onClick={() => setEditing(false)}
@@ -327,8 +327,8 @@ function TaskDetail() {
                                     style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", resize: "none", fontSize: "14px" }} />
                             </div>
                             <div style={{ display: "flex", gap: "12px" }}>
-                                <button type="submit" disabled={actionLoading}
-                                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#2563eb", color: "white", border: "none", padding: "13px 28px", borderRadius: "10px", cursor: "pointer", fontWeight: "700", fontSize: "15px", opacity: actionLoading ? 0.6 : 1 }}>
+                                <button type="submit" disabled={actionLoading} className="btn-save-task"
+                                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--primary, #2563eb)", color: "white", border: "none", padding: "13px 28px", borderRadius: "10px", cursor: "pointer", fontWeight: "700", fontSize: "15px", opacity: actionLoading ? 0.6 : 1 }}>
                                     <FaCheck /> {actionLoading ? "Saving..." : "Save Changes"}
                                 </button>
                                 <button type="button" onClick={() => setEditing(false)}

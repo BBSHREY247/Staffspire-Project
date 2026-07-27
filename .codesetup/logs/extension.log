@@ -1,3 +1,0 @@
-2026-07-17T14:18:21.503Z extension.activated runId=
-2026-07-17T14:19:48.913Z cli.command.started runId=run_20260717_194948_workspace-init_0ac6cc
-2026-07-17T14:19:48.913Z cli.command.failed runId=run_20260717_194948_workspace-init_0ac6cc success=false durationMs=323 failureCategory=cli_not_found

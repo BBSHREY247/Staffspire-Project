@@ -356,6 +356,16 @@ const updateTask = async (req, res) => {
             );
         }
 
+        const finalStatus = req.body.status || task.status;
+        if (finalStatus === "Completed" && task.status !== "Completed" && task.assigned_by_user_id) {
+            const { createNotification } = require("./notificationController");
+            await createNotification(
+                task.assigned_by_user_id,
+                "Task Completed",
+                `Task "${task.task_title}" has been marked as completed.`
+            );
+        }
+
         return res.status(200).json({ success: true, message: "Task updated successfully." });
     } catch (error) {
         console.error("Update task error:", error);

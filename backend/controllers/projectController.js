@@ -1,4 +1,5 @@
 const db = require("../config/db");
+const { createNotification } = require("./notificationController");
 
 // --- PROJECT CRUD ---
 const createProject = async (req, res) => {
@@ -15,6 +16,12 @@ const createProject = async (req, res) => {
         const projectCode = `PRJ${String(result.insertId).padStart(4, "0")}`;
         await db.promise().query("UPDATE projects SET project_code = ? WHERE id = ?", [projectCode, result.insertId]);
 
+        await createNotification(
+            req.user.id,
+            "Project Created",
+            `You successfully initialized project "${project_name}" (${projectCode}).`
+        );
+
         res.status(201).json({ success: true, message: "Project created", projectId: result.insertId });
     } catch (error) {
         console.error(error);
@@ -30,6 +37,21 @@ const updateProject = async (req, res) => {
             `UPDATE projects SET project_name=?, description=?, department_id=?, manager_id=?, priority=?, status=?, start_date=?, end_date=?, project_color=?, project_icon=? WHERE id=?`,
             [project_name, description, department_id, manager_id, priority, status, start_date, end_date, project_color, project_icon, req.params.id]
         );
+
+        if (status === 'Completed') {
+            const [members] = await db.promise().query(`
+                SELECT u.id as user_id FROM project_members pm
+                JOIN employees e ON pm.employee_id = e.employee_id
+                LEFT JOIN users u ON e.employee_id = u.login_id OR e.email = u.email
+                WHERE pm.project_id = ?
+            `, [req.params.id]);
+            for (const m of members) {
+                if (m.user_id) {
+                    await createNotification(m.user_id, "Project Completed", `Project "${project_name}" has been marked as Completed!`);
+                }
+            }
+        }
+
         res.json({ success: true, message: "Project updated" });
     } catch (error) {
         console.error(error);
@@ -123,6 +145,19 @@ const addMember = async (req, res) => {
         if (exist.length > 0) return res.status(400).json({ success: false, message: "Member already added" });
         
         await db.promise().query("INSERT INTO project_members (project_id, employee_id) VALUES (?, ?)", [project_id, employee_id]);
+
+        const [projRows] = await db.promise().query("SELECT project_name FROM projects WHERE id = ?", [project_id]);
+        const projectName = projRows.length ? projRows[0].project_name : "a project";
+
+        const [userRows] = await db.promise().query(`
+            SELECT u.id AS user_id FROM employees e 
+            LEFT JOIN users u ON e.employee_id = u.login_id OR e.email = u.email 
+            WHERE e.employee_id = ?
+        `, [employee_id]);
+        if (userRows.length && userRows[0].user_id) {
+            await createNotification(userRows[0].user_id, "Member Added", `You have been added to the team for project "${projectName}".`);
+        }
+
         res.json({ success: true, message: "Member added" });
     } catch (error) {
         console.error(error);
@@ -167,6 +202,19 @@ const updateMilestone = async (req, res) => {
             "UPDATE project_milestones SET title=?, description=?, due_date=?, status=?, completion_date=? WHERE id=?",
             [title, description, due_date, status, completion_date, req.params.id]
         );
+
+        if (status === 'Completed') {
+            const [msRows] = await db.promise().query("SELECT project_id, title FROM project_milestones WHERE id = ?", [req.params.id]);
+            if (msRows.length) {
+                const { project_id, title: msTitle } = msRows[0];
+                const [projRows] = await db.promise().query("SELECT project_name, created_by FROM projects WHERE id = ?", [project_id]);
+                if (projRows.length) {
+                    const { project_name, created_by } = projRows[0];
+                    if (created_by) await createNotification(created_by, "Milestone Completed", `Milestone "${msTitle}" in project "${project_name}" has been completed!`);
+                }
+            }
+        }
+
         res.json({ success: true, message: "Milestone updated" });
     } catch (error) {
         console.error(error);

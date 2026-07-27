@@ -39,10 +39,9 @@
 
 /* Header Styling */
 .theme-amber .header-premium {
-    background-color: #cbdae4;
-    /* background: linear-gradient(90deg, #4eb4ef) !important; */
-    border-bottom: none !important;
-    box-shadow: 0 4px 15px rgba(255, 140, 0, 0.15) !important;
+    background: linear-gradient(135deg, #fffaf0 0%, #fef3c7 100%) !important;
+    border-bottom: 1px solid rgba(255, 140, 0, 0.25) !important;
+    box-shadow: 0 4px 20px rgba(255, 140, 0, 0.12) !important;
 }
 
 .theme-amber .header-title-premium {
@@ -51,18 +50,18 @@
 }
 
 .theme-amber .header-divider-premium {
-    background: rgba(255, 255, 255, 0.3) !important;
+    background: rgba(255, 140, 0, 0.3) !important;
 }
 
 .theme-amber .action-btn-premium {
-    background: rgba(255, 255, 255, 0.2) !important;
-    border-color: transparent !important;
-    color: rgb(0, 0, 0) !important;
+    background: white !important;
+    border: 1px solid rgba(255, 140, 0, 0.3) !important;
+    color: var(--primary) !important;
 }
 
 .theme-amber .action-btn-premium:hover {
-    background: white !important;
-    color: var(--primary) !important;
+    background: var(--primary) !important;
+    color: white !important;
 }
 
 .theme-amber .profile-name-premium {
@@ -300,3 +299,62 @@
 .theme-amber .btn-settings-save:hover {
     background-color: var(--primary-hover) !important;
 }
+
+/* Detail Pages Overrides (TaskDetail, ProjectDetail, etc.) */
+.theme-amber .back-link-btn {
+    color: var(--primary) !important;
+}
+.theme-amber .task-id-badge {
+    color: var(--primary) !important;
+    background: rgba(255, 140, 0, 0.15) !important;
+    border: 1px solid rgba(255, 140, 0, 0.3) !important;
+}
+.theme-amber .btn-edit-task,
+.theme-amber .btn-save-task {
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover)) !important;
+    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3) !important;
+}
+.theme-amber .btn-edit-task:hover,
+.theme-amber .btn-save-task:hover {
+    background: var(--primary-hover) !important;
+    transform: translateY(-1px);
+}
+.theme-amber .task-detail-icon {
+    color: var(--primary) !important;
+}
+.theme-amber .task-desc-box {
+    border-left-color: var(--primary) !important;
+    background: #fffaf0 !important;
+}
+
+/* Manager Performance Dashboard Section (Amber Theme) */
+.theme-amber .perf-dashboard-section {
+    background: linear-gradient(135deg, #fffaf0 0%, #fffef9 100%) !important;
+    border-color: rgba(255, 140, 0, 0.3) !important;
+    box-shadow: 0 4px 20px rgba(255, 140, 0, 0.08) !important;
+}
+.theme-amber .perf-header-title {
+    color: #1e293b !important;
+}
+.theme-amber .perf-stat-card.stat-1 {
+    background: rgba(255, 140, 0, 0.1) !important;
+    border-color: rgba(255, 140, 0, 0.3) !important;
+    color: #9a3412 !important;
+}
+.theme-amber .perf-stat-card.stat-1 .perf-stat-val {
+    color: var(--primary) !important;
+}
+.theme-amber .perf-stat-card.stat-2 {
+    background: #f0fdf4 !important;
+    border-color: #bbf7d0 !important;
+}
+.theme-amber .perf-stat-card.stat-3 {
+    background: #fff1f2 !important;
+    border-color: #fecdd3 !important;
+}
+.theme-amber .perf-deliverable-card:hover {
+    border-color: var(--primary) !important;
+    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.12) !important;
+}
+
+

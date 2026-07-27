@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
+const { adminOnly, adminOrManager } = require("../middleware/roleMiddleware");
 
 const {
     createProject, getAllProjects, getProjectById, updateProject, deleteProject, archiveProject,
@@ -16,20 +17,20 @@ router.use(authMiddleware);
 router.get("/analytics", getProjectAnalytics);
 
 // Members (Must be defined before /:id routes)
-router.post("/members", addMember);
-router.delete("/members", removeMember);
+router.post("/members", adminOrManager, addMember);
+router.delete("/members", adminOrManager, removeMember);
 
 // Milestones
-router.post("/milestones", createMilestone);
-router.put("/milestones/:id", updateMilestone);
-router.delete("/milestones/:id", deleteMilestone);
+router.post("/milestones", adminOrManager, createMilestone);
+router.put("/milestones/:id", adminOrManager, updateMilestone);
+router.delete("/milestones/:id", adminOrManager, deleteMilestone);
 
 // Projects CRUD
-router.post("/", createProject);
+router.post("/", adminOrManager, createProject);
 router.get("/", getAllProjects);
 router.get("/:id", getProjectById);
-router.put("/:id", updateProject);
-router.delete("/:id", deleteProject);
-router.put("/:id/archive", archiveProject);
+router.put("/:id", adminOrManager, updateProject);
+router.delete("/:id", adminOnly, deleteProject);
+router.put("/:id/archive", adminOnly, archiveProject);
 
 module.exports = router;
