@@ -2,9 +2,10 @@ const db = require("../config/db");
 
 // Helper: Get employee info from logged-in user
 const getEmployeeFromUser = async (userId) => {
-    const [users] = await db.promise().query("SELECT email FROM users WHERE id = ?", [userId]);
+    const [users] = await db.promise().query("SELECT * FROM users WHERE id = ?", [userId]);
     if (!users.length) return null;
-    const [emps] = await db.promise().query("SELECT * FROM employees WHERE email = ?", [users[0].email]);
+    const u = users[0];
+    const [emps] = await db.promise().query("SELECT * FROM employees WHERE email = ? OR employee_id = ?", [u.email, u.login_id]);
     return emps.length ? emps[0] : null;
 };
 
@@ -300,6 +301,10 @@ const updateTask = async (req, res) => {
         const role = req.user.role;
 
         if (role === "Employee") {
+            const emp = await getEmployeeFromUser(req.user.id);
+            if (!emp || (String(task.employee_id) !== String(emp.employee_id) && String(task.employee_id) !== String(req.user.id) && String(task.employee_id) !== String(req.user.login_id))) {
+                return res.status(403).json({ success: false, message: "Forbidden: You can only update tasks assigned to you." });
+            }
             // Employee: only status + remarks
             const { status, remarks } = req.body;
             const newStatus = status || task.status;

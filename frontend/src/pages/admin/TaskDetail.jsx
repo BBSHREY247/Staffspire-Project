@@ -36,6 +36,13 @@ function TaskDetail() {
     const isAdminOrManager = user.role === "Admin" || user.role === "Manager";
 
     const [task, setTask] = useState(null);
+
+    const isAssignedToMe = isEmployee && task && (
+        String(task.employee_id) === String(user.login_id) ||
+        String(task.employee_id) === String(user.employee_id) ||
+        String(task.employee_id) === String(user.id) ||
+        (task.employee_name && user.name && String(task.employee_name).trim().toLowerCase() === String(user.name).trim().toLowerCase())
+    );
     const [employees, setEmployees] = useState([]);
     const [loading, setLoading] = useState(true);
     const [editing, setEditing] = useState(false);
@@ -169,7 +176,7 @@ function TaskDetail() {
                             <span style={{ background: stsCfg.bg, color: stsCfg.color, border: `1.5px solid ${stsCfg.border}`, padding: "8px 20px", borderRadius: "30px", fontWeight: "700", fontSize: "14px" }}>
                                 {task.status}
                             </span>
-                            {(!editing && (isAdminOrManager || (isEmployee && task.status !== "Completed"))) && (
+                            {(!editing && (isAdminOrManager || (isAssignedToMe && task.status !== "Completed"))) && (
                                 <button type="button" onClick={() => setEditing(true)} className="btn-edit-task"
                                     style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--primary, #2563eb)", color: "white", border: "none", padding: "10px 18px", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "13px" }}>
                                     <FaEdit /> Edit Task
@@ -302,7 +309,7 @@ function TaskDetail() {
                 )}
 
                 {/* ─── EMPLOYEE UPDATE FORM ─── */}
-                {isEmployee && editing && task.status !== "Completed" && (
+                {isAssignedToMe && editing && task.status !== "Completed" && (
                     <div style={{ background: "white", borderRadius: "16px", padding: "28px", boxShadow: "0 2px 16px rgba(0,0,0,0.08)", marginBottom: "20px" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
                             <h2 style={{ margin: 0, fontWeight: "700", fontSize: "18px" }}>Edit Task</h2>

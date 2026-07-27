@@ -105,7 +105,10 @@ const loginUser = (req, res) => {
 
     const token = generateToken(
       user.id,
-      user.role_name
+      user.role_name,
+      user.login_id,
+      user.email,
+      user.name
     );
 
     res.status(200).json({
@@ -116,7 +119,9 @@ const loginUser = (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role_name,
-        must_change_password: user.must_change_password
+        must_change_password: user.must_change_password,
+        login_id: user.login_id,
+        employee_id: user.login_id
       }
     });
 

@@ -18,6 +18,10 @@ export default function ProjectDetails() {
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
 
+    const user = JSON.parse(localStorage.getItem("user:v1")) || {};
+    const role = user.role || "Employee";
+    const isAdminOrManager = role === "Admin" || role === "Manager";
+
     const [activeTab, setActiveTab] = useState("Overview");
 
     const { data: projectRes, isLoading, mutate } = useSWR(token ? `http://localhost:5000/api/projects/${id}` : null, fetcher);
@@ -246,12 +250,14 @@ export default function ProjectDetails() {
                 )}
                 {/* Back Button and Edit Button */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "12px" }}>
-                    <button onClick={() => navigate("/admin/projects")} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "#64748b", cursor: "pointer", fontSize: "0.95rem", fontWeight: "600" }}>
+                    <button onClick={() => navigate(isAdminOrManager ? "/admin/projects" : "/employee/projects")} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "#64748b", cursor: "pointer", fontSize: "0.95rem", fontWeight: "600" }}>
                         <FaArrowLeft /> Back to Projects
                     </button>
-                    <button onClick={() => setIsEditModalOpen(true)} style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "var(--primary, #3b82f6)", border: "none", color: "white", padding: "10px 18px", borderRadius: "10px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "600", boxShadow: "0 2px 4px rgba(59, 130, 246, 0.2)" }}>
-                        <FaEdit /> Edit Project Details
-                    </button>
+                    {isAdminOrManager && (
+                        <button onClick={() => setIsEditModalOpen(true)} style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "var(--primary, #3b82f6)", border: "none", color: "white", padding: "10px 18px", borderRadius: "10px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "600", boxShadow: "0 2px 4px rgba(59, 130, 246, 0.2)" }}>
+                            <FaEdit /> Edit Project Details
+                        </button>
+                    )}
                 </div>
 
                 {/* Top Section */}
@@ -403,7 +409,7 @@ export default function ProjectDetails() {
                                                     <td style={{ padding: "12px", color: "#334155", borderRight: "1px solid #e2e8f0", fontSize: "0.9rem", fontWeight: "500" }}>{t.employee_name || "Unassigned"}</td>
                                                     <td style={{ padding: "12px", textAlign: "center" }}>
                                                         <button 
-                                                            onClick={() => navigate(`/admin/tasks/${t.id}`)} 
+                                                            onClick={() => navigate(isAdminOrManager ? `/admin/tasks/${t.id}` : `/employee/tasks/${t.id}`)} 
                                                             style={{ background: "none", border: "none", color: "var(--primary, #3b82f6)", cursor: "pointer", display: "inline-flex", alignItems: "center", padding: "6px", borderRadius: "6px", transition: "all 0.2s" }}
                                                             onMouseOver={e => e.currentTarget.style.backgroundColor = "#eff6ff"}
                                                             onMouseOut={e => e.currentTarget.style.backgroundColor = "transparent"}
@@ -498,7 +504,7 @@ export default function ProjectDetails() {
                                                         </button>
                                                     </td>
                                                 </tr>
-                                            ) : (
+                                            ) : isAdminOrManager ? (
                                                 <tr>
                                                     <td colSpan={8} style={{ padding: "14px", textAlign: "left", backgroundColor: "#f8fafc" }}>
                                                         <button 
@@ -512,7 +518,7 @@ export default function ProjectDetails() {
                                                         </button>
                                                     </td>
                                                 </tr>
-                                            )}
+                                            ) : null}
                                         </tbody>
                                     </table>
                                 </div>
@@ -524,7 +530,7 @@ export default function ProjectDetails() {
                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "12px" }}>
                                     <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                                         <h3 style={{ margin: 0, color: "#1e293b" }}>Project Team ({members.length})</h3>
-                                        {selectedMemberIds.length > 0 && (
+                                        {isAdminOrManager && selectedMemberIds.length > 0 && (
                                             <div style={{ display: "flex", alignItems: "center", gap: "12px", backgroundColor: "#fef2f2", border: "1px solid #fca5a5", padding: "6px 14px", borderRadius: "8px" }}>
                                                 <span style={{ fontSize: "0.85rem", color: "#b91c1c", fontWeight: "600" }}>{selectedMemberIds.length} Selected</span>
                                                 <button onClick={handleBulkRemoveMembers} style={{ backgroundColor: "#ef4444", color: "white", border: "none", padding: "6px 12px", borderRadius: "6px", fontSize: "0.8rem", fontWeight: "600", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
@@ -534,7 +540,7 @@ export default function ProjectDetails() {
                                         )}
                                     </div>
                                     <div>
-                                        {!isAddMemberOpen ? (
+                                        {isAdminOrManager && (!isAddMemberOpen ? (
                                             <button onClick={() => setIsAddMemberOpen(true)} style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "var(--primary, #3b82f6)", color: "white", border: "none", padding: "10px 16px", borderRadius: "8px", fontWeight: "600", fontSize: "0.9rem", cursor: "pointer", boxShadow: "0 2px 4px rgba(59, 130, 246, 0.15)" }}>
                                                 <FaUserPlus /> + Add Employee to Project
                                             </button>
@@ -555,7 +561,7 @@ export default function ProjectDetails() {
                                                     <FaTimes />
                                                 </button>
                                             </div>
-                                        )}
+                                        ))}
                                     </div>
                                 </div>
 
@@ -568,14 +574,16 @@ export default function ProjectDetails() {
                                         <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "700px" }}>
                                             <thead>
                                                 <tr style={{ borderBottom: "2px solid #cbd5e1", backgroundColor: "#f8fafc", textAlign: "left" }}>
-                                                    <th style={{ padding: "14px 12px", width: "50px", textAlign: "center", borderRight: "1px solid #e2e8f0" }}>
-                                                        <input 
-                                                            type="checkbox" 
-                                                            checked={members.length > 0 && selectedMemberIds.length === members.length}
-                                                            onChange={e => handleSelectAllMembers(e.target.checked)}
-                                                            style={{ cursor: "pointer" }}
-                                                        />
-                                                    </th>
+                                                    {isAdminOrManager && (
+                                                        <th style={{ padding: "14px 12px", width: "50px", textAlign: "center", borderRight: "1px solid #e2e8f0" }}>
+                                                            <input 
+                                                                type="checkbox" 
+                                                                checked={members.length > 0 && selectedMemberIds.length === members.length}
+                                                                onChange={e => handleSelectAllMembers(e.target.checked)}
+                                                                style={{ cursor: "pointer" }}
+                                                            />
+                                                        </th>
+                                                    )}
                                                     <th style={{ padding: "14px 12px", width: "60px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Sr.</th>
                                                     <th style={{ padding: "14px 12px", minWidth: "200px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Employee Name</th>
                                                     <th style={{ padding: "14px 12px", minWidth: "160px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Department</th>
@@ -589,17 +597,19 @@ export default function ProjectDetails() {
                                                     const isManager = String(m.employee_id) === String(project.manager_id);
                                                     return (
                                                         <tr key={m.id || m.employee_id} style={{ borderBottom: "1px solid #e2e8f0", backgroundColor: idx % 2 === 0 ? "white" : "#fcfcfd" }}>
-                                                            <td style={{ padding: "12px", textAlign: "center", borderRight: "1px solid #e2e8f0" }}>
-                                                                <input 
-                                                                    type="checkbox" 
-                                                                    checked={isSelected}
-                                                                    onChange={e => {
-                                                                        if (e.target.checked) setSelectedMemberIds([...selectedMemberIds, m.employee_id]);
-                                                                        else setSelectedMemberIds(selectedMemberIds.filter(id => id !== m.employee_id));
-                                                                    }}
-                                                                    style={{ cursor: "pointer" }}
-                                                                />
-                                                            </td>
+                                                            {isAdminOrManager && (
+                                                                <td style={{ padding: "12px", textAlign: "center", borderRight: "1px solid #e2e8f0" }}>
+                                                                    <input 
+                                                                        type="checkbox" 
+                                                                        checked={isSelected}
+                                                                        onChange={e => {
+                                                                            if (e.target.checked) setSelectedMemberIds([...selectedMemberIds, m.employee_id]);
+                                                                            else setSelectedMemberIds(selectedMemberIds.filter(id => id !== m.employee_id));
+                                                                        }}
+                                                                        style={{ cursor: "pointer" }}
+                                                                    />
+                                                                </td>
+                                                            )}
                                                             <td style={{ padding: "12px", color: "#64748b", fontWeight: "600", borderRight: "1px solid #e2e8f0", fontSize: "0.9rem" }}>{idx + 1}</td>
                                                             <td style={{ padding: "12px", fontWeight: "600", color: "#0f172a", borderRight: "1px solid #e2e8f0", fontSize: "0.9rem" }}>
                                                                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -723,12 +733,14 @@ export default function ProjectDetails() {
                     </div>
                 </div>
 
-                <EditProjectModal
-                    isOpen={isEditModalOpen}
-                    onClose={() => setIsEditModalOpen(false)}
-                    onSuccess={() => mutate()}
-                    project={project}
-                />
+                {isAdminOrManager && (
+                    <EditProjectModal
+                        isOpen={isEditModalOpen}
+                        onClose={() => setIsEditModalOpen(false)}
+                        onSuccess={() => mutate()}
+                        project={project}
+                    />
+                )}
 
                 <CustomConfirmModal
                     isOpen={confirmModal.isOpen}
