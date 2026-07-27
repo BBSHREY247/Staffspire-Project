@@ -149,13 +149,22 @@ export default function ProjectDetails() {
 
     // Workload calculation
     const workloadMap = {};
+    const getPriorityWeight = (priority) => {
+        if (priority === "Critical") return 5;
+        if (priority === "High") return 3;
+        if (priority === "Low") return 1;
+        return 2; // Medium or default
+    };
     members.forEach(m => {
         workloadMap[m.employee_id] = {
             name: `${m.first_name || ''} ${m.last_name || ''}`.trim() || `Employee ${m.employee_id}`,
             id: m.employee_id,
             department: m.department || deptName || "—",
             tasksCount: 0,
-            completedCount: 0
+            completedCount: 0,
+            workloadPoints: 0,
+            completedPoints: 0,
+            priorityBreakdown: { Critical: 0, High: 0, Medium: 0, Low: 0 }
         };
     });
     tasks.forEach(t => {
@@ -166,11 +175,21 @@ export default function ProjectDetails() {
                     id: t.employee_id,
                     department: t.department || deptName || "—",
                     tasksCount: 0,
-                    completedCount: 0
+                    completedCount: 0,
+                    workloadPoints: 0,
+                    completedPoints: 0,
+                    priorityBreakdown: { Critical: 0, High: 0, Medium: 0, Low: 0 }
                 };
             }
+            const weight = getPriorityWeight(t.priority);
+            const priKey = t.priority === "Critical" || t.priority === "High" || t.priority === "Low" ? t.priority : "Medium";
             workloadMap[t.employee_id].tasksCount += 1;
-            if (t.status === "Completed") workloadMap[t.employee_id].completedCount += 1;
+            workloadMap[t.employee_id].workloadPoints += weight;
+            workloadMap[t.employee_id].priorityBreakdown[priKey] = (workloadMap[t.employee_id].priorityBreakdown[priKey] || 0) + 1;
+            if (t.status === "Completed") {
+                workloadMap[t.employee_id].completedCount += 1;
+                workloadMap[t.employee_id].completedPoints += weight;
+            }
         }
     });
     const workloadList = Object.values(workloadMap);
@@ -464,6 +483,7 @@ export default function ProjectDetails() {
                                                             onChange={e => setInlineTask({ ...inlineTask, priority: e.target.value })}
                                                             style={{ width: "100%", padding: "8px", border: "1px solid #93c5fd", borderRadius: "6px", fontSize: "0.85rem", boxSizing: "border-box", outline: "none", backgroundColor: "white", fontWeight: "600" }}
                                                         >
+                                                            <option value="Critical">Critical</option>
                                                             <option value="High">High</option>
                                                             <option value="Medium">Medium</option>
                                                             <option value="Low">Low</option>
@@ -663,9 +683,10 @@ export default function ProjectDetails() {
                                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "20px" }}>
                                         {workloadList.map(emp => {
                                             const activeCount = emp.tasksCount - emp.completedCount;
-                                            const isOverloaded = emp.tasksCount >= 5;
-                                            const blockBar = "█".repeat(Math.min(emp.tasksCount, 15)) || "—";
-                                            const compPct = emp.tasksCount > 0 ? Math.round((emp.completedCount / emp.tasksCount) * 100) : 0;
+                                            const activePoints = emp.workloadPoints - emp.completedPoints;
+                                            const isOverloaded = emp.workloadPoints >= 10 || emp.tasksCount >= 5;
+                                            const blockBar = "█".repeat(Math.min(emp.workloadPoints, 20)) || "—";
+                                            const compPct = emp.workloadPoints > 0 ? Math.round((emp.completedPoints / emp.workloadPoints) * 100) : 0;
                                             
                                             return (
                                                 <div key={emp.id} style={{ backgroundColor: "white", border: isOverloaded ? "2px solid #f87171" : "1px solid #e2e8f0", borderRadius: "14px", padding: "20px", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)", position: "relative", transition: "all 0.2s" }}>
@@ -677,14 +698,42 @@ export default function ProjectDetails() {
                                                                 <span style={{ fontSize: "0.8rem", color: "#64748b" }}>{emp.department}</span>
                                                             </div>
                                                         </div>
-                                                        <span style={{ backgroundColor: isOverloaded ? "#fee2e2" : "#f1f5f9", color: isOverloaded ? "#dc2626" : "#334155", padding: "4px 10px", borderRadius: "20px", fontSize: "0.85rem", fontWeight: "700" }}>
-                                                            {emp.tasksCount} Tasks
-                                                        </span>
+                                                        <div style={{ textAlign: "right" }}>
+                                                            <span style={{ backgroundColor: isOverloaded ? "#fee2e2" : "#eff6ff", color: isOverloaded ? "#dc2626" : "#2563eb", padding: "4px 10px", borderRadius: "20px", fontSize: "0.85rem", fontWeight: "700", display: "inline-block", marginBottom: "4px" }}>
+                                                                {emp.workloadPoints} Workload Pts
+                                                            </span>
+                                                            <div style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: "600" }}>
+                                                                {emp.tasksCount} Task{emp.tasksCount !== 1 ? 's' : ''}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "12px" }}>
+                                                        {emp.priorityBreakdown?.Critical > 0 && (
+                                                            <span style={{ fontSize: "0.75rem", background: "#fef2f2", color: "#991b1b", padding: "2px 8px", borderRadius: "6px", border: "1px solid #fca5a5", fontWeight: "600" }}>
+                                                                Critical: {emp.priorityBreakdown.Critical} (x5)
+                                                            </span>
+                                                        )}
+                                                        {emp.priorityBreakdown?.High > 0 && (
+                                                            <span style={{ fontSize: "0.75rem", background: "#fee2e2", color: "#b91c1c", padding: "2px 8px", borderRadius: "6px", border: "1px solid #fecaca", fontWeight: "600" }}>
+                                                                High: {emp.priorityBreakdown.High} (x3)
+                                                            </span>
+                                                        )}
+                                                        {emp.priorityBreakdown?.Medium > 0 && (
+                                                            <span style={{ fontSize: "0.75rem", background: "#ffedd5", color: "#c2410c", padding: "2px 8px", borderRadius: "6px", border: "1px solid #fed7aa", fontWeight: "600" }}>
+                                                                Medium: {emp.priorityBreakdown.Medium} (x2)
+                                                            </span>
+                                                        )}
+                                                        {emp.priorityBreakdown?.Low > 0 && (
+                                                            <span style={{ fontSize: "0.75rem", background: "#f1f5f9", color: "#475569", padding: "2px 8px", borderRadius: "6px", border: "1px solid #e2e8f0", fontWeight: "600" }}>
+                                                                Low: {emp.priorityBreakdown.Low} (x1)
+                                                            </span>
+                                                        )}
                                                     </div>
 
                                                     <div style={{ marginBottom: "16px", backgroundColor: "#f8fafc", padding: "10px", borderRadius: "8px", border: "1px solid #f1f5f9" }}>
                                                         <div style={{ fontSize: "0.75rem", color: "#64748b", marginBottom: "4px", display: "flex", justifyContent: "space-between" }}>
-                                                            <span>Workload Bar</span>
+                                                            <span>Workload Bar (by points)</span>
                                                             <span style={{ fontWeight: "600", color: "#334155" }}>{compPct}% Completed</span>
                                                         </div>
                                                         <div style={{ fontFamily: "monospace", color: isOverloaded ? "#dc2626" : "var(--primary, #4f46e5)", fontSize: "1rem", letterSpacing: "1px", wordBreak: "break-all" }}>
@@ -693,8 +742,8 @@ export default function ProjectDetails() {
                                                     </div>
 
                                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #f1f5f9", paddingTop: "12px", fontSize: "0.85rem" }}>
-                                                        <span style={{ color: "#16a34a", fontWeight: "600" }}>✓ {emp.completedCount} Done</span>
-                                                        <span style={{ color: "#d97706", fontWeight: "600" }}>⏳ {activeCount} Active</span>
+                                                        <span style={{ color: "#16a34a", fontWeight: "600" }}>✓ {emp.completedPoints} pts Done ({emp.completedCount})</span>
+                                                        <span style={{ color: "#d97706", fontWeight: "600" }}>⏳ {activePoints} pts Active ({activeCount})</span>
                                                     </div>
 
                                                     {isOverloaded && (

@@ -14,6 +14,7 @@ const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${lo
 const API = "http://localhost:5000/api";
 
 const priorityConfig = {
+    Critical: { color: "#991b1b", bg: "#fef2f2", border: "#f87171", dot: "🔥" },
     High:   { color: "#ef4444", bg: "#fee2e2", border: "#fecaca", dot: "🔴" },
     Medium: { color: "#d97706", bg: "#fef9c3", border: "#fde68a", dot: "🟡" },
     Low:    { color: "#16a34a", bg: "#dcfce7", border: "#bbf7d0", dot: "🟢" },
@@ -275,7 +276,7 @@ function TaskDetail() {
                                     <label>Priority</label>
                                     <select aria-label="Priority" value={editForm.priority || "Medium"} onChange={e => setEditForm({ ...editForm, priority: e.target.value })}
                                         style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }}>
-                                        <option>High</option><option>Medium</option><option>Low</option>
+                                        <option>Critical</option><option>High</option><option>Medium</option><option>Low</option>
                                     </select>
                                 </div>
                                 <div className="form-group" style={{ margin: 0 }}>
