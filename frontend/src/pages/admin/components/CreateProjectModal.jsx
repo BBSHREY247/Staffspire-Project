@@ -57,7 +57,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }) {
         setSelectedMembers(selectedMembers.filter(m => m.employee_id !== id));
     };
 
-    const selectedDeptObj = departments.find(d => String(d.id) === String(formData.department_id));
+    const selectedDeptObj = departments.find(d => String(d.id) === String(formData.department_id) || d.department_name === formData.department_id || String(d.department_name).toLowerCase() === String(formData.department_id).toLowerCase());
     const selectedDeptName = selectedDeptObj ? selectedDeptObj.department_name : "";
 
     const deptEmployees = employees.filter(e => e.department === selectedDeptName);
@@ -68,7 +68,7 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }) {
 
     const handleDepartmentChange = (e) => {
         const deptId = e.target.value;
-        const deptObj = departments.find(d => String(d.id) === String(deptId));
+        const deptObj = departments.find(d => String(d.id) === String(deptId) || d.department_name === deptId || String(d.department_name).toLowerCase() === String(deptId).toLowerCase());
         const deptName = deptObj ? deptObj.department_name : "";
 
         let autoManagerId = "";

@@ -43,7 +43,7 @@ function Projects() {
                               (p.project_code && p.project_code.toLowerCase().includes(search.toLowerCase()));
         const matchesStatus = statusFilter ? p.status === statusFilter : true;
         const matchesPriority = priorityFilter ? p.priority === priorityFilter : true;
-        const matchesDept = deptFilter ? p.department_id === parseInt(deptFilter) : true;
+        const matchesDept = deptFilter ? (String(p.department_id) === String(deptFilter) || p.department_id === parseInt(deptFilter) || getDeptName(p.department_id) === getDeptName(deptFilter)) : true;
         return matchesSearch && matchesStatus && matchesPriority && matchesDept;
     });
 
@@ -62,10 +62,15 @@ function Projects() {
     const totalPages = Math.ceil(filteredProjects.length / limit) || 1;
     const paginatedProjects = filteredProjects.slice((page - 1) * limit, page * limit);
 
-    const getDeptName = (id) => departments.find(d => d.id === id)?.department_name || "Unknown";
+    const getDeptName = (id) => {
+        if (!id) return "Unknown";
+        const found = departments.find(d => String(d.id) === String(id) || d.department_name === id || d.id === id || String(d.department_name).toLowerCase() === String(id).toLowerCase());
+        return found ? found.department_name : (isNaN(id) ? id : "Unknown");
+    };
     const getManagerName = (id) => {
-        const m = employees.find(e => e.employee_id === id);
-        return m ? `${m.first_name} ${m.last_name}` : "Unassigned";
+        if (!id) return "Unassigned";
+        const m = employees.find(e => String(e.employee_id) === String(id) || e.employee_id === id || `${e.first_name} ${e.last_name}` === id || String(e.id) === String(id));
+        return m ? `${m.first_name} ${m.last_name}` : (isNaN(id) ? id : "Unassigned");
     };
 
     return (

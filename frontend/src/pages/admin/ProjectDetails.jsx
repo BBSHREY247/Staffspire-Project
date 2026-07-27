@@ -121,9 +121,10 @@ export default function ProjectDetails() {
     const departments = Array.isArray(deptData) ? deptData : (deptData?.departments || []);
     const employees = Array.isArray(empData) ? empData : (empData?.employees || []);
 
-    const deptName = departments.find(d => d.id === project.department_id)?.department_name || "Unknown Department";
-    const manager = employees.find(e => e.employee_id === project.manager_id);
-    const managerName = manager ? `${manager.first_name} ${manager.last_name}` : "Unassigned";
+    const deptObj = departments.find(d => String(d.id) === String(project.department_id) || d.department_name === project.department_id || d.id === project.department_id || String(d.department_name).toLowerCase() === String(project.department_id).toLowerCase());
+    const deptName = deptObj ? deptObj.department_name : (project.department_id && isNaN(project.department_id) ? project.department_id : "Unknown Department");
+    const manager = employees.find(e => String(e.employee_id) === String(project.manager_id) || e.employee_id === project.manager_id || `${e.first_name} ${e.last_name}` === project.manager_id || String(e.id) === String(project.manager_id));
+    const managerName = manager ? `${manager.first_name} ${manager.last_name}` : (project.manager_id && isNaN(project.manager_id) ? project.manager_id : "Unassigned");
 
     const projectEmployees = employees.filter(emp => emp.department === deptName || members.some(m => m.employee_id === emp.employee_id));
     const assignableEmployees = projectEmployees.length > 0 ? projectEmployees : employees;

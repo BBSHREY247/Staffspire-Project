@@ -20,10 +20,19 @@ function ProjectDashboard() {
     const { data: analyticsData, isLoading: analyticsLoading } = useSWR(token ? "http://localhost:5000/api/projects/analytics" : null, fetcher);
     // Fetch projects
     const { data: projectsData, isLoading: projectsLoading } = useSWR(token ? "http://localhost:5000/api/projects" : null, fetcher);
+    // Fetch departments
+    const { data: deptData } = useSWR(token ? "http://localhost:5000/api/departments" : null, fetcher);
 
     const stats = analyticsData?.stats || { total: 0, active: 0, completed: 0, on_hold: 0, overdue: 0, avg_progress: 0 };
     const deptDist = analyticsData?.deptDist || [];
     const projects = projectsData?.projects || [];
+    const departments = Array.isArray(deptData) ? deptData : (deptData?.departments || []);
+
+    const getDeptName = (id) => {
+        if (!id) return "Cross-Functional";
+        const found = departments.find(d => String(d.id) === String(id) || d.department_name === id || d.id === id || String(d.department_name).toLowerCase() === String(id).toLowerCase());
+        return found ? found.department_name : (isNaN(id) ? id : "Unknown");
+    };
 
     const deptChartRef = useRef(null);
     const statusChartRef = useRef(null);
@@ -205,7 +214,7 @@ function ProjectDashboard() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td><span className="dept-tag">{p.department_id || "Cross-Functional"}</span></td>
+                                        <td><span className="dept-tag">{getDeptName(p.department_id)}</span></td>
                                         <td>
                                             <span style={{ 
                                                 background: p.status === 'Completed' ? '#dcfce7' : p.status === 'Overdue' ? '#fee2e2' : '#dbeafe', 
