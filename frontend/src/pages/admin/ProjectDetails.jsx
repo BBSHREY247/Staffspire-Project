@@ -389,6 +389,7 @@ export default function ProjectDetails() {
                                                 <th style={{ padding: "14px 12px", minWidth: "180px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Title</th>
                                                 <th style={{ padding: "14px 12px", minWidth: "200px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Description</th>
                                                 <th style={{ padding: "14px 12px", width: "130px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Status</th>
+                                                <th style={{ padding: "14px 12px", width: "110px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Priority</th>
                                                 <th style={{ padding: "14px 12px", width: "130px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Start Date</th>
                                                 <th style={{ padding: "14px 12px", width: "130px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Due Date</th>
                                                 <th style={{ padding: "14px 12px", minWidth: "160px", color: "#334155", fontWeight: "700", fontSize: "0.85rem", borderRight: "1px solid #e2e8f0" }}>Assigned To</th>
@@ -403,6 +404,9 @@ export default function ProjectDetails() {
                                                     <td style={{ padding: "12px", color: "#475569", borderRight: "1px solid #e2e8f0", fontSize: "0.85rem" }}>{t.description || "—"}</td>
                                                     <td style={{ padding: "12px", borderRight: "1px solid #e2e8f0" }}>
                                                         <span style={{ padding: "4px 8px", borderRadius: "4px", fontSize: "0.8rem", fontWeight: "600", backgroundColor: t.status === "Completed" ? "#dcfce7" : t.status === "In Progress" ? "#dbeafe" : t.status === "On Hold" ? "#f3f4f6" : "#fef9c3", color: t.status === "Completed" ? "#166534" : t.status === "In Progress" ? "#1e40af" : t.status === "On Hold" ? "#374151" : "#854d0e" }}>{t.status}</span>
+                                                    </td>
+                                                    <td style={{ padding: "12px", borderRight: "1px solid #e2e8f0" }}>
+                                                        <span style={{ padding: "4px 8px", borderRadius: "4px", fontSize: "0.8rem", fontWeight: "700", backgroundColor: t.priority === "High" ? "#fee2e2" : t.priority === "Low" ? "#f1f5f9" : "#ffedd5", color: t.priority === "High" ? "#b91c1c" : t.priority === "Low" ? "#475569" : "#c2410c" }}>{t.priority || "Medium"}</span>
                                                     </td>
                                                     <td style={{ padding: "12px", color: "#475569", borderRight: "1px solid #e2e8f0", fontSize: "0.85rem" }}>{t.start_date ? new Date(t.start_date).toLocaleDateString() : "—"}</td>
                                                     <td style={{ padding: "12px", color: "#475569", borderRight: "1px solid #e2e8f0", fontSize: "0.85rem" }}>{t.deadline ? new Date(t.deadline).toLocaleDateString() : "—"}</td>
@@ -452,6 +456,17 @@ export default function ProjectDetails() {
                                                             <option>In Progress</option>
                                                             <option>On Hold</option>
                                                             <option>Completed</option>
+                                                        </select>
+                                                    </td>
+                                                    <td style={{ padding: "8px", borderRight: "1px solid #bfdbfe" }}>
+                                                        <select 
+                                                            value={inlineTask.priority || "Medium"} 
+                                                            onChange={e => setInlineTask({ ...inlineTask, priority: e.target.value })}
+                                                            style={{ width: "100%", padding: "8px", border: "1px solid #93c5fd", borderRadius: "6px", fontSize: "0.85rem", boxSizing: "border-box", outline: "none", backgroundColor: "white", fontWeight: "600" }}
+                                                        >
+                                                            <option value="High">High</option>
+                                                            <option value="Medium">Medium</option>
+                                                            <option value="Low">Low</option>
                                                         </select>
                                                     </td>
                                                     <td style={{ padding: "8px", borderRight: "1px solid #bfdbfe" }}>
@@ -506,7 +521,7 @@ export default function ProjectDetails() {
                                                 </tr>
                                             ) : isAdminOrManager ? (
                                                 <tr>
-                                                    <td colSpan={8} style={{ padding: "14px", textAlign: "left", backgroundColor: "#f8fafc" }}>
+                                                    <td colSpan={9} style={{ padding: "14px", textAlign: "left", backgroundColor: "#f8fafc" }}>
                                                         <button 
                                                             type="button" 
                                                             onClick={() => setInlineTask({ task_title: "", description: "", status: "Pending", start_date: new Date().toLocaleDateString('en-CA'), deadline: "", assigned_to: "", priority: "Medium" })}
