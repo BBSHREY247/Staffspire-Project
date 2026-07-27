@@ -127,6 +127,14 @@ function App() {
                     path="/admin/projects/:id"
                     element={<ProjectDetails />}
                 />
+                <Route
+                    path="/employee/projects"
+                    element={<Projects />}
+                />
+                <Route
+                    path="/employee/projects/:id"
+                    element={<ProjectDetails />}
+                />
 
                 <Route
                     path="/employee/tasks"

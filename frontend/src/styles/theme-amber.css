@@ -357,4 +357,8 @@
     box-shadow: 0 4px 12px rgba(255, 140, 0, 0.12) !important;
 }
 
-
+/* Employee Dashboard Amber overrides */
+.theme-amber .emp-proj-card-item:hover {
+    border-color: var(--primary) !important;
+    box-shadow: 0 6px 16px rgba(255, 140, 0, 0.12) !important;
+}

@@ -76,6 +76,7 @@ function EmployeeDashboard() {
     const workingHours = dashData?.workingHours || {};
     const leaveBalance = dashData?.leaveBalance || {};
     const tasks = dashData?.tasks || [];
+    const projects = dashData?.projects || [];
     const heatmap = dashData?.heatmap || [];
     const upcomingEvents = dashData?.upcomingEvents || [];
 
@@ -201,74 +202,144 @@ function EmployeeDashboard() {
 
                 {/* ---- Main Grid ---- */}
                 <div className="emp-main-grid">
-                    {/* Left: My Tasks */}
-                    <div className="emp-tasks-card">
-                        <div className="emp-tasks-header">
-                            <h3 className="emp-tasks-title">
-                                <FaCheckCircle color="#004ac6" />
-                                My Tasks
-                            </h3>
-                            <button type="button"
-                                className="emp-submit-btn"
-                                onClick={() => navigate("/employee/tasks")}
-                            >
-                                <FaPlus size={13} /> View All
-                            </button>
+                    {/* Left: My Tasks & Projects */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                        {/* My Tasks */}
+                        <div className="emp-tasks-card">
+                            <div className="emp-tasks-header">
+                                <h3 className="emp-tasks-title">
+                                    <FaCheckCircle color="#004ac6" />
+                                    My Tasks
+                                </h3>
+                                <button type="button"
+                                    className="emp-submit-btn"
+                                    onClick={() => navigate("/employee/tasks")}
+                                >
+                                    <FaPlus size={13} /> View All
+                                </button>
+                            </div>
+
+                            {tasks.length > 0 ? (
+                                <div style={{ overflowX: "auto" }}>
+                                    <table className="emp-task-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Task Name</th>
+                                                <th>Priority</th>
+                                                <th>Deadline</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {tasks.map((task) => (
+                                                <tr key={task.id}>
+                                                    <td>
+                                                        <div
+                                                            className="emp-task-name"
+                                                            onClick={() => navigate(`/employee/tasks/${task.id}`)}
+                                                        >
+                                                            {task.title}
+                                                        </div>
+                                                        {task.department && (
+                                                            <div className="emp-task-dept">{task.department}</div>
+                                                        )}
+                                                    </td>
+                                                    <td>
+                                                        <span className={badgeClass(task.priority)}>
+                                                            {task.priority}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span className="emp-task-deadline">{task.deadline}</span>
+                                                    </td>
+                                                    <td>
+                                                        <button type="button"
+                                                            className="emp-task-action-btn"
+                                                            onClick={() => navigate(`/employee/tasks/${task.id}`)}
+                                                            title="View task"
+                                                        >
+                                                            <FaEllipsisV size={14} />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            ) : (
+                                <div className="emp-tasks-empty">
+                                    <FaCheckCircle size={32} color="#e1e2ed" style={{ marginBottom: 12 }} />
+                                    <p>No active tasks assigned to you.</p>
+                                </div>
+                            )}
                         </div>
 
-                        {tasks.length > 0 ? (
-                            <div style={{ overflowX: "auto" }}>
-                                <table className="emp-task-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Task Name</th>
-                                            <th>Priority</th>
-                                            <th>Deadline</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {tasks.map((task) => (
-                                            <tr key={task.id}>
-                                                <td>
-                                                    <div
-                                                        className="emp-task-name"
-                                                        onClick={() => navigate(`/employee/tasks/${task.id}`)}
-                                                    >
-                                                        {task.title}
+                        {/* Assigned Projects & Workload */}
+                        <div className="emp-tasks-card emp-projects-card">
+                            <div className="emp-tasks-header">
+                                <h3 className="emp-tasks-title">
+                                    <span style={{ fontSize: "18px" }}>📁</span>
+                                    Assigned Projects & Workload
+                                </h3>
+                                <button type="button"
+                                    className="emp-submit-btn"
+                                    onClick={() => navigate("/employee/projects")}
+                                >
+                                    <FaPlus size={13} /> View All ({projects.length})
+                                </button>
+                            </div>
+
+                            {projects.length > 0 ? (
+                                <div style={{ padding: "20px 24px", display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
+                                    {projects.map((proj, idx) => {
+                                        const prog = proj.completion_percentage || 0;
+                                        const badgeColor = proj.status === 'Completed' ? '#16a34a' : proj.status === 'On Hold' ? '#64748b' : '#2563eb';
+                                        const badgeBg = proj.status === 'Completed' ? '#dcfce7' : proj.status === 'On Hold' ? '#f1f5f9' : '#e0f2fe';
+                                        const priorityColor = proj.priority === 'High' ? '#ef4444' : proj.priority === 'Medium' ? '#f59e0b' : '#3b82f6';
+                                        
+                                        return (
+                                            <div key={idx} onClick={() => navigate(`/employee/projects/${proj.id}`)} style={{ padding: "16px", borderRadius: "12px", border: "1px solid #e2e8f0", background: "#ffffff", transition: "all 0.2s ease", display: "flex", flexDirection: "column", justify: "space-between", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.02)" }} className="emp-proj-card-item">
+                                                <div>
+                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px", gap: "8px" }}>
+                                                        <div>
+                                                            <div style={{ fontSize: "15px", fontWeight: "700", color: "#0f172a", marginBottom: "2px" }}>{proj.project_name}</div>
+                                                            <div style={{ fontSize: "12px", color: "#64748b", fontWeight: "600" }}>{proj.project_code || `PRJ-00${idx+1}`}</div>
+                                                        </div>
+                                                        <span style={{ fontSize: "11px", fontWeight: "700", padding: "3px 8px", borderRadius: "6px", background: badgeBg, color: badgeColor, whiteSpace: "nowrap" }}>
+                                                            {proj.status || "In Progress"}
+                                                        </span>
                                                     </div>
-                                                    {task.department && (
-                                                        <div className="emp-task-dept">{task.department}</div>
-                                                    )}
-                                                </td>
-                                                <td>
-                                                    <span className={badgeClass(task.priority)}>
-                                                        {task.priority}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <span className="emp-task-deadline">{task.deadline}</span>
-                                                </td>
-                                                <td>
-                                                    <button type="button"
-                                                        className="emp-task-action-btn"
-                                                        onClick={() => navigate(`/employee/tasks/${task.id}`)}
-                                                        title="View task"
-                                                    >
-                                                        <FaEllipsisV size={14} />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        ) : (
-                            <div className="emp-tasks-empty">
-                                <FaCheckCircle size={32} color="#e1e2ed" style={{ marginBottom: 12 }} />
-                                <p>No active tasks assigned to you.</p>
-                            </div>
-                        )}
+
+                                                    <div style={{ display: "flex", alignItems: "center", gap: "12px", fontSize: "12px", color: "#64748b", marginBottom: "14px" }}>
+                                                        <span style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                                                            <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: priorityColor }}></span>
+                                                            <strong style={{ color: "#334155" }}>{proj.priority || "Medium"}</strong>
+                                                        </span>
+                                                        <span>•</span>
+                                                        <span>Due: {proj.end_date ? new Date(proj.end_date).toLocaleDateString() : "Ongoing"}</span>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "12px", fontWeight: "700", marginBottom: "6px" }}>
+                                                        <span style={{ color: "#475569" }}>Completion</span>
+                                                        <span style={{ color: prog === 100 ? "#16a34a" : "#004ac6" }}>{prog}%</span>
+                                                    </div>
+                                                    <div style={{ width: "100%", height: "8px", background: "#f1f5f9", borderRadius: "4px", overflow: "hidden" }}>
+                                                        <div style={{ width: `${prog}%`, height: "100%", background: prog === 100 ? "#10b981" : "#004ac6", borderRadius: "4px", transition: "width 0.5s ease" }}></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <div className="emp-tasks-empty">
+                                    <span style={{ fontSize: "32px", marginBottom: "12px" }}>🚀</span>
+                                    <p>No projects assigned to you or your department yet.</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Right Column */}

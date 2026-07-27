@@ -299,6 +299,33 @@ const getEmployeeDashboard = async (req, res) => {
             color: act.color
         }));
 
+        // --- My Projects & Department Deliverables ---
+        const [deptRows] = await db.promise().query("SELECT id FROM departments WHERE department_name = ?", [emp.department || ""]);
+        const deptId = deptRows.length ? deptRows[0].id : -1;
+
+        let [projects] = await db.promise().query(
+            `SELECT DISTINCT p.id, p.project_name, p.project_code, p.status, p.priority, p.completion_percentage, p.end_date, p.start_date, p.project_color, p.description
+             FROM projects p
+             LEFT JOIN project_members pm ON p.id = pm.project_id
+             WHERE p.department_id = ? OR pm.employee_id = ? OR pm.employee_id = ? OR pm.employee_id = ?
+             ORDER BY p.created_at DESC LIMIT 6`,
+            [deptId, employeeId, emp.id || -1, emp.employee_id || -1]
+        );
+
+        if (projects.length === 0 && emp.department) {
+            // Fallback: Use employee's tasks or department tasks if no formal project is assigned
+            const [fallbackTasks] = await db.promise().query(
+                `SELECT id, task_title as project_name, CONCAT('TSK-', id) as project_code, status, priority, 
+                        IF(status='Completed', 100, IF(status='In Progress', 60, 20)) as completion_percentage, 
+                        deadline as end_date, created_at as start_date, '#3b82f6' as project_color, description 
+                 FROM tasks WHERE employee_id = ? OR department = ? ORDER BY created_at DESC LIMIT 6`,
+                [employeeId, emp.department]
+            );
+            if (fallbackTasks.length > 0) {
+                projects = fallbackTasks;
+            }
+        }
+
         return res.status(200).json({
             success: true,
             employee: {
@@ -344,6 +371,7 @@ const getEmployeeDashboard = async (req, res) => {
                 taken: daysTaken
             },
             tasks: formattedTasks,
+            projects: projects || [],
             heatmap,
             upcomingEvents
         });

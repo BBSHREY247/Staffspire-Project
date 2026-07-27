@@ -48,6 +48,7 @@ function Sidebar() {
         { name: "Attendance", path: "/employee/attendance", icon: <FaCalendarCheck /> },
         { name: "Leave Requests", path: "/employee/leaves", icon: <FaClipboardList /> },
         { name: "My Tasks", path: "/employee/tasks", icon: <FaTasks /> },
+        { name: "Projects", path: "/employee/projects", icon: <FaFolder /> },
         { name: "Reports", path: "/reports", icon: <FaChartBar /> },
         { name: "Settings", path: "/settings", icon: <FaCog /> },
     ];
