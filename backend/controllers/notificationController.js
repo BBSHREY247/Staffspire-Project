@@ -1,5 +1,29 @@
 const db = require("../config/db");
 
+// Ensure deadline_notifications_log table exists to track reminders across clear-alls and page refreshes
+db.promise().query(`
+    CREATE TABLE IF NOT EXISTS deadline_notifications_log (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        message VARCHAR(500) NOT NULL,
+        sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX (user_id, sent_at)
+    )
+`).catch(err => console.error("Error ensuring deadline_notifications_log table:", err));
+
+// Clean up existing duplicate deadline notifications in the database
+db.promise().query(`
+    DELETE n1 FROM notifications n1
+    INNER JOIN notifications n2 
+    WHERE n1.id < n2.id 
+    AND n1.user_id = n2.user_id 
+    AND n1.title = 'Deadline Approaching' 
+    AND n1.message = n2.message
+`).catch(err => console.error("Error cleaning up duplicate notifications:", err));
+
+// In-memory cooldown map (user_id -> last check timestamp) to avoid database spam on page refresh/polling
+const userLastDeadlineCheck = new Map();
+
 // Helper function to create notification in DB
 const createNotification = async (userId, title, message) => {
     try {
@@ -16,11 +40,19 @@ const createNotification = async (userId, title, message) => {
 
 const checkApproachingDeadlines = async (userId, role) => {
     try {
+        const now = Date.now();
+        const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
+        if (userLastDeadlineCheck.has(userId) && (now - userLastDeadlineCheck.get(userId) < SIX_HOURS_MS)) {
+            return;
+        }
+
         const today = new Date();
         const threeDaysLater = new Date();
         threeDaysLater.setDate(today.getDate() + 3);
         const todayStr = today.toISOString().slice(0, 10);
         const targetStr = threeDaysLater.toISOString().slice(0, 10);
+
+        let checkedAny = false;
 
         if (role === "Employee") {
             const [users] = await db.promise().query("SELECT email FROM users WHERE id = ?", [userId]);
@@ -33,12 +65,16 @@ const checkApproachingDeadlines = async (userId, role) => {
                         [empId, todayStr, targetStr]
                     );
                     for (const t of tasks) {
-                        const msg = `Reminder: Task "${t.task_title}" is due soon (${t.deadline}).`;
-                        const [exist] = await db.promise().query("SELECT id FROM notifications WHERE user_id = ? AND message = ? AND created_at >= CURDATE()", [userId, msg]);
-                        if (!exist.length) {
+                        const endStr = new Date(t.deadline).toISOString().slice(0, 10);
+                        const msg = `Reminder: Task "${t.task_title}" is due soon (${endStr}).`;
+                        const [existLog] = await db.promise().query("SELECT id FROM deadline_notifications_log WHERE user_id = ? AND message = ? AND sent_at >= NOW() - INTERVAL 6 HOUR", [userId, msg]);
+                        const [existNotif] = await db.promise().query("SELECT id FROM notifications WHERE user_id = ? AND message = ? AND created_at >= NOW() - INTERVAL 6 HOUR", [userId, msg]);
+                        if (!existLog.length && !existNotif.length) {
+                            await db.promise().query("INSERT INTO deadline_notifications_log (user_id, message) VALUES (?, ?)", [userId, msg]);
                             await createNotification(userId, "Deadline Approaching", msg);
                         }
                     }
+                    checkedAny = true;
                 }
             }
         } else {
@@ -49,11 +85,18 @@ const checkApproachingDeadlines = async (userId, role) => {
             for (const p of projects) {
                 const endStr = new Date(p.end_date).toISOString().slice(0, 10);
                 const msg = `Reminder: Project "${p.project_name}" deadline is approaching (${endStr}).`;
-                const [exist] = await db.promise().query("SELECT id FROM notifications WHERE user_id = ? AND message = ? AND created_at >= CURDATE()", [userId, msg]);
-                if (!exist.length) {
+                const [existLog] = await db.promise().query("SELECT id FROM deadline_notifications_log WHERE user_id = ? AND message = ? AND sent_at >= NOW() - INTERVAL 6 HOUR", [userId, msg]);
+                const [existNotif] = await db.promise().query("SELECT id FROM notifications WHERE user_id = ? AND message = ? AND created_at >= NOW() - INTERVAL 6 HOUR", [userId, msg]);
+                if (!existLog.length && !existNotif.length) {
+                    await db.promise().query("INSERT INTO deadline_notifications_log (user_id, message) VALUES (?, ?)", [userId, msg]);
                     await createNotification(userId, "Deadline Approaching", msg);
                 }
             }
+            checkedAny = true;
+        }
+
+        if (checkedAny) {
+            userLastDeadlineCheck.set(userId, now);
         }
     } catch (e) {
         console.error("Deadline check error:", e);
