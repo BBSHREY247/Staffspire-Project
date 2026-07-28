@@ -10,6 +10,7 @@ import {
 import EditProjectModal from "./components/EditProjectModal";
 import CustomConfirmModal from "../../components/CustomConfirmModal";
 import InlineAlert from "../../components/InlineAlert";
+import ProjectTimeline from "./components/ProjectTimeline";
 
 const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
 
@@ -194,71 +195,7 @@ export default function ProjectDetails() {
     });
     const workloadList = Object.values(workloadMap);
 
-    // Timeline calculation
-    const timelineEvents = [
-        {
-            id: "proj-create",
-            title: "Project Created",
-            date: project.created_at ? new Date(project.created_at) : new Date(project.start_date || Date.now()),
-            desc: `Project "${project.project_name}" was initialized in ${deptName}.`,
-            icon: <FaProjectDiagram color="#4f46e5" />,
-            bg: "#e0e7ff"
-        }
-    ];
-    members.forEach(m => {
-        timelineEvents.push({
-            id: `mem-${m.employee_id}`,
-            title: "Member Added",
-            date: m.joined_at ? new Date(m.joined_at) : (project.created_at ? new Date(new Date(project.created_at).getTime() + 1000 * 60 * 5) : new Date()),
-            desc: `${m.first_name || ''} ${m.last_name || ''} joined the project team.`,
-            icon: <FaUserPlus color="#0284c7" />,
-            bg: "#e0f2fe"
-        });
-    });
-    tasks.forEach(t => {
-        timelineEvents.push({
-            id: `task-${t.id}`,
-            title: "Task Assigned",
-            date: t.created_at ? new Date(t.created_at) : (t.start_date ? new Date(t.start_date) : new Date()),
-            desc: `Task "${t.task_title}" was assigned to ${t.employee_name || 'an employee'} (Priority: ${t.priority || 'Medium'}).`,
-            icon: <FaTasks color="#d97706" />,
-            bg: "#fef3c7"
-        });
-        if (t.status === "Completed") {
-            timelineEvents.push({
-                id: `task-comp-${t.id}`,
-                title: "Task Completed",
-                date: t.completion_date ? new Date(t.completion_date) : (t.updated_at ? new Date(t.updated_at) : new Date()),
-                desc: `Task "${t.task_title}" was marked as Completed by ${t.employee_name || 'an employee'}.`,
-                icon: <FaCheckCircle color="#16a34a" />,
-                bg: "#dcfce7"
-            });
-        }
-    });
-    milestones.forEach(ms => {
-        if (ms.status === "Completed") {
-            timelineEvents.push({
-                id: `ms-comp-${ms.id}`,
-                title: "Milestone Completed",
-                date: ms.updated_at ? new Date(ms.updated_at) : new Date(),
-                desc: `Milestone "${ms.title || ms.name}" reached 100% completion!`,
-                icon: <FaFlag color="#9333ea" />,
-                bg: "#f3e8ff"
-            });
-        }
-    });
-    if (project.status === "Completed" || progress === 100) {
-        timelineEvents.push({
-            id: "proj-comp",
-            title: "Project Completed",
-            date: project.updated_at ? new Date(project.updated_at) : new Date(project.end_date || Date.now()),
-            desc: `Project "${project.project_name}" has reached 100% completion!`,
-            icon: <FaCheckCircle color="#15803d" />,
-            bg: "#dcfce7"
-        });
-    }
-    timelineEvents.sort((a, b) => a.date - b.date);
-
+    // Timeline rendering delegated to ProjectTimeline component
     const tabs = ["Overview", "Tasks", "Members", "Workload", "Timeline"];
 
     return (
@@ -760,39 +697,14 @@ export default function ProjectDetails() {
                         )}
 
                         {activeTab === "Timeline" && (
-                            <div>
-                                <div style={{ marginBottom: "24px" }}>
-                                    <h3 style={{ margin: "0 0 4px 0", color: "#1e293b", fontSize: "1.3rem" }}>Project Activity Timeline</h3>
-                                    <p style={{ margin: 0, color: "#64748b", fontSize: "0.85rem" }}>Chronological log of project lifecycle events, assignments, and milestone achievements.</p>
-                                </div>
-                                {timelineEvents.length === 0 ? (
-                                    <div style={{ padding: "40px", textAlign: "center", color: "#64748b", backgroundColor: "#f8fafc", borderRadius: "12px", border: "1px dashed #cbd5e1" }}>
-                                        No activity recorded yet.
-                                    </div>
-                                ) : (
-                                    <div style={{ position: "relative", paddingLeft: "36px", borderLeft: "3px solid #e2e8f0", marginLeft: "16px" }}>
-                                        {timelineEvents.map((ev, idx) => (
-                                            <div key={ev.id + idx} style={{ position: "relative", marginBottom: "28px" }}>
-                                                <div style={{ position: "absolute", left: "-52px", top: "0", width: "32px", height: "32px", borderRadius: "50%", backgroundColor: ev.bg, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 0 4px white, 0 2px 4px rgba(0,0,0,0.1)", zIndex: 2 }}>
-                                                    {ev.icon}
-                                                </div>
-                                                <div style={{ backgroundColor: "white", padding: "16px 20px", borderRadius: "12px", border: "1px solid #e2e8f0", boxShadow: "0 2px 4px rgba(0,0,0,0.02)", maxWidth: "700px", transition: "all 0.2s" }}>
-                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-                                                        <span style={{ fontWeight: "700", color: "#0f172a", fontSize: "1rem" }}>{ev.title}</span>
-                                                        <span style={{ fontSize: "0.75rem", color: "#64748b", backgroundColor: "#f8fafc", padding: "2px 8px", borderRadius: "12px", border: "1px solid #f1f5f9" }}>
-                                                            {ev.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                                                        </span>
-                                                    </div>
-                                                    <p style={{ margin: 0, color: "#475569", fontSize: "0.9rem", lineHeight: "1.5" }}>{ev.desc}</p>
-                                                </div>
-                                                {idx < timelineEvents.length - 1 && (
-                                                    <div style={{ color: "#94a3b8", fontWeight: "700", marginLeft: "10px", marginTop: "8px", fontSize: "1.1rem" }}>↓</div>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
+                            <ProjectTimeline 
+                                project={project} 
+                                deptName={deptName} 
+                                members={members} 
+                                tasks={tasks} 
+                                milestones={milestones} 
+                                progress={progress} 
+                            />
                         )}
                     </div>
                 </div>
