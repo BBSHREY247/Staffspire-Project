@@ -5,12 +5,13 @@ import axios from "axios";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { 
     FaArrowLeft, FaCheckCircle, FaTasks, FaExclamationCircle, 
-    FaUsers, FaClock, FaFolderOpen, FaProjectDiagram, FaHistory, FaFlag, FaUserCircle, FaPlus, FaTimes, FaEdit, FaTrash, FaUserPlus, FaEye, FaExclamationTriangle
+    FaUsers, FaClock, FaFolderOpen, FaProjectDiagram, FaHistory, FaFlag, FaUserCircle, FaPlus, FaTimes, FaEdit, FaTrash, FaUserPlus, FaEye, FaExclamationTriangle, FaFileAlt
 } from "react-icons/fa";
 import EditProjectModal from "./components/EditProjectModal";
 import CustomConfirmModal from "../../components/CustomConfirmModal";
 import InlineAlert from "../../components/InlineAlert";
 import ProjectTimeline from "./components/ProjectTimeline";
+import ProjectReport from "./components/ProjectReport";
 
 const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
 
@@ -53,6 +54,7 @@ export default function ProjectDetails() {
     };
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [showReport, setShowReport] = useState(false);
     const [selectedMemberIds, setSelectedMemberIds] = useState([]);
     const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
     const [newMemberId, setNewMemberId] = useState("");
@@ -209,11 +211,18 @@ export default function ProjectDetails() {
                     <button onClick={() => navigate(isAdminOrManager ? "/admin/projects" : "/employee/projects")} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "#64748b", cursor: "pointer", fontSize: "0.95rem", fontWeight: "600" }}>
                         <FaArrowLeft /> Back to Projects
                     </button>
-                    {isAdminOrManager && (
-                        <button onClick={() => setIsEditModalOpen(true)} style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "var(--primary, #3b82f6)", border: "none", color: "white", padding: "10px 18px", borderRadius: "10px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "600", boxShadow: "0 2px 4px rgba(59, 130, 246, 0.2)" }}>
-                            <FaEdit /> Edit Project Details
-                        </button>
-                    )}
+                    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                        {(project.status === "Completed" || progress === 100) && (
+                            <button onClick={() => setShowReport(true)} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)", border: "none", color: "white", padding: "10px 18px", borderRadius: "10px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "600", boxShadow: "0 2px 4px rgba(79, 70, 229, 0.25)" }}>
+                                <FaFileAlt /> Generate Report
+                            </button>
+                        )}
+                        {isAdminOrManager && (
+                            <button onClick={() => setIsEditModalOpen(true)} style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "var(--primary, #3b82f6)", border: "none", color: "white", padding: "10px 18px", borderRadius: "10px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "600", boxShadow: "0 2px 4px rgba(59, 130, 246, 0.2)" }}>
+                                <FaEdit /> Edit Project Details
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Top Section */}
@@ -727,6 +736,19 @@ export default function ProjectDetails() {
                     confirmText="Remove"
                     cancelText="Cancel"
                     type="danger"
+                />
+
+                <ProjectReport
+                    isOpen={showReport}
+                    onClose={() => setShowReport(false)}
+                    project={project}
+                    members={members}
+                    tasks={tasks}
+                    milestones={milestones}
+                    deptName={deptName}
+                    managerName={managerName}
+                    progress={progress}
+                    workloadList={workloadList}
                 />
             </div>
 
