@@ -140,16 +140,18 @@
 .theme-amber .kpi-icon-wrapper.blue { background-color: rgba(255, 140, 0, 0.1); color: var(--primary); }
 
 /* Colorful KPI Cards */
-.theme-amber .kpi-card:nth-child(1) { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; }
-.theme-amber .kpi-card:nth-child(2) { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; }
-.theme-amber .kpi-card:nth-child(3) { background: linear-gradient(135deg, #f97316, #ea580c); color: white; border: none; }
-.theme-amber .kpi-card:nth-child(4) { background: linear-gradient(135deg, #a855f7, #9333ea); color: white; border: none; }
-.theme-amber .kpi-card:nth-child(5) { background: linear-gradient(135deg, #f43f5e, #e11d48); color: white; border: none; }
-.theme-amber .kpi-card:nth-child(6) { background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; border: none; }
-.theme-amber .kpi-card:nth-child(7) { background: linear-gradient(135deg, #64748b, #475569); color: white; border: none; }
-.theme-amber .kpi-card:nth-child(8) { background: linear-gradient(135deg, #ec4899, #db2777); color: white; border: none; }
+.theme-amber .kpi-card:nth-child(1) { background: linear-gradient(135deg, #3b82f6, #3b82f6); color: white; border: none; }
+.theme-amber .kpi-card:nth-child(2) { background: linear-gradient(135deg, #3b82f6, #3b82f6); color: white; border: none; }
+.theme-amber .kpi-card:nth-child(3) { background: linear-gradient(135deg, #3b82f6, #3b82f6); color: white; border: none; }
+.theme-amber .kpi-card:nth-child(4) { background: linear-gradient(135deg, #3b82f6, #3b82f6); color: white; border: none; }
+.theme-amber .kpi-card:nth-child(5) { background: linear-gradient(135deg, #3b82f6, #3b82f6); color: white; border: none; }
+.theme-amber .kpi-card:nth-child(6) { background: linear-gradient(135deg, #3b82f6, #3b82f6); color: white; border: none; }
+.theme-amber .kpi-card:nth-child(7) { background: linear-gradient(135deg, #3b82f6, #3b82f6); color: white; border: none; }
+.theme-amber .kpi-card:nth-child(8) { background: linear-gradient(135deg, #3b82f6, #3b82f6); color: white; border: none; }
 
-.theme-amber .kpi-card .kpi-card-label,
+.theme-amber .kpi-card .kpi-card-label {
+    color: white !important;
+}
 .theme-amber .kpi-card .kpi-card-value,
 .theme-amber .kpi-card .trend-badge {
     color: white !important;
