@@ -1,9 +1,5 @@
 import React from "react";
-import {
-    FaProjectDiagram, FaCheckCircle, FaTasks,
-    FaFlag, FaPrint, FaTimes, FaExclamationTriangle,
-    FaLightbulb
-} from "react-icons/fa";
+import { FaPrint, FaTimes } from "react-icons/fa";
 import "../../../styles/projectReport.css";
 
 const fmtDate = (d) => {
@@ -18,24 +14,6 @@ const daysBetween = (d1, d2) => {
     const a = new Date(d1), b = new Date(d2);
     if (isNaN(a) || isNaN(b)) return 0;
     return Math.max(0, Math.ceil((b - a) / (1000 * 60 * 60 * 24)));
-};
-
-const StatusBadge = ({ status }) => {
-    let cls = "rpt-badge ";
-    if (status === "Completed") cls += "rpt-badge-completed";
-    else if (status === "In Progress") cls += "rpt-badge-progress";
-    else if (status === "On Hold") cls += "rpt-badge-hold";
-    else cls += "rpt-badge-pending";
-    return <span className={cls}>{status}</span>;
-};
-
-const PriorityBadge = ({ priority }) => {
-    let cls = "rpt-badge ";
-    if (priority === "Critical") cls += "rpt-badge-critical";
-    else if (priority === "High") cls += "rpt-badge-high";
-    else if (priority === "Medium") cls += "rpt-badge-medium";
-    else cls += "rpt-badge-low";
-    return <span className={cls}>{priority || "Medium"}</span>;
 };
 
 export default function ProjectReport({
@@ -122,9 +100,14 @@ export default function ProjectReport({
     if (overloaded.length > 0) recommendations.push("Balance workload distribution across team.");
     if (avgTaskDuration > 14) recommendations.push("Break large tasks into smaller deliverables.");
     if (teamUtilization < 70) recommendations.push("Right-size team for better utilization.");
-    recommendations.push("Capture lessons learned for future projects.");
-
-    let sectionNum = 0;
+    
+    const handlePrint = () => {
+        const originalTitle = document.title;
+        // Changes title to e.g. "Website_Redesign_PRJ001_Report" so it gets saved properly
+        document.title = `${project.project_name ? project.project_name.replace(/\s+/g, '_') : 'Project'}_${project.project_code || 'Report'}`;
+        window.print();
+        document.title = originalTitle;
+    };
 
     return (
         <div className="report-overlay" onClick={onClose}>
@@ -137,17 +120,9 @@ export default function ProjectReport({
                         <span className="cover-brand">StaffSpire</span>
                     </div>
 
-                    <div className="cover-logo-row">
-                        <div className="cover-logo-icon"><FaProjectDiagram /></div>
-                        <div>
-                            <div className="cover-company-name">StaffSpire</div>
-                            <div className="cover-company-sub">Project Management System</div>
-                        </div>
-                    </div>
-
                     <div className="cover-doc-type">Project Completion Report</div>
                     <h1 className="cover-project-title">{project.project_name}</h1>
-                    <div className="cover-project-code">{project.project_code} &nbsp;·&nbsp; {deptName} Department</div>
+                    <div className="cover-project-code">{project.project_code} · {deptName} Department</div>
 
                     <div className="cover-meta-grid">
                         <div className="cover-meta-item">
@@ -164,7 +139,7 @@ export default function ProjectReport({
                         </div>
                         <div className="cover-meta-item">
                             <div className="cover-meta-label">Status</div>
-                            <div className="cover-meta-value" style={{ color: "#4ade80" }}>✓ Completed</div>
+                            <div className="cover-meta-value">Completed</div>
                         </div>
                     </div>
 
@@ -179,10 +154,7 @@ export default function ProjectReport({
                     {/* 1. Summary */}
                     <div className="report-section">
                         <div className="report-section-header">
-                            <div className="section-number">{++sectionNum}</div>
-                            <div>
-                                <h2 className="section-title">Summary</h2>
-                            </div>
+                            <h2 className="section-title">Summary</h2>
                         </div>
                         <div className="exec-summary-text">
                             This report covers <strong>{project.project_name}</strong> ({project.project_code}), managed by {managerName} under the {deptName} department. The project ran for {totalDuration} days ({fmtDate(project.start_date)} to {fmtDate(project.end_date)}) with {members.length} team member{members.length !== 1 ? "s" : ""}.
@@ -195,10 +167,7 @@ export default function ProjectReport({
                     {/* 2. Project Details */}
                     <div className="report-section">
                         <div className="report-section-header">
-                            <div className="section-number">{++sectionNum}</div>
-                            <div>
-                                <h2 className="section-title">Project Details</h2>
-                            </div>
+                            <h2 className="section-title">Project Details</h2>
                         </div>
                         <div className="report-table-container">
                             <table className="report-table report-table-fixed">
@@ -228,22 +197,19 @@ export default function ProjectReport({
                     {/* 3. Task Summary */}
                     <div className="report-section">
                         <div className="report-section-header">
-                            <div className="section-number">{++sectionNum}</div>
-                            <div>
-                                <h2 className="section-title">Task Summary</h2>
-                            </div>
+                            <h2 className="section-title">Task Summary</h2>
                         </div>
 
                         <div className="report-kpi-grid">
                             {[
-                                { label: "Total", value: totalTasks, color: "#3b82f6" },
-                                { label: "Completed", value: completedTasks, color: "#16a34a" },
-                                { label: "In Progress", value: inProgressTasks, color: "#0284c7" },
-                                { label: "On Hold", value: onHoldTasks, color: "#64748b" },
-                                { label: "Overdue", value: overdueTasks, color: "#ef4444" },
-                                { label: "On-Time", value: onTimeTasks, color: "#10b981" }
+                                { label: "Total", value: totalTasks },
+                                { label: "Completed", value: completedTasks },
+                                { label: "In Progress", value: inProgressTasks },
+                                { label: "On Hold", value: onHoldTasks },
+                                { label: "Overdue", value: overdueTasks },
+                                { label: "On-Time", value: onTimeTasks }
                             ].map((kpi, i) => (
-                                <div key={i} className="report-kpi-card" style={{ "--kpi-color": kpi.color }}>
+                                <div key={i} className="report-kpi-card">
                                     <div className="kpi-value">{kpi.value}</div>
                                     <div className="kpi-label">{kpi.label}</div>
                                 </div>
@@ -267,11 +233,11 @@ export default function ProjectReport({
                                     <tbody>
                                         {tasks.map((t, i) => (
                                             <tr key={t.id || i}>
-                                                <td style={{ color: "#94a3b8" }}>{i + 1}</td>
-                                                <td style={{ fontWeight: 600, color: "#0f172a" }}>{t.task_title}</td>
+                                                <td>{i + 1}</td>
+                                                <td>{t.task_title}</td>
                                                 <td>{t.employee_name || "—"}</td>
-                                                <td><PriorityBadge priority={t.priority} /></td>
-                                                <td><StatusBadge status={t.status} /></td>
+                                                <td>{t.priority || "Medium"}</td>
+                                                <td>{t.status}</td>
                                                 <td>{fmtDate(t.start_date)}</td>
                                                 <td>{fmtDate(t.deadline)}</td>
                                             </tr>
@@ -285,10 +251,7 @@ export default function ProjectReport({
                     {/* 4. Team */}
                     <div className="report-section">
                         <div className="report-section-header">
-                            <div className="section-number">{++sectionNum}</div>
-                            <div>
-                                <h2 className="section-title">Team ({members.length})</h2>
-                            </div>
+                            <h2 className="section-title">Team ({members.length})</h2>
                         </div>
 
                         {members.length > 0 && (
@@ -311,29 +274,19 @@ export default function ProjectReport({
                                             const memberInfo = members.find(m => m.employee_id === w.id);
                                             return (
                                                 <tr key={w.id || i}>
-                                                    <td style={{ color: "#94a3b8" }}>{i + 1}</td>
-                                                    <td style={{ fontWeight: 600, color: "#0f172a" }}>{w.name}</td>
+                                                    <td>{i + 1}</td>
+                                                    <td>{w.name}</td>
                                                     <td>{memberInfo?.department || w.department || "—"}</td>
                                                     <td>{memberInfo?.designation || "—"}</td>
                                                     <td style={{ textAlign: "center" }}>{w.tasksCount}</td>
                                                     <td style={{ textAlign: "center" }}>{w.completedCount}</td>
-                                                    <td>
-                                                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                                                            <div className="rpt-progress-bar-bg" style={{ flex: 1 }}>
-                                                                <div className="rpt-progress-bar-fill" style={{
-                                                                    width: `${compPct}%`,
-                                                                    background: compPct === 100 ? "#16a34a" : compPct >= 50 ? "#3b82f6" : "#f59e0b"
-                                                                }} />
-                                                            </div>
-                                                            <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#334155", minWidth: "30px", textAlign: "right" }}>{compPct}%</span>
-                                                        </div>
-                                                    </td>
+                                                    <td>{compPct}%</td>
                                                 </tr>
                                             );
                                         }) : members.map((m, i) => (
                                             <tr key={m.employee_id || i}>
-                                                <td style={{ color: "#94a3b8" }}>{i + 1}</td>
-                                                <td style={{ fontWeight: 600, color: "#0f172a" }}>{m.first_name} {m.last_name}</td>
+                                                <td>{i + 1}</td>
+                                                <td>{m.first_name} {m.last_name}</td>
                                                 <td>{m.department || "—"}</td>
                                                 <td>{m.designation || "—"}</td>
                                                 <td style={{ textAlign: "center" }}>—</td>
@@ -351,10 +304,7 @@ export default function ProjectReport({
                     {milestones.length > 0 && (
                         <div className="report-section">
                             <div className="report-section-header">
-                                <div className="section-number">{++sectionNum}</div>
-                                <div>
-                                    <h2 className="section-title">Milestones</h2>
-                                </div>
+                                <h2 className="section-title">Milestones</h2>
                             </div>
                             <div className="report-table-container">
                                 <table className="report-table report-table-fixed">
@@ -370,10 +320,10 @@ export default function ProjectReport({
                                     <tbody>
                                         {milestones.map((ms, i) => (
                                             <tr key={ms.id || i}>
-                                                <td style={{ color: "#94a3b8" }}>{i + 1}</td>
-                                                <td style={{ fontWeight: 600, color: "#0f172a" }}>{ms.title || ms.name}</td>
+                                                <td>{i + 1}</td>
+                                                <td>{ms.title || ms.name}</td>
                                                 <td>{fmtDate(ms.due_date)}</td>
-                                                <td><StatusBadge status={ms.status} /></td>
+                                                <td>{ms.status}</td>
                                                 <td>{ms.status === "Completed" ? fmtDate(ms.completion_date || ms.updated_at) : "—"}</td>
                                             </tr>
                                         ))}
@@ -386,96 +336,72 @@ export default function ProjectReport({
                     {/* 6. Metrics */}
                     <div className="report-section">
                         <div className="report-section-header">
-                            <div className="section-number">{++sectionNum}</div>
-                            <div>
-                                <h2 className="section-title">Performance</h2>
-                            </div>
+                            <h2 className="section-title">Performance</h2>
                         </div>
                         <div className="perf-metrics-grid">
                             <div className="perf-metric-card">
-                                <div className="perf-metric-value" style={{ color: completionRate === 100 ? "#16a34a" : "#f59e0b" }}>
-                                    {completionRate}%
-                                </div>
+                                <div className="perf-metric-value">{completionRate}%</div>
                                 <div className="perf-metric-label">Task Completion</div>
                                 <div className="perf-metric-detail">{completedTasks}/{totalTasks} tasks</div>
                             </div>
                             <div className="perf-metric-card">
-                                <div className="perf-metric-value" style={{ color: onTimeRate >= 80 ? "#16a34a" : onTimeRate >= 50 ? "#f59e0b" : "#ef4444" }}>
-                                    {onTimeRate}%
-                                </div>
+                                <div className="perf-metric-value">{onTimeRate}%</div>
                                 <div className="perf-metric-label">On-Time Rate</div>
                                 <div className="perf-metric-detail">{onTimeTasks}/{completedTasks} on time</div>
                             </div>
                             <div className="perf-metric-card">
-                                <div className="perf-metric-value" style={{ color: "#3b82f6" }}>
-                                    {avgTaskDuration}d
-                                </div>
+                                <div className="perf-metric-value">{avgTaskDuration}d</div>
                                 <div className="perf-metric-label">Avg Duration</div>
                                 <div className="perf-metric-detail">{completedWithDates.length} tasks measured</div>
                             </div>
                             <div className="perf-metric-card">
-                                <div className="perf-metric-value" style={{ color: teamUtilization >= 70 ? "#16a34a" : "#f59e0b" }}>
-                                    {teamUtilization}%
-                                </div>
+                                <div className="perf-metric-value">{teamUtilization}%</div>
                                 <div className="perf-metric-label">Team Utilization</div>
                                 <div className="perf-metric-detail">{membersWithTasks}/{members.length} active</div>
                             </div>
                             {totalMilestones > 0 && (
                                 <div className="perf-metric-card">
-                                    <div className="perf-metric-value" style={{ color: milestoneRate === 100 ? "#16a34a" : "#7c3aed" }}>
-                                        {milestoneRate}%
-                                    </div>
+                                    <div className="perf-metric-value">{milestoneRate}%</div>
                                     <div className="perf-metric-label">Milestones</div>
                                     <div className="perf-metric-detail">{completedMilestones}/{totalMilestones} achieved</div>
                                 </div>
                             )}
                         </div>
 
-                        <div style={{ marginTop: "18px" }}>
-                            <div className="rpt-priority-row">
-                                {[
-                                    { label: "Critical", count: priCritical, color: "#7f1d1d", bg: "#fef2f2" },
-                                    { label: "High", count: priHigh, color: "#b91c1c", bg: "#fee2e2" },
-                                    { label: "Medium", count: priMedium, color: "#c2410c", bg: "#ffedd5" },
-                                    { label: "Low", count: priLow, color: "#475569", bg: "#f1f5f9" }
-                                ].map((p, i) => (
-                                    <div key={i} className="rpt-priority-chip" style={{ background: p.bg, color: p.color }}>
-                                        <strong>{p.count}</strong> {p.label}
-                                    </div>
-                                ))}
-                            </div>
+                        <div className="rpt-priority-row">
+                            {[
+                                { label: "Critical", count: priCritical },
+                                { label: "High", count: priHigh },
+                                { label: "Medium", count: priMedium },
+                                { label: "Low", count: priLow }
+                            ].map((p, i) => (
+                                <div key={i} className="rpt-priority-chip">
+                                    <strong>{p.count}</strong> {p.label}
+                                </div>
+                            ))}
                         </div>
                     </div>
 
                     {/* 7. Observations */}
                     <div className="report-section">
                         <div className="report-section-header">
-                            <div className="section-number">{++sectionNum}</div>
-                            <div>
-                                <h2 className="section-title">Observations</h2>
-                            </div>
+                            <h2 className="section-title">Observations</h2>
                         </div>
                         <div className="report-obs-grid">
                             <div className="report-obs-card highlights">
-                                <div className="obs-card-title" style={{ color: "#166534" }}>
-                                    <FaCheckCircle color="#16a34a" /> Highlights
-                                </div>
+                                <div className="obs-card-title">Highlights</div>
                                 <ul className="obs-card-list">
                                     {highlights.map((h, i) => <li key={i}>{h}</li>)}
                                 </ul>
                             </div>
                             <div className="report-obs-card risks">
-                                <div className="obs-card-title" style={{ color: "#991b1b" }}>
-                                    <FaExclamationTriangle color="#ef4444" /> Risks
-                                </div>
+                                <div className="obs-card-title">Risks</div>
                                 <ul className="obs-card-list">
                                     {risks.map((r, i) => <li key={i}>{r}</li>)}
                                 </ul>
                             </div>
                             <div className="report-obs-card recommendations">
-                                <div className="obs-card-title" style={{ color: "#1e40af" }}>
-                                    <FaLightbulb color="#3b82f6" /> Next Steps
-                                </div>
+                                <div className="obs-card-title">Next Steps</div>
                                 <ul className="obs-card-list">
                                     {recommendations.map((r, i) => <li key={i}>{r}</li>)}
                                 </ul>
@@ -507,7 +433,7 @@ export default function ProjectReport({
                         RPT-{project.project_code}-{new Date().toISOString().slice(0, 10).replace(/-/g, "")}
                     </div>
                     <div className="report-footer-notice">
-                        Auto-generated by StaffSpire · Data reflects project state at time of generation
+                        System generated report · Data reflects project state at time of generation
                     </div>
                 </div>
 
@@ -515,7 +441,7 @@ export default function ProjectReport({
 
             {/* Toolbar */}
             <div className="report-toolbar" onClick={e => e.stopPropagation()}>
-                <button className="btn-print-report" onClick={() => window.print()}>
+                <button className="btn-print-report" onClick={handlePrint}>
                     <FaPrint /> Print / Save PDF
                 </button>
                 <button className="btn-close-report" onClick={onClose}>
