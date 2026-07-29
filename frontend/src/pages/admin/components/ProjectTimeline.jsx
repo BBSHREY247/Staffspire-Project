@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { 
     FaProjectDiagram, FaUserPlus, FaTasks, FaCheckCircle, FaFlag, 
-    FaClock, FaSearch, FaSortAmountDown, FaSortAmountUp, FaCalendarAlt, 
-    FaUserCircle, FaFilter, FaHistory, FaRocket, FaAward, FaListUl
+    FaClock, FaSearch, FaCalendarAlt, FaUserCircle, FaHistory, FaRocket, FaAward
 } from "react-icons/fa";
 import "../../../styles/projectTimeline.css";
 
@@ -90,14 +89,12 @@ function TimelineItem({ ev, idx, isLeft, isNewest }) {
 }
 
 export default function ProjectTimeline({ project = {}, deptName = "—", members = [], tasks = [], milestones = [], progress = 0 }) {
-    const [activeFilter, setActiveFilter] = useState("all");
     const [searchQuery, setSearchQuery] = useState("");
-    const [sortOrder, setSortOrder] = useState("desc"); // Newest first by default
 
     // Build rich chronological events array
     const events = [];
 
-    // 1. Project Initialization
+    // 1. Project Initialization (ALWAYS AT TOP: orderPriority = -100)
     const createdDate = project.created_at ? new Date(project.created_at) : new Date(project.start_date || Date.now());
     events.push({
         id: "proj-create",
@@ -110,14 +107,16 @@ export default function ProjectTimeline({ project = {}, deptName = "—", member
         glow: "#4f46e5",
         type: "project",
         badge: "Lifecycle",
-        author: project.manager_name || "Admin"
+        author: project.manager_name || "Admin",
+        orderPriority: -100,
+        subIndex: 0
     });
 
     // 2. Members Joined
-    members.forEach(m => {
-        const joinDate = m.joined_at ? new Date(m.joined_at) : (project.created_at ? new Date(new Date(project.created_at).getTime() + 1000 * 60 * 5) : new Date());
+    members.forEach((m, idx) => {
+        const joinDate = m.joined_at ? new Date(m.joined_at) : (project.created_at ? new Date(new Date(project.created_at).getTime() + 1000 * 60 * 10) : new Date());
         events.push({
-            id: `mem-${m.employee_id || m.id}`,
+            id: `mem-${m.employee_id || m.id || idx}`,
             title: "Team Member Added",
             date: joinDate,
             relativeTime: getRelativeTime(joinDate),
@@ -127,15 +126,17 @@ export default function ProjectTimeline({ project = {}, deptName = "—", member
             glow: "#0284c7",
             type: "member",
             badge: "Team",
-            author: "Team Lead"
+            author: "Team Lead",
+            orderPriority: 0,
+            subIndex: idx
         });
     });
 
     // 3. Tasks Assigned & Completed
-    tasks.forEach(t => {
+    tasks.forEach((t, idx) => {
         const assignDate = t.created_at ? new Date(t.created_at) : (t.start_date ? new Date(t.start_date) : new Date());
         events.push({
-            id: `task-assign-${t.id}`,
+            id: `task-assign-${t.id || idx}`,
             title: "Task Assigned",
             date: assignDate,
             relativeTime: getRelativeTime(assignDate),
@@ -145,13 +146,15 @@ export default function ProjectTimeline({ project = {}, deptName = "—", member
             glow: "#d97706",
             type: "task",
             badge: "Task",
-            author: t.employee_name || "Employee"
+            author: t.employee_name || "Employee",
+            orderPriority: 0,
+            subIndex: idx
         });
 
         if (t.status === "Completed") {
             const compDate = t.completion_date ? new Date(t.completion_date) : (t.updated_at ? new Date(t.updated_at) : new Date());
             events.push({
-                id: `task-comp-${t.id}`,
+                id: `task-comp-${t.id || idx}`,
                 title: "Task Completed 🎉",
                 date: compDate,
                 relativeTime: getRelativeTime(compDate),
@@ -161,16 +164,18 @@ export default function ProjectTimeline({ project = {}, deptName = "—", member
                 glow: "#16a34a",
                 type: "task",
                 badge: "Completed",
-                author: t.employee_name || "Employee"
+                author: t.employee_name || "Employee",
+                orderPriority: 50,
+                subIndex: idx
             });
         }
     });
 
     // 4. Milestones Added & Achieved
-    milestones.forEach(ms => {
+    milestones.forEach((ms, idx) => {
         const msCreateDate = ms.created_at ? new Date(ms.created_at) : createdDate;
         events.push({
-            id: `ms-create-${ms.id}`,
+            id: `ms-create-${ms.id || idx}`,
             title: "Milestone Scheduled",
             date: msCreateDate,
             relativeTime: getRelativeTime(msCreateDate),
@@ -180,13 +185,15 @@ export default function ProjectTimeline({ project = {}, deptName = "—", member
             glow: "#7c3aed",
             type: "milestone",
             badge: "Milestone",
-            author: "Project Manager"
+            author: "Project Manager",
+            orderPriority: 0,
+            subIndex: idx
         });
 
         if (ms.status === "Completed") {
             const msCompDate = ms.completion_date ? new Date(ms.completion_date) : (ms.updated_at ? new Date(ms.updated_at) : new Date());
             events.push({
-                id: `ms-comp-${ms.id}`,
+                id: `ms-comp-${ms.id || idx}`,
                 title: "Milestone Achieved 🏆",
                 date: msCompDate,
                 relativeTime: getRelativeTime(msCompDate),
@@ -196,12 +203,14 @@ export default function ProjectTimeline({ project = {}, deptName = "—", member
                 glow: "#9333ea",
                 type: "milestone",
                 badge: "Achieved",
-                author: "Project Team"
+                author: "Project Team",
+                orderPriority: 60,
+                subIndex: idx
             });
         }
     });
 
-    // 5. Project Completed
+    // 5. Project Completed (ALWAYS AT BOTTOM: orderPriority = 100)
     if (project.status === "Completed" || progress === 100) {
         const projCompDate = project.updated_at ? new Date(project.updated_at) : new Date(project.end_date || Date.now());
         events.push({
@@ -215,30 +224,35 @@ export default function ProjectTimeline({ project = {}, deptName = "—", member
             glow: "#15803d",
             type: "project",
             badge: "Success",
-            author: project.manager_name || "Manager"
+            author: project.manager_name || "Manager",
+            orderPriority: 100,
+            subIndex: 0
         });
     }
 
-    // Filter events
+    // Filter by search query, then sort strictly in chronological order (asc: earliest first, latest last)
     const filteredEvents = events.filter(ev => {
-        const matchesFilter = activeFilter === "all" || ev.type === activeFilter;
         const matchesSearch = !searchQuery || 
             ev.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
             ev.desc.toLowerCase().includes(searchQuery.toLowerCase()) ||
             (ev.author && ev.author.toLowerCase().includes(searchQuery.toLowerCase()));
-        return matchesFilter && matchesSearch;
+        return matchesSearch;
     }).sort((a, b) => {
-        return sortOrder === "desc" ? b.date - a.date : a.date - b.date;
+        // 1. Enforce absolute top/bottom priority (e.g. Project Initialized at top, Project Completed at bottom)
+        if (a.orderPriority !== b.orderPriority && (a.orderPriority === -100 || b.orderPriority === -100 || a.orderPriority === 100 || b.orderPriority === 100)) {
+            return a.orderPriority - b.orderPriority;
+        }
+        // 2. Sort by date ascending (chronological order)
+        const timeDiff = a.date.getTime() - b.date.getTime();
+        if (timeDiff !== 0) {
+            return timeDiff;
+        }
+        // 3. If timestamps are identical, interleave round-robin by subIndex so they never group in solid category blocks
+        if (a.subIndex !== b.subIndex) {
+            return a.subIndex - b.subIndex;
+        }
+        return a.orderPriority - b.orderPriority;
     });
-
-    // Counts for filter pills
-    const counts = {
-        all: events.length,
-        project: events.filter(e => e.type === "project").length,
-        milestone: events.filter(e => e.type === "milestone").length,
-        task: events.filter(e => e.type === "task").length,
-        member: events.filter(e => e.type === "member").length
-    };
 
     return (
         <div className="timeline-container-premium">
@@ -285,62 +299,16 @@ export default function ProjectTimeline({ project = {}, deptName = "—", member
                 </div>
             </div>
 
-            {/* Controls & Filter Bar */}
-            <div className="timeline-controls-bar">
-                <div className="timeline-filter-pills">
-                    <button 
-                        onClick={() => setActiveFilter("all")} 
-                        className={`timeline-pill ${activeFilter === "all" ? "active" : ""}`}
-                    >
-                        <FaListUl size={12} /> All Events <span className="pill-count">{counts.all}</span>
-                    </button>
-                    <button 
-                        onClick={() => setActiveFilter("milestone")} 
-                        className={`timeline-pill ${activeFilter === "milestone" ? "active" : ""}`}
-                    >
-                        <FaFlag size={12} /> Milestones <span className="pill-count">{counts.milestone}</span>
-                    </button>
-                    <button 
-                        onClick={() => setActiveFilter("task")} 
-                        className={`timeline-pill ${activeFilter === "task" ? "active" : ""}`}
-                    >
-                        <FaTasks size={12} /> Tasks <span className="pill-count">{counts.task}</span>
-                    </button>
-                    <button 
-                        onClick={() => setActiveFilter("member")} 
-                        className={`timeline-pill ${activeFilter === "member" ? "active" : ""}`}
-                    >
-                        <FaUserPlus size={12} /> Team <span className="pill-count">{counts.member}</span>
-                    </button>
-                    <button 
-                        onClick={() => setActiveFilter("project")} 
-                        className={`timeline-pill ${activeFilter === "project" ? "active" : ""}`}
-                    >
-                        <FaRocket size={12} /> Lifecycle <span className="pill-count">{counts.project}</span>
-                    </button>
-                </div>
-
-                <div className="timeline-actions-right">
-                    <div className="timeline-search-box">
-                        <FaSearch className="timeline-search-icon" />
-                        <input 
-                            type="text" 
-                            placeholder="Search timeline..." 
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
-                    <button 
-                        onClick={() => setSortOrder(prev => prev === "desc" ? "asc" : "desc")} 
-                        className="timeline-sort-btn"
-                        title="Toggle Sort Order"
-                    >
-                        {sortOrder === "desc" ? (
-                            <>Newest First <FaSortAmountDown size={14} color="#6366f1" /></>
-                        ) : (
-                            <>Oldest First <FaSortAmountUp size={14} color="#6366f1" /></>
-                        )}
-                    </button>
+            {/* Controls Bar (Search Only - Uncategorized Free Timeline) */}
+            <div className="timeline-controls-bar" style={{ justifyContent: "flex-end" }}>
+                <div className="timeline-search-box">
+                    <FaSearch className="timeline-search-icon" />
+                    <input 
+                        type="text" 
+                        placeholder="Search timeline..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
                 </div>
             </div>
 
@@ -349,7 +317,7 @@ export default function ProjectTimeline({ project = {}, deptName = "—", member
                 <div className="timeline-empty-state">
                     <FaClock size={44} color="#94a3b8" />
                     <h4>No timeline events found</h4>
-                    <p>Try adjusting your search query or switching active filter categories above.</p>
+                    <p>Try adjusting your search query above.</p>
                 </div>
             ) : (
                 <div className="timeline-track-area">
@@ -360,7 +328,7 @@ export default function ProjectTimeline({ project = {}, deptName = "—", member
                             ev={ev} 
                             idx={idx} 
                             isLeft={idx % 2 === 0} 
-                            isNewest={idx === 0 && sortOrder === "desc"}
+                            isNewest={idx === filteredEvents.length - 1}
                         />
                     ))}
                 </div>
