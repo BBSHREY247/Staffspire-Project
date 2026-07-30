@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 import { FaPrint, FaTimes } from "react-icons/fa";
 import "../../../styles/projectReport.css";
 
@@ -109,7 +110,7 @@ export default function ProjectReport({
         document.title = originalTitle;
     };
 
-    return (
+    const reportContent = (
         <div className="report-overlay" onClick={onClose}>
             <div className="report-document" onClick={e => e.stopPropagation()}>
 
@@ -450,4 +451,6 @@ export default function ProjectReport({
             </div>
         </div>
     );
+
+    return createPortal(reportContent, document.body);
 }

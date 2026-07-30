@@ -332,30 +332,23 @@
 
 /* ---- PRINT ---- */
 @media print {
-    /* Hide EVERYTHING by default to stop dashboard background interference */
-    body * {
-        visibility: hidden;
+    /* Hide the entire React app root to completely remove any blank pages */
+    #root {
+        display: none !important;
     }
-    
-    /* Reset heights so browser can paginate */
+
+    /* Reset html and body to ensure browser can paginate naturally */
     html, body {
         height: auto !important;
         overflow: visible !important;
         min-height: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
-    }
-
-    /* Make only the report elements visible */
-    .report-overlay,
-    .report-overlay * {
-        visibility: visible;
+        background: #fff !important;
     }
 
     .report-overlay {
-        position: absolute !important;
-        left: 0 !important;
-        top: 0 !important;
+        position: static !important;
         width: 100% !important;
         height: auto !important;
         overflow: visible !important;
