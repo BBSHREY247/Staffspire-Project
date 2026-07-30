@@ -209,93 +209,116 @@ export default function ProjectDetails() {
                 {alertMsg && (
                     <InlineAlert type={alertMsg.type} message={alertMsg.text} onClose={() => setAlertMsg(null)} />
                 )}
-                {/* Back Button and Edit Button */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "12px" }}>
+                {/* Back Button */}
+                <div style={{ marginBottom: "20px" }}>
                     <button onClick={() => navigate(isAdminOrManager ? "/admin/projects" : "/employee/projects")} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "none", border: "none", color: "#64748b", cursor: "pointer", fontSize: "0.95rem", fontWeight: "600" }}>
                         <FaArrowLeft /> Back to Projects
                     </button>
-                    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                        {(project.status === "Completed" || progress === 100) && (
-                            <button onClick={() => setShowReport(true)} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)", border: "none", color: "white", padding: "10px 18px", borderRadius: "10px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "600", boxShadow: "0 2px 4px rgba(79, 70, 229, 0.25)" }}>
-                                <FaFileAlt /> Generate Report
-                            </button>
-                        )}
-                        {isAdminOrManager && (
-                            <button onClick={() => setIsEditModalOpen(true)} style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "var(--primary, #3b82f6)", border: "none", color: "white", padding: "10px 18px", borderRadius: "10px", cursor: "pointer", fontSize: "0.9rem", fontWeight: "600", boxShadow: "0 2px 4px rgba(59, 130, 246, 0.2)" }}>
-                                <FaEdit /> Edit Project Details
-                            </button>
-                        )}
-                    </div>
                 </div>
 
-                {/* Top Section */}
-                <div style={{ backgroundColor: "white", borderRadius: "16px", padding: "24px", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)", marginBottom: "24px" }}>
+                {/* Top Section / Title Card */}
+                <div style={{ backgroundColor: "white", borderRadius: "16px", padding: "32px", border: "1px solid #e2e8f0", marginBottom: "32px" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "20px" }}>
-                        <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-                            <div style={{ width: "64px", height: "64px", backgroundColor: project.project_color || "#4f46e5", borderRadius: "16px", display: "flex", justifyContent: "center", alignItems: "center", color: "white" }}>
-                                <FaFolderOpen size={32} />
+                        
+                        {/* Left Side: Icon and Info */}
+                        <div style={{ display: "flex", gap: "24px", alignItems: "flex-start" }}>
+                            {/* Project Icon */}
+                            <div style={{ width: "80px", height: "80px", backgroundColor: "#1e293b", borderRadius: "20px", display: "flex", justifyContent: "center", alignItems: "center", color: "white" }}>
+                                <FaFolderOpen size={40} />
                             </div>
+                            
+                            {/* Project Info */}
                             <div>
-                                <h1 style={{ margin: "0 0 8px 0", fontSize: "1.8rem", color: "#0f172a" }}>{project.project_name} <span style={{ fontSize: "1rem", color: "#64748b", fontWeight: "normal" }}>({project.project_code})</span></h1>
-                                <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
-                                    <span style={{ padding: "4px 10px", backgroundColor: project.status === 'Completed' ? '#dcfce7' : project.status === 'On Hold' ? '#f1f5f9' : '#dbeafe', color: project.status === 'Completed' ? '#166534' : project.status === 'On Hold' ? '#475569' : '#1e40af', borderRadius: "6px", fontSize: "0.8rem", fontWeight: "700" }}>{project.status}</span>
-                                    <span style={{ display: "flex", alignItems: "center", gap: "4px", color: project.priority === 'High' ? '#ef4444' : project.priority === 'Medium' ? '#f59e0b' : '#3b82f6', fontSize: "0.85rem", fontWeight: "600" }}>
-                                        <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: project.priority === 'High' ? '#ef4444' : project.priority === 'Medium' ? '#f59e0b' : '#3b82f6' }} />
-                                        {project.priority} Priority
+                                <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "12px", flexWrap: "wrap" }}>
+                                    <h1 style={{ margin: 0, fontSize: "2rem", color: "#0f172a", fontWeight: "700" }}>
+                                        {project.project_name} <span style={{ fontSize: "1.7rem", color: "#64748b", fontWeight: "500" }}>({project.project_code})</span>
+                                    </h1>
+                                    <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                                        <span style={{ padding: "6px 16px", backgroundColor: project.status === 'Completed' ? '#dcfce7' : project.status === 'On Hold' ? '#f1f5f9' : '#e0e7ff', color: project.status === 'Completed' ? '#166534' : project.status === 'On Hold' ? '#475569' : '#3730a3', borderRadius: "20px", fontSize: "0.85rem", fontWeight: "700" }}>
+                                            {project.status === 'In Progress' ? 'Active' : project.status}
+                                        </span>
+                                        <span style={{ display: "flex", alignItems: "center", gap: "6px", backgroundColor: project.priority === 'High' ? '#fee2e2' : project.priority === 'Medium' ? '#fef3c7' : '#dbeafe', color: project.priority === 'High' ? '#991b1b' : project.priority === 'Medium' ? '#92400e' : '#1e40af', padding: "6px 16px", borderRadius: "20px", fontSize: "0.85rem", fontWeight: "700" }}>
+                                            <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: project.priority === 'High' ? '#ef4444' : project.priority === 'Medium' ? '#f59e0b' : '#3b82f6' }} />
+                                            {project.priority} Priority
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div style={{ display: "flex", gap: "24px", alignItems: "center", color: "#475569", fontSize: "0.95rem" }}>
+                                    <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                        <FaProjectDiagram size={16} /> {deptName}
                                     </span>
-                                    <span style={{ fontSize: "0.85rem", color: "#64748b", display: "flex", alignItems: "center", gap: "4px" }}><FaProjectDiagram /> {deptName}</span>
-                                    <span style={{ fontSize: "0.85rem", color: "#64748b", display: "flex", alignItems: "center", gap: "4px" }}><FaUserCircle /> Manager: {managerName}</span>
+                                    <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                        <FaUserCircle size={18} /> Manager: {managerName}
+                                    </span>
                                 </div>
                             </div>
                         </div>
-                        <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", minWidth: "200px" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                                <span style={{ fontSize: "0.9rem", fontWeight: "600", color: "#334155" }}>Project Progress</span>
-                                <span style={{ fontSize: "0.9rem", fontWeight: "700", color: project.project_color || "#4f46e5" }}>{progress}%</span>
+
+                        {/* Right Side: Actions and Progress */}
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", minWidth: "250px" }}>
+                            <div style={{ display: "flex", gap: "12px", marginBottom: "20px" }}>
+                                {(project.status === "Completed" || progress === 100) && (
+                                    <button onClick={() => setShowReport(true)} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "white", border: "1px solid #e2e8f0", color: "#334155", padding: "10px 18px", borderRadius: "8px", cursor: "pointer", fontSize: "0.95rem", fontWeight: "600" }}>
+                                        <FaFileAlt /> Report
+                                    </button>
+                                )}
+                                {isAdminOrManager && (
+                                    <button onClick={() => setIsEditModalOpen(true)} style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "#f59e0b", border: "none", color: "white", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", fontSize: "0.95rem", fontWeight: "600", boxShadow: "0 2px 4px rgba(245, 158, 11, 0.2)" }}>
+                                        <FaEdit /> Edit Project Details
+                                    </button>
+                                )}
                             </div>
-                            <div style={{ width: "100%", height: "10px", backgroundColor: "#e2e8f0", borderRadius: "5px", overflow: "hidden" }}>
-                                <div style={{ width: `${progress}%`, height: "100%", backgroundColor: progress === 100 ? "#10b981" : (project.project_color || "#4f46e5"), transition: "width 0.5s ease-in-out" }}></div>
-                            </div>
-                            <div style={{ fontSize: "0.8rem", color: "#64748b", marginTop: "8px", textAlign: "right" }}>
-                                Deadline: {new Date(project.end_date).toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' })}
+                            
+                            <div style={{ width: "100%" }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                                    <span style={{ fontSize: "0.9rem", fontWeight: "600", color: "#334155" }}>Project Progress</span>
+                                    <span style={{ fontSize: "0.9rem", fontWeight: "700", color: "#1e293b" }}>{progress}%</span>
+                                </div>
+                                <div style={{ width: "100%", height: "8px", backgroundColor: "#f1f5f9", borderRadius: "4px", overflow: "hidden", marginBottom: "8px" }}>
+                                    <div style={{ width: `${progress}%`, height: "100%", backgroundColor: progress === 100 ? "#10b981" : "#0f172a", transition: "width 0.5s ease-in-out" }}></div>
+                                </div>
+                                <div style={{ fontSize: "0.85rem", color: "#64748b", textAlign: "right", fontWeight: "500" }}>
+                                    Deadline: {new Date(project.end_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Widgets */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "20px", marginBottom: "24px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "20px", marginBottom: "32px" }}>
                     {[
-                        { title: "Total Tasks", value: totalTasks, icon: <FaTasks />, color: "#3b82f6", bg: "#eff6ff" },
-                        { title: "Completed", value: completedTasks, icon: <FaCheckCircle />, color: "#10b981", bg: "#ecfdf5" },
-                        { title: "Pending", value: pendingTasks, icon: <FaClock />, color: "#f59e0b", bg: "#fffbeb" },
-                        { title: "Overdue", value: overdueTasks, icon: <FaExclamationCircle />, color: "#ef4444", bg: "#fef2f2" },
-                        { title: "Team Members", value: members.length, icon: <FaUsers />, color: "#8b5cf6", bg: "#f5f3ff" },
-                        { title: "Remaining Days", value: remainingDays, icon: <FaFlag />, color: "#06b6d4", bg: "#ecfeff" }
+                        { title: "TOTAL TASKS", value: totalTasks, icon: <FaTasks />, color: "#3b82f6", bg: "#eff6ff" },
+                        { title: "COMPLETED", value: completedTasks, icon: <FaCheckCircle />, color: "#10b981", bg: "#ecfdf5" },
+                        { title: "PENDING", value: pendingTasks, icon: <FaClock />, color: "#f59e0b", bg: "#fffbeb" },
+                        { title: "OVERDUE", value: overdueTasks, icon: <FaExclamationCircle />, color: "#ef4444", bg: "#fef2f2" },
+                        { title: "TEAM MEMBERS", value: members.length, icon: <FaUsers />, color: "#8b5cf6", bg: "#f5f3ff" },
+                        { title: "REMAINING DAYS", value: remainingDays, icon: <FaFlag />, color: "#06b6d4", bg: "#ecfeff" }
                     ].map((w, i) => (
-                        <div key={i} style={{ backgroundColor: "white", padding: "20px", borderRadius: "16px", boxShadow: "0 2px 4px rgba(0,0,0,0.02)", border: "1px solid #f1f5f9", display: "flex", alignItems: "center", gap: "16px" }}>
-                            <div style={{ width: "48px", height: "48px", borderRadius: "12px", backgroundColor: w.bg, color: w.color, display: "flex", justifyContent: "center", alignItems: "center", fontSize: "20px" }}>
+                        <div key={i} style={{ backgroundColor: "white", padding: "24px", borderRadius: "12px", border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", gap: "16px" }}>
+                            <div style={{ width: "36px", height: "36px", borderRadius: "8px", backgroundColor: w.bg, color: w.color, display: "flex", justifyContent: "center", alignItems: "center", fontSize: "16px" }}>
                                 {w.icon}
                             </div>
                             <div>
-                                <div style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: "600", marginBottom: "4px" }}>{w.title}</div>
-                                <div style={{ fontSize: "1.5rem", color: "#0f172a", fontWeight: "bold" }}>{w.value}</div>
+                                <div style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: "700", letterSpacing: "0.05em", marginBottom: "8px" }}>{w.title}</div>
+                                <div style={{ fontSize: "2.5rem", color: "#0f172a", fontWeight: "700", lineHeight: "1" }}>{w.value}</div>
                             </div>
                         </div>
                     ))}
                 </div>
 
                 {/* Tabs & Content */}
-                <div style={{ backgroundColor: "white", borderRadius: "16px", boxShadow: "0 2px 4px rgba(0,0,0,0.02)", border: "1px solid #f1f5f9", overflow: "hidden" }}>
-                    <div style={{ display: "flex", borderBottom: "1px solid #e2e8f0", backgroundColor: "#f8fafc", overflowX: "auto" }}>
+                <div style={{ backgroundColor: "white", borderRadius: "16px", border: "1px solid #e2e8f0", overflow: "hidden" }}>
+                    <div style={{ display: "flex", borderBottom: "1px solid #e2e8f0", backgroundColor: "white", padding: "0 24px" }}>
                         {tabs.map(tab => (
                             <button 
                                 key={tab} 
                                 onClick={() => setActiveTab(tab)}
                                 style={{ 
-                                    padding: "16px 24px", border: "none", background: "none", 
-                                    borderBottom: activeTab === tab ? `3px solid ${project.project_color || 'var(--primary, #4f46e5)'}` : "3px solid transparent",
-                                    color: activeTab === tab ? "#0f172a" : "#64748b", fontWeight: "600", cursor: "pointer", fontSize: "0.95rem",
+                                    padding: "16px 20px", border: "none", background: "none", 
+                                    borderBottom: activeTab === tab ? "2px solid #0f172a" : "2px solid transparent",
+                                    color: activeTab === tab ? "#0f172a" : "#64748b", fontWeight: activeTab === tab ? "700" : "600", cursor: "pointer", fontSize: "0.95rem",
                                     transition: "all 0.2s"
                                 }}
                             >
@@ -303,56 +326,80 @@ export default function ProjectDetails() {
                             </button>
                         ))}
                     </div>
-                    <div style={{ padding: "24px" }}>
+                    <div style={{ padding: "32px 24px" }}>
                         {/* Tab Content Rendering */}
                         
                         {activeTab === "Overview" && (
-                            <div>
-                                <h3 style={{ marginTop: 0, color: "#1e293b" }}>Project Description</h3>
-                                <p style={{ color: "#475569", lineHeight: "1.6" }}>{project.description || "No description provided."}</p>
-                                <hr style={{ border: "0", borderTop: "1px solid #e2e8f0", margin: "24px 0" }}/>
-                                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "24px" }}>
-                                    <div>
-                                        <h4 style={{ color: "#1e293b", margin: "0 0 12px 0" }}>Key Details</h4>
-                                        <ul style={{ listStyle: "none", padding: 0, margin: 0, color: "#475569", display: "flex", flexDirection: "column", gap: "10px" }}>
-                                            <li><strong>Start Date:</strong> {new Date(project.start_date).toLocaleDateString()}</li>
-                                            <li><strong>Deadline:</strong> {new Date(project.end_date).toLocaleDateString()}</li>
-                                            <li><strong>Department:</strong> {deptName}</li>
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <h4 style={{ color: "#1e293b", margin: "0 0 12px 0" }}>Manager</h4>
-                                        <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px", backgroundColor: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
-                                            <FaUserCircle size={36} color="#94a3b8" />
-                                            <div>
-                                                <div style={{ fontWeight: "600", color: "#1e293b" }}>{managerName}</div>
-                                                <div style={{ fontSize: "0.85rem", color: "#64748b" }}>{manager?.email || ""}</div>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "48px" }}>
+                                {/* Left Column: Description, Key Details, Manager */}
+                                <div style={{ flex: "2", minWidth: "350px" }}>
+                                    <h3 style={{ marginTop: 0, color: "#1e293b", fontSize: "1.3rem", fontWeight: "600", marginBottom: "16px" }}>Project Description</h3>
+                                    <p style={{ color: "#475569", lineHeight: "1.7", fontSize: "1rem", marginBottom: "40px" }}>{project.description || "No description provided."}</p>
+                                    
+                                    <div style={{ display: "flex", gap: "64px", flexWrap: "wrap" }}>
+                                        <div>
+                                            <div style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: "700", letterSpacing: "0.05em", marginBottom: "12px", textTransform: "uppercase" }}>Key Details</div>
+                                            
+                                            <div style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: "700", letterSpacing: "0.05em", marginBottom: "4px", textTransform: "uppercase" }}>Start Date</div>
+                                            <div style={{ fontSize: "0.95rem", color: "#0f172a", fontWeight: "500", marginBottom: "16px" }}>{new Date(project.start_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                                            
+                                            <div style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: "700", letterSpacing: "0.05em", marginBottom: "4px", textTransform: "uppercase" }}>Deadline</div>
+                                            <div style={{ fontSize: "0.95rem", color: "#0f172a", fontWeight: "500", marginBottom: "16px" }}>{new Date(project.end_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                                            
+                                            <div style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: "700", letterSpacing: "0.05em", marginBottom: "4px", textTransform: "uppercase" }}>Department</div>
+                                            <div style={{ fontSize: "0.95rem", color: "#0f172a", fontWeight: "500" }}>{deptName}</div>
+                                        </div>
+
+                                        <div>
+                                            <div style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: "700", letterSpacing: "0.05em", marginBottom: "12px", textTransform: "uppercase" }}>Manager</div>
+                                            <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "16px", backgroundColor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0", minWidth: "280px" }}>
+                                                <img src={manager?.profile_picture || "https://ui-avatars.com/api/?name=" + encodeURIComponent(managerName) + "&background=0D8ABC&color=fff"} alt="Manager Avatar" style={{ width: "44px", height: "44px", borderRadius: "50%", objectFit: "cover" }} />
+                                                <div style={{ flex: 1 }}>
+                                                    <div style={{ fontWeight: "700", color: "#0f172a", fontSize: "0.9rem" }}>{managerName}</div>
+                                                    <div style={{ fontSize: "0.85rem", color: "#64748b" }}>{manager?.email || "No email available"}</div>
+                                                </div>
+                                                <div style={{ width: "32px", height: "32px", borderRadius: "50%", border: "1px solid #cbd5e1", display: "flex", justifyContent: "center", alignItems: "center", color: "#64748b", cursor: "pointer", backgroundColor: "white" }}>
+                                                    ✉️
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <hr style={{ border: "0", borderTop: "1px solid #e2e8f0", margin: "24px 0" }}/>
-                                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "24px" }}>
-                                    <div>
-                                        <h4 style={{ color: "#1e293b", margin: "0 0 12px 0" }}>Repository</h4>
-                                        <div style={{ padding: "12px", backgroundColor: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
-                                            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 12px 0", color: "#475569", display: "flex", flexDirection: "column", gap: "6px" }}>
-                                                <li><strong>Provider:</strong> {project.repository_provider || "None"}</li>
-                                                <li><strong>Default Branch:</strong> <span style={{ fontFamily: "monospace", backgroundColor: "#e2e8f0", padding: "2px 6px", borderRadius: "4px" }}>{project.default_branch || "N/A"}</span></li>
-                                            </ul>
-                                            {project.repository_url ? (
-                                                <a 
-                                                    href={project.repository_url} 
-                                                    target="_blank" 
-                                                    rel="noopener noreferrer"
-                                                    style={{ display: "inline-flex", alignItems: "center", gap: "6px", textDecoration: "none", backgroundColor: "var(--primary, #4f46e5)", color: "white", padding: "6px 12px", borderRadius: "6px", fontSize: "0.85rem", fontWeight: "600" }}
-                                                >
-                                                    Open Repository
-                                                </a>
-                                            ) : (
-                                                <span style={{ fontSize: "0.85rem", color: "#94a3b8", fontStyle: "italic" }}>No URL provided</span>
-                                            )}
+
+                                {/* Right Column: Repository */}
+                                <div style={{ flex: "1", minWidth: "300px" }}>
+                                    <h3 style={{ marginTop: 0, color: "#1e293b", fontSize: "1.3rem", fontWeight: "600", marginBottom: "16px" }}>Repository</h3>
+                                    <div style={{ backgroundColor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0", padding: "24px" }}>
+                                        <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "32px" }}>
+                                            <div style={{ width: "48px", height: "48px", backgroundColor: "#0f172a", color: "white", borderRadius: "50%", display: "flex", justifyContent: "center", alignItems: "center", fontSize: "24px" }}>
+                                                {/* Fallback to simple GitHub text icon style */}
+                                                <svg height="24" aria-hidden="true" viewBox="0 0 16 16" version="1.1" width="24" data-view-component="true" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <div style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: "700", letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: "4px" }}>Provider</div>
+                                                <div style={{ fontWeight: "700", color: "#0f172a", fontSize: "1.05rem" }}>{project.repository_provider || "GitHub"}</div>
+                                            </div>
                                         </div>
+                                        
+                                        <div style={{ marginBottom: "24px" }}>
+                                            <div style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: "700", letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: "8px" }}>Default Branch</div>
+                                            <div style={{ display: "flex", alignItems: "center", gap: "8px", backgroundColor: "#e2e8f0", padding: "10px 16px", borderRadius: "8px", fontFamily: "monospace", color: "#334155", fontSize: "0.95rem" }}>
+                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path fillRule="evenodd" d="M11.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm-2.25.75a2.25 2.25 0 113 2.122V6A2.5 2.5 0 0110 8.5H6a1 1 0 00-1 1v1.128a2.251 2.251 0 11-1.5 0V5.372a2.25 2.25 0 111.5 0v1.836A2.492 2.492 0 016 7h4a1 1 0 001-1v-.628A2.25 2.25 0 019.5 3.25zM4.25 12a.75.75 0 100 1.5.75.75 0 000-1.5zM3.5 3.25a.75.75 0 111.5 0 .75.75 0 01-1.5 0z"></path></svg>
+                                                {project.default_branch || "main"}
+                                            </div>
+                                        </div>
+
+                                        <a 
+                                            href={project.repository_url || "#"} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "8px", backgroundColor: "#f59e0b", color: "white", padding: "12px", borderRadius: "8px", fontSize: "0.95rem", fontWeight: "600", textDecoration: "none", width: "100%", boxSizing: "border-box", boxShadow: "0 2px 4px rgba(245, 158, 11, 0.25)" }}
+                                        >
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                            Open Repository
+                                        </a>
                                     </div>
                                 </div>
                             </div>

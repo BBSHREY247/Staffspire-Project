@@ -5,7 +5,7 @@ import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
 import {
     FaArrowLeft, FaEdit, FaCheck, FaTimes, FaCalendarAlt,
-    FaUser, FaBuilding, FaFlag, FaStickyNote, FaClock, FaIdBadge, FaTrashAlt
+    FaUser, FaBuilding, FaFlag, FaStickyNote, FaClock, FaIdBadge, FaTrashAlt, FaSpinner
 } from "react-icons/fa";
 import TaskCompletionModal from "./components/TaskCompletionModal";
 
@@ -54,6 +54,8 @@ function TaskDetail() {
     const [editing, setEditing] = useState(false);
     const [actionLoading, setActionLoading] = useState(false);
     const [message, setMessage] = useState(null);
+    const [commitToRemove, setCommitToRemove] = useState(null);
+    const [submissionToDelete, setSubmissionToDelete] = useState(null);
 
     const [editForm, setEditForm] = useState({});
     
@@ -124,6 +126,41 @@ function TaskDetail() {
             fetchTask();
         } catch (err) {
             showNotification("error", err.response?.data?.message || "Update failed.");
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const handleRemoveCommit = (submissionId, commitHash) => {
+        setCommitToRemove({ submissionId, commitHash });
+    };
+
+    const confirmRemoveCommit = async () => {
+        if (!commitToRemove) return;
+        const { submissionId, commitHash } = commitToRemove;
+        try {
+            setActionLoading(true);
+            await axios.delete(`${API}/tasks/${id}/submissions/${submissionId}/commits/${commitHash}`, { headers });
+            showNotification("success", "Commit removed successfully.");
+            setCommitToRemove(null);
+            fetchTask();
+        } catch (err) {
+            showNotification("error", err.response?.data?.message || "Failed to remove commit.");
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const confirmDeleteSubmission = async () => {
+        if (!submissionToDelete) return;
+        try {
+            setActionLoading(true);
+            await axios.delete(`${API}/tasks/${id}/submissions/${submissionToDelete}`, { headers });
+            showNotification("success", "Submission deleted successfully.");
+            setSubmissionToDelete(null);
+            fetchTask();
+        } catch (err) {
+            showNotification("error", err.response?.data?.message || "Failed to delete submission.");
         } finally {
             setActionLoading(false);
         }
@@ -271,8 +308,15 @@ function TaskDetail() {
                                             <span style={{ fontSize: "14px", fontWeight: "700", color: "#1e293b" }}>Submission #{task.submissions.length - index}</span>
                                             <span style={{ fontSize: "12px", color: "#64748b" }}>{new Date(sub.submitted_at).toLocaleString()}</span>
                                         </div>
-                                        <div style={{ fontSize: "12px", fontWeight: "600", padding: "4px 8px", borderRadius: "4px", backgroundColor: sub.review_status === 'Approved' ? '#dcfce7' : sub.review_status === 'Rejected' ? '#fee2e2' : '#fef9c3', color: sub.review_status === 'Approved' ? '#166534' : sub.review_status === 'Rejected' ? '#991b1b' : '#a16207' }}>
-                                            {sub.review_status}
+                                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                            <div style={{ fontSize: "12px", fontWeight: "600", padding: "4px 8px", borderRadius: "4px", backgroundColor: sub.review_status === 'Approved' ? '#dcfce7' : sub.review_status === 'Rejected' ? '#fee2e2' : '#fef9c3', color: sub.review_status === 'Approved' ? '#166534' : sub.review_status === 'Rejected' ? '#991b1b' : '#a16207' }}>
+                                                {sub.review_status}
+                                            </div>
+                                            {sub.review_status !== 'Approved' && (
+                                                <button onClick={() => setSubmissionToDelete(sub.id)} title="Delete submission" style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444", fontSize: "15px", display: "flex", alignItems: "center", padding: "4px" }}>
+                                                    <FaTrashAlt />
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                     
@@ -285,19 +329,26 @@ function TaskDetail() {
                                         {sub.commit_hash && (
                                             <div>
                                                 <strong>Commits:</strong>{' '}
-                                                {sub.commit_hash.split(',').map(h => h.trim()).filter(Boolean).map((hash, idx) => (
-                                                    <span key={idx} style={{ marginRight: "8px" }}>
-                                                        {sub.repository_url ? (
-                                                            <a href={`${sub.repository_url.trim().replace(/\.git$/, '').replace(/\/$/, '')}/commit/${hash}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--primary, #2563eb)", fontFamily: "monospace" }}>
-                                                                {hash.substring(0, 7)}
-                                                            </a>
-                                                        ) : (
-                                                            <span style={{ fontFamily: "monospace", backgroundColor: "#f1f5f9", padding: "2px 6px", borderRadius: "4px" }}>
-                                                                {hash.substring(0, 7)}
-                                                            </span>
-                                                        )}
-                                                    </span>
-                                                ))}
+                                                <div style={{ display: "inline-flex", flexWrap: "wrap", gap: "8px", marginTop: "4px" }}>
+                                                    {sub.commit_hash.split(',').map(h => h.trim()).filter(Boolean).map((hash, idx) => (
+                                                        <span key={idx} style={{ display: "inline-flex", alignItems: "center", background: "#f1f5f9", padding: "4px 10px", borderRadius: "6px", border: "1px solid #e2e8f0" }}>
+                                                            {sub.repository_url ? (
+                                                                <a href={`${sub.repository_url.trim().replace(/\.git$/, '').replace(/\/$/, '')}/commit/${hash}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--primary, #2563eb)", fontFamily: "monospace", textDecoration: "none", fontWeight: "600" }}>
+                                                                    {hash.substring(0, 7)}
+                                                                </a>
+                                                            ) : (
+                                                                <span style={{ fontFamily: "monospace", fontWeight: "600" }}>
+                                                                    {hash.substring(0, 7)}
+                                                                </span>
+                                                            )}
+                                                            {sub.review_status !== 'Approved' && (
+                                                                <button onClick={() => handleRemoveCommit(sub.id, hash)} title="Remove commit" style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444", marginLeft: "6px", padding: "0 2px", fontSize: "14px", display: "flex", alignItems: "center" }}>
+                                                                    <FaTimes />
+                                                                </button>
+                                                            )}
+                                                        </span>
+                                                    ))}
+                                                </div>
                                             </div>
                                         )}
                                         {sub.pull_request_url && <div><strong>PR:</strong> <a href={sub.pull_request_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--primary, #2563eb)" }}>View Pull Request</a></div>}
@@ -500,7 +551,7 @@ function TaskDetail() {
                 )}
 
                 {/* Manager Review Widget */}
-                {isAdminOrManager && task.status === "Submitted for Review" && task.submissions?.length > 0 && (
+                {isAdminOrManager && task.submissions?.length > 0 && task.submissions[0].review_status === 'Pending' && (
                     <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: "16px", padding: "24px", marginBottom: "24px", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}>
                         <h3 style={{ margin: "0 0 16px 0", fontSize: "18px", color: "#1e293b", display: "flex", alignItems: "center", gap: "8px" }}><FaCheck color="#10b981" /> Manager Review</h3>
                         <div style={{ background: "#f8fafc", padding: "16px", borderRadius: "8px", border: "1px solid #e2e8f0", marginBottom: "16px" }}>
@@ -523,6 +574,47 @@ function TaskDetail() {
                 )}
             </div>
 
+            {/* Commit Removal Confirmation Modal */}
+            {commitToRemove && (
+                <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "20px" }}>
+                    <div style={{ background: "white", padding: "24px", borderRadius: "12px", width: "100%", maxWidth: "400px", boxShadow: "0 10px 25px rgba(0,0,0,0.2)" }}>
+                        <h3 style={{ margin: "0 0 12px 0", fontSize: "18px", color: "#1e293b", fontWeight: "700" }}>Remove Commit</h3>
+                        <p style={{ margin: "0 0 24px 0", fontSize: "15px", color: "#475569", lineHeight: "1.5" }}>
+                            Are you sure you want to remove commit <strong>{commitToRemove.commitHash.substring(0, 7)}</strong>? This action cannot be undone.
+                        </p>
+                        <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
+                            <button onClick={() => setCommitToRemove(null)} disabled={actionLoading} style={{ background: "white", color: "#475569", border: "1px solid #cbd5e1", padding: "10px 16px", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "14px" }}>
+                                Cancel
+                            </button>
+                            <button onClick={confirmRemoveCommit} disabled={actionLoading} style={{ background: "#ef4444", color: "white", border: "none", padding: "10px 16px", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "14px", display: "flex", alignItems: "center", gap: "8px" }}>
+                                {actionLoading ? <FaSpinner className="spin" /> : <FaTimes />}
+                                Remove Commit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Submission Deletion Confirmation Modal */}
+            {submissionToDelete && (
+                <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "20px" }}>
+                    <div style={{ background: "white", padding: "24px", borderRadius: "12px", width: "100%", maxWidth: "400px", boxShadow: "0 10px 25px rgba(0,0,0,0.2)" }}>
+                        <h3 style={{ margin: "0 0 12px 0", fontSize: "18px", color: "#1e293b", fontWeight: "700" }}>Delete Submission</h3>
+                        <p style={{ margin: "0 0 24px 0", fontSize: "15px", color: "#475569", lineHeight: "1.5" }}>
+                            Are you sure you want to delete this entire submission record? This action cannot be undone.
+                        </p>
+                        <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
+                            <button onClick={() => setSubmissionToDelete(null)} disabled={actionLoading} style={{ background: "white", color: "#475569", border: "1px solid #cbd5e1", padding: "10px 16px", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "14px" }}>
+                                Cancel
+                            </button>
+                            <button onClick={confirmDeleteSubmission} disabled={actionLoading} style={{ background: "#ef4444", color: "white", border: "none", padding: "10px 16px", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "14px", display: "flex", alignItems: "center", gap: "8px" }}>
+                                {actionLoading ? <FaSpinner className="spin" /> : <FaTrashAlt />}
+                                Delete Submission
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </DashboardLayout>
     );
 }

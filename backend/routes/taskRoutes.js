@@ -15,7 +15,7 @@ const { adminOnly, adminOrManager } = require("../middleware/roleMiddleware");
 const {
     createTask, getAllTasks, getMyTasks, getTaskStats,
     getEmployeesForAssignment, getTaskById, updateTask, deleteTask,
-    submitTaskEvidence, reviewTaskSubmission
+    submitTaskEvidence, reviewTaskSubmission, removeCommitFromSubmission, deleteTaskSubmission
 } = require("../controllers/taskController");
 
 // Stats (Admin / Manager / Employee — each sees their own scope)
@@ -47,5 +47,11 @@ router.post("/:id/submissions", protect, upload.array("attachments", 5), submitT
 
 // Review task submission (Admin/Manager)
 router.post("/:id/submissions/:submissionId/review", protect, reviewTaskSubmission);
+
+// Remove specific commit from submission
+router.delete("/:id/submissions/:submissionId/commits/:commitHash", protect, removeCommitFromSubmission);
+
+// Delete entire submission
+router.delete("/:id/submissions/:submissionId", protect, deleteTaskSubmission);
 
 module.exports = router;

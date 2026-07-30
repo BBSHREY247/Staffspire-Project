@@ -510,8 +510,100 @@ const reviewTaskSubmission = async (req, res) => {
     }
 };
 
+// Remove a specific commit from a submission
+const removeCommitFromSubmission = async (req, res) => {
+    try {
+        const { id, submissionId, commitHash } = req.params;
+
+        // Check if user is allowed to edit this submission
+        const role = req.user.role;
+        const emp = await getEmployeeFromUser(req.user.id);
+        
+        const [submissions] = await db.promise().query(
+            "SELECT * FROM task_submissions WHERE id = ? AND task_id = ?",
+            [submissionId, id]
+        );
+        if (!submissions.length) return res.status(404).json({ success: false, message: "Submission not found." });
+
+        const sub = submissions[0];
+
+        // If employee, they can only edit their own submissions
+        if (role === "Employee") {
+            if (!emp || (String(sub.employee_id) !== String(emp.employee_id) && String(sub.employee_id) !== String(req.user.id) && String(sub.employee_id) !== String(req.user.login_id))) {
+                return res.status(403).json({ success: false, message: "Forbidden: You can only modify your own submissions." });
+            }
+        }
+        
+        if (sub.review_status === "Approved") {
+            return res.status(400).json({ success: false, message: "Cannot modify an approved submission." });
+        }
+
+        // Parse and remove the commit hash
+        if (!sub.commit_hash) return res.status(400).json({ success: false, message: "No commits found in this submission." });
+
+        const commitHashes = sub.commit_hash.split(',').map(h => h.trim()).filter(Boolean);
+        const newCommitHashes = commitHashes.filter(h => h !== commitHash);
+
+        // Check if there are other forms of evidence
+        let hasFiles = false;
+        try {
+            const parsedFiles = JSON.parse(sub.file_paths || '[]');
+            if (parsedFiles && parsedFiles.length > 0) hasFiles = true;
+        } catch (e) {}
+
+        if (newCommitHashes.length === 0 && !hasFiles && !sub.demo_url && !sub.summary && !sub.notes) {
+            // No evidence left, auto-delete the entire submission
+            await db.promise().query("DELETE FROM task_submissions WHERE id = ?", [submissionId]);
+            return res.status(200).json({ success: true, message: "Commit removed and empty submission deleted." });
+        } else {
+            await db.promise().query(
+                "UPDATE task_submissions SET commit_hash = ? WHERE id = ?",
+                [newCommitHashes.join(', ') || null, submissionId]
+            );
+            return res.status(200).json({ success: true, message: "Commit removed successfully." });
+        }
+    } catch (error) {
+        console.error("Remove commit error:", error);
+        return res.status(500).json({ success: false, message: "Failed to remove commit." });
+    }
+};
+
+// Delete an entire task submission
+const deleteTaskSubmission = async (req, res) => {
+    try {
+        const { id, submissionId } = req.params;
+        const role = req.user.role;
+        const emp = await getEmployeeFromUser(req.user.id);
+        
+        const [submissions] = await db.promise().query(
+            "SELECT * FROM task_submissions WHERE id = ? AND task_id = ?",
+            [submissionId, id]
+        );
+        if (!submissions.length) return res.status(404).json({ success: false, message: "Submission not found." });
+
+        const sub = submissions[0];
+
+        if (role === "Employee") {
+            if (!emp || (String(sub.employee_id) !== String(emp.employee_id) && String(sub.employee_id) !== String(req.user.id) && String(sub.employee_id) !== String(req.user.login_id))) {
+                return res.status(403).json({ success: false, message: "Forbidden: You can only delete your own submissions." });
+            }
+        }
+        
+        if (sub.review_status === "Approved") {
+            return res.status(400).json({ success: false, message: "Cannot delete an approved submission." });
+        }
+
+        await db.promise().query("DELETE FROM task_submissions WHERE id = ?", [submissionId]);
+
+        return res.status(200).json({ success: true, message: "Submission deleted successfully." });
+    } catch (error) {
+        console.error("Delete submission error:", error);
+        return res.status(500).json({ success: false, message: "Failed to delete submission." });
+    }
+};
+
 module.exports = {
     createTask, getAllTasks, getMyTasks, getTaskStats,
     getEmployeesForAssignment, getTaskById, updateTask, deleteTask,
-    submitTaskEvidence, reviewTaskSubmission
+    submitTaskEvidence, reviewTaskSubmission, removeCommitFromSubmission, deleteTaskSubmission
 };
