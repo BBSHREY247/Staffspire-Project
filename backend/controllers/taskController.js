@@ -335,8 +335,8 @@ const updateTask = async (req, res) => {
             if (!emp || (String(task.employee_id) !== String(emp.employee_id) && String(task.employee_id) !== String(req.user.id) && String(task.employee_id) !== String(req.user.login_id))) {
                 return res.status(403).json({ success: false, message: "Forbidden: You can only update tasks assigned to you." });
             }
-            // Employee: only status + remarks + git_evidence
-            const { status, remarks, git_evidence } = req.body;
+            // Employee: only status + remarks
+            const { status, remarks } = req.body;
             const newStatus = status || task.status;
             const completionDate = newStatus === "Completed" ? new Date().toISOString().split("T")[0] : task.completion_date;
 
@@ -344,14 +344,6 @@ const updateTask = async (req, res) => {
                 "UPDATE tasks SET status = ?, remarks = ?, completion_date = ? WHERE id = ?",
                 [newStatus, remarks !== undefined ? remarks : task.remarks, completionDate, req.params.id]
             );
-
-            if (git_evidence && (git_evidence.branch_name || git_evidence.commit_hash || git_evidence.pull_request_url || git_evidence.notes)) {
-                await db.promise().query(
-                    `INSERT INTO task_git_activity (task_id, employee_id, branch_name, commit_hash, commit_url, pull_request_url, notes)
-                     VALUES (?, ?, ?, ?, ?, ?, ?)`,
-                    [req.params.id, emp.employee_id, git_evidence.branch_name || null, git_evidence.commit_hash || null, git_evidence.commit_url || null, git_evidence.pull_request_url || null, git_evidence.notes || null]
-                );
-            }
         } else {
             // Admin / Manager: full update
             const { task_title, description, assigned_to, priority, status, deadline, department, remarks, project_id, start_date } = req.body;
@@ -396,6 +388,25 @@ const updateTask = async (req, res) => {
                     start_date !== undefined ? start_date : task.start_date,
                     req.params.id
                 ]
+            );
+        }
+
+        // Handle proof of completion (evidence)
+        const { summary, notes, evidence_type, repository_url, commit_hash, pull_request_url, branch_name, demo_url } = req.body;
+        if (summary || evidence_type || (req.files && req.files.length > 0)) {
+            let filePaths = [];
+            if (req.files && req.files.length > 0) {
+                filePaths = req.files.map(f => f.filename);
+            }
+            
+            const actingEmp = await getEmployeeFromUser(req.user.id);
+            const actingEmpId = actingEmp ? actingEmp.employee_id : task.employee_id; // Default to task assignee if admin has no employee profile
+
+            await db.promise().query(
+                `INSERT INTO task_submissions 
+                (task_id, employee_id, summary, notes, evidence_type, repository_url, commit_hash, pull_request_url, branch_name, demo_url, file_paths, review_status) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')`,
+                [req.params.id, actingEmpId, summary || null, notes || null, evidence_type || null, repository_url || null, commit_hash || null, pull_request_url || null, branch_name || null, demo_url || null, JSON.stringify(filePaths)]
             );
         }
 

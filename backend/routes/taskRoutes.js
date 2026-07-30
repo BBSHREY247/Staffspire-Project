@@ -36,8 +36,8 @@ router.post("/", protect, createTask);
 // Single task detail (any authenticated user)
 router.get("/:id", protect, getTaskById);
 
-// Update task (Admin/Manager: full; Employee: status+remarks)
-router.put("/:id", protect, updateTask);
+// Update task (Admin/Manager: full; Employee: status+remarks+evidence)
+router.put("/:id", protect, upload.array("attachments", 5), updateTask);
 
 // Delete task (Admin/Manager)
 router.delete("/:id", protect, adminOrManager, deleteTask);
