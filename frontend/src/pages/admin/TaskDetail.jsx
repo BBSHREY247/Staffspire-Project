@@ -4,10 +4,10 @@ import axios from "axios";
 import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
 import {
-
     FaArrowLeft, FaEdit, FaCheck, FaTimes, FaCalendarAlt,
     FaUser, FaBuilding, FaFlag, FaStickyNote, FaClock, FaIdBadge
 } from "react-icons/fa";
+import TaskCompletionModal from "./components/TaskCompletionModal";
 
 const fetcher = (url) => axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }).then(res => res.data);
 
@@ -23,6 +23,8 @@ const priorityConfig = {
 const statusConfig = {
     "Pending":     { color: "#92400e", bg: "#fef9c3", border: "#fde68a" },
     "In Progress": { color: "#1e40af", bg: "#dbeafe", border: "#bfdbfe" },
+    "Submitted for Review": { color: "#6b21a8", bg: "#f3e8ff", border: "#e9d5ff" },
+    "Needs Revision": { color: "#9a3412", bg: "#ffedd5", border: "#fed7aa" },
     "On Hold":     { color: "#374151", bg: "#f3f4f6", border: "#d1d5db" },
     "Completed":   { color: "#14532d", bg: "#dcfce7", border: "#bbf7d0" },
     "Overdue":     { color: "#7f1d1d", bg: "#fee2e2", border: "#fecaca" },
@@ -57,6 +59,12 @@ function TaskDetail() {
     const [empStatus, setEmpStatus] = useState("");
     const [empRemarks, setEmpRemarks] = useState("");
     const [gitEvidence, setGitEvidence] = useState({ branch_name: "", commit_hash: "", commit_url: "", pull_request_url: "", notes: "" });
+
+    const [showCompletionModal, setShowCompletionModal] = useState(false);
+    const [submittingEvidence, setSubmittingEvidence] = useState(false);
+    
+    // Manager Review state
+    const [reviewComments, setReviewComments] = useState("");
 
     const token = localStorage.getItem("token");
     const headers = { Authorization: `Bearer ${token}` };
@@ -123,6 +131,42 @@ function TaskDetail() {
         }
     };
 
+    const handleSubmitEvidence = async (formData) => {
+        try {
+            setSubmittingEvidence(true);
+            // Must use multipart/form-data config
+            await axios.post(`${API}/tasks/${id}/submissions`, formData, { 
+                headers: { ...headers, "Content-Type": "multipart/form-data" } 
+            });
+            showNotification("success", "Evidence submitted successfully.");
+            setShowCompletionModal(false);
+            fetchTask();
+        } catch (err) {
+            showNotification("error", err.response?.data?.message || "Failed to submit evidence.");
+        } finally {
+            setSubmittingEvidence(false);
+        }
+    };
+
+    const handleManagerReview = async (status) => {
+        try {
+            setActionLoading(true);
+            const submissionId = task.submissions?.[0]?.id;
+            if (!submissionId) {
+                showNotification("error", "No submission found.");
+                return;
+            }
+            await axios.post(`${API}/tasks/${id}/submissions/${submissionId}/review`, { status, review_comments: reviewComments }, { headers });
+            showNotification("success", `Submission ${status === 'Approved' ? 'approved' : 'revision requested'}.`);
+            setReviewComments("");
+            fetchTask();
+        } catch (err) {
+            showNotification("error", err.response?.data?.message || "Failed to submit review.");
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
     const formatDate = (d) => {
         if (!d) return "—";
         return new Date(d).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
@@ -179,10 +223,16 @@ function TaskDetail() {
                             <span style={{ background: stsCfg.bg, color: stsCfg.color, border: `1.5px solid ${stsCfg.border}`, padding: "8px 20px", borderRadius: "30px", fontWeight: "700", fontSize: "14px" }}>
                                 {task.status}
                             </span>
-                            {(!editing && (isAdminOrManager || (isAssignedToMe && task.status !== "Completed"))) && (
+                            {(!editing && isAdminOrManager) && (
                                 <button type="button" onClick={() => setEditing(true)} className="btn-edit-task"
                                     style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--primary, #2563eb)", color: "white", border: "none", padding: "10px 18px", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "13px" }}>
                                     <FaEdit /> Edit Task
+                                </button>
+                            )}
+                            {(isAssignedToMe && task.status !== "Completed" && task.status !== "Submitted for Review") && (
+                                <button type="button" onClick={() => setShowCompletionModal(true)}
+                                    style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "#10b981", color: "white", border: "none", padding: "10px 18px", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "13px" }}>
+                                    <FaCheck /> Mark as Complete
                                 </button>
                             )}
                         </div>
@@ -211,31 +261,61 @@ function TaskDetail() {
                     ))}
                 </div>
 
-                {/* Git Activity / Evidence */}
-                {task.git_activity && task.git_activity.length > 0 && (
+                {/* Task Submissions / Evidence */}
+                {task.submissions && task.submissions.length > 0 && (
                     <div style={{ background: "white", borderRadius: "12px", padding: "22px 24px", boxShadow: "0 2px 10px rgba(0,0,0,0.05)", marginBottom: "20px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
-                            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "700", color: "#1e293b" }}>Git Activity / Evidence</h3>
+                            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "700", color: "#1e293b" }}>Task Submissions / Evidence</h3>
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                            {task.git_activity.map((act, index) => (
-                                <div key={act.id} style={{ padding: "16px", backgroundColor: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
-                                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                            {task.submissions.map((sub, index) => (
+                                <div key={sub.id} style={{ padding: "16px", backgroundColor: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px", borderBottom: "1px solid #cbd5e1", paddingBottom: "8px" }}>
                                         <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                                            <span style={{ fontSize: "13px", fontWeight: "600", color: "#475569" }}>Submission #{task.git_activity.length - index}</span>
-                                            <span style={{ fontSize: "12px", color: "#94a3b8" }}>{new Date(act.submitted_at).toLocaleString()}</span>
+                                            <span style={{ fontSize: "14px", fontWeight: "700", color: "#1e293b" }}>Submission #{task.submissions.length - index}</span>
+                                            <span style={{ fontSize: "12px", color: "#64748b" }}>{new Date(sub.submitted_at).toLocaleString()}</span>
+                                        </div>
+                                        <div style={{ fontSize: "12px", fontWeight: "600", padding: "4px 8px", borderRadius: "4px", backgroundColor: sub.review_status === 'Approved' ? '#dcfce7' : sub.review_status === 'Rejected' ? '#fee2e2' : '#fef9c3', color: sub.review_status === 'Approved' ? '#166534' : sub.review_status === 'Rejected' ? '#991b1b' : '#a16207' }}>
+                                            {sub.review_status}
                                         </div>
                                     </div>
-                                    <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", fontSize: "14px", color: "#1e293b" }}>
-                                        {act.branch_name && <div><strong>Branch:</strong> <span style={{ fontFamily: "monospace", backgroundColor: "#e2e8f0", padding: "2px 6px", borderRadius: "4px" }}>{act.branch_name}</span></div>}
-                                        {act.commit_hash && act.commit_url ? (
-                                            <div><strong>Commit:</strong> <a href={act.commit_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--primary, #2563eb)", fontFamily: "monospace" }}>{act.commit_hash.substring(0, 7)}</a></div>
-                                        ) : act.commit_hash ? (
-                                            <div><strong>Commit:</strong> <span style={{ fontFamily: "monospace", backgroundColor: "#e2e8f0", padding: "2px 6px", borderRadius: "4px" }}>{act.commit_hash.substring(0, 7)}</span></div>
+                                    
+                                    <p style={{ margin: "0 0 12px 0", fontSize: "14px", color: "#334155", fontWeight: "600" }}>Summary: <span style={{ fontWeight: "400" }}>{sub.summary}</span></p>
+                                    
+                                    <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", fontSize: "14px", color: "#1e293b", background: "#fff", padding: "12px", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+                                        <div style={{ width: "100%", fontWeight: "600", color: "#475569", marginBottom: "4px" }}>Evidence Type: {sub.evidence_type}</div>
+                                        
+                                        {sub.branch_name && <div><strong>Branch:</strong> <span style={{ fontFamily: "monospace", backgroundColor: "#f1f5f9", padding: "2px 6px", borderRadius: "4px" }}>{sub.branch_name}</span></div>}
+                                        {sub.commit_hash && sub.repository_url ? (
+                                            <div><strong>Commit:</strong> <a href={sub.repository_url.endsWith('/') ? `${sub.repository_url}commit/${sub.commit_hash}` : `${sub.repository_url}/commit/${sub.commit_hash}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--primary, #2563eb)", fontFamily: "monospace" }}>{sub.commit_hash.substring(0, 7)}</a></div>
+                                        ) : sub.commit_hash ? (
+                                            <div><strong>Commit:</strong> <span style={{ fontFamily: "monospace", backgroundColor: "#f1f5f9", padding: "2px 6px", borderRadius: "4px" }}>{sub.commit_hash.substring(0, 7)}</span></div>
                                         ) : null}
-                                        {act.pull_request_url && <div><strong>PR:</strong> <a href={act.pull_request_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--primary, #2563eb)" }}>View Pull Request</a></div>}
+                                        {sub.pull_request_url && <div><strong>PR:</strong> <a href={sub.pull_request_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--primary, #2563eb)" }}>View Pull Request</a></div>}
+                                        {sub.demo_url && <div><strong>Demo:</strong> <a href={sub.demo_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--primary, #2563eb)" }}>{sub.demo_url}</a></div>}
                                     </div>
-                                    {act.notes && <p style={{ margin: "10px 0 0", color: "#475569", fontSize: "14px" }}>{act.notes}</p>}
+                                    
+                                    {sub.file_paths && Array.isArray(sub.file_paths) && sub.file_paths.length > 0 && (
+                                        <div style={{ marginTop: "12px", background: "#f0fdf4", padding: "12px", borderRadius: "8px", border: "1px solid #bbf7d0" }}>
+                                            <strong style={{ fontSize: "13px", color: "#166534", display: "block", marginBottom: "8px" }}>Attachments:</strong>
+                                            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                                                {sub.file_paths.map((file, i) => (
+                                                    <a key={i} href={`http://localhost:5000/uploads/${file}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: "13px", background: "#fff", padding: "6px 12px", borderRadius: "6px", color: "#2563eb", textDecoration: "none", border: "1px solid #dbeafe" }}>
+                                                        📎 {file.split('-').slice(2).join('-') || file}
+                                                    </a>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {sub.notes && <p style={{ margin: "12px 0 0", color: "#475569", fontSize: "14px", padding: "8px", background: "#f1f5f9", borderRadius: "6px" }}><strong>Notes:</strong> {sub.notes}</p>}
+                                    
+                                    {sub.review_comments && (
+                                        <div style={{ marginTop: "12px", padding: "12px", background: sub.review_status === 'Approved' ? '#f0fdf4' : '#fef2f2', borderLeft: `4px solid ${sub.review_status === 'Approved' ? '#166534' : '#991b1b'}`, borderRadius: "4px" }}>
+                                            <strong style={{ fontSize: "13px", color: sub.review_status === 'Approved' ? '#166534' : '#991b1b' }}>Manager Feedback:</strong>
+                                            <p style={{ margin: "4px 0 0", fontSize: "14px", color: "#1e293b" }}>{sub.review_comments}</p>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -316,7 +396,7 @@ function TaskDetail() {
                                     <label>Status</label>
                                     <select aria-label="Status" value={editForm.status || "Pending"} onChange={e => setEditForm({ ...editForm, status: e.target.value })}
                                         style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }}>
-                                        {["Pending", "In Progress", "On Hold", "Completed"].map(s => <option key={s}>{s}</option>)}
+                                            {["Pending", "In Progress", "Submitted for Review", "Needs Revision", "On Hold", "Completed"].map(s => <option key={s}>{s}</option>)}
                                     </select>
                                 </div>
                             </div>
@@ -342,89 +422,36 @@ function TaskDetail() {
                     </div>
                 )}
 
-                {/* ─── EMPLOYEE UPDATE FORM ─── */}
-                {isAssignedToMe && editing && task.status !== "Completed" && (
-                    <div style={{ background: "white", borderRadius: "16px", padding: "28px", boxShadow: "0 2px 16px rgba(0,0,0,0.08)", marginBottom: "20px" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-                            <h2 style={{ margin: 0, fontWeight: "700", fontSize: "18px" }}>Edit Task</h2>
-                            <button type="button" aria-label="Close modal" onClick={() => setEditing(false)}
-                                style={{ background: "none", border: "none", cursor: "pointer", color: "#64748b", fontSize: "18px" }}>
-                                <FaTimes />
+                {/* Manager Review Widget */}
+                {isAdminOrManager && task.status === "Submitted for Review" && task.submissions?.length > 0 && (
+                    <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: "16px", padding: "24px", marginBottom: "24px", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}>
+                        <h3 style={{ margin: "0 0 16px 0", fontSize: "18px", color: "#1e293b", display: "flex", alignItems: "center", gap: "8px" }}><FaCheck color="#10b981" /> Manager Review</h3>
+                        <div style={{ background: "#f8fafc", padding: "16px", borderRadius: "8px", border: "1px solid #e2e8f0", marginBottom: "16px" }}>
+                            <h4 style={{ margin: "0 0 8px 0", color: "#334155" }}>Latest Submission Summary</h4>
+                            <p style={{ margin: 0, color: "#475569", fontSize: "14px" }}>{task.submissions[0].summary}</p>
+                        </div>
+                        <div style={{ marginBottom: "16px" }}>
+                            <label style={{ display: "block", marginBottom: "8px", fontSize: "14px", fontWeight: "600", color: "#334155" }}>Review Comments (Optional)</label>
+                            <textarea value={reviewComments} onChange={e => setReviewComments(e.target.value)} rows="3" placeholder="Provide feedback to the employee..." style={{ width: "100%", padding: "12px", border: "1px solid #cbd5e1", borderRadius: "8px", resize: "none", fontSize: "14px" }} />
+                        </div>
+                        <div style={{ display: "flex", gap: "12px" }}>
+                            <button onClick={() => handleManagerReview('Approved')} disabled={actionLoading} style={{ background: "#10b981", color: "white", padding: "12px 24px", borderRadius: "8px", border: "none", fontWeight: "600", cursor: "pointer", opacity: actionLoading ? 0.7 : 1 }}>
+                                Approve & Complete
+                            </button>
+                            <button onClick={() => handleManagerReview('Rejected')} disabled={actionLoading} style={{ background: "#f59e0b", color: "white", padding: "12px 24px", borderRadius: "8px", border: "none", fontWeight: "600", cursor: "pointer", opacity: actionLoading ? 0.7 : 1 }}>
+                                Request Changes
                             </button>
                         </div>
-                        <form onSubmit={handleEmployeeUpdate} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                            <div className="form-group" style={{ margin: 0 }}>
-                                <label>Update Status</label>
-                                <select aria-label="Update Status" value={empStatus} onChange={e => setEmpStatus(e.target.value)}
-                                    style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }}>
-                                    {["Pending", "In Progress", "On Hold", "Completed"].map(s => <option key={s}>{s}</option>)}
-                                </select>
-                            </div>
-
-                            {/* Project Repository Context */}
-                            {task.repository_provider && (
-                                <div style={{ padding: "16px", backgroundColor: "#f8fafc", borderRadius: "8px", border: "1px solid #cbd5e1" }}>
-                                    <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", color: "#1e293b" }}>Project Repository</h4>
-                                    <div style={{ display: "flex", gap: "16px", fontSize: "14px", color: "#475569" }}>
-                                        <div><strong>Provider:</strong> {task.repository_provider}</div>
-                                        <div><strong>Default Branch:</strong> <span style={{ fontFamily: "monospace" }}>{task.default_branch || "main"}</span></div>
-                                    </div>
-                                    {task.repository_url && (
-                                        <div style={{ marginTop: "8px" }}>
-                                            <a href={task.repository_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--primary, #2563eb)", fontSize: "14px", fontWeight: "600", textDecoration: "none" }}>Open Repository</a>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* Development Evidence Section */}
-                            <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: "16px" }}>
-                                <h3 style={{ margin: "0 0 16px 0", fontSize: "15px", fontWeight: "700", color: "#1e293b" }}>Development Evidence (Optional)</h3>
-                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-                                    <div className="form-group" style={{ margin: 0 }}>
-                                        <label>Branch Name</label>
-                                        <input type="text" placeholder="e.g., feature/login" value={gitEvidence.branch_name} onChange={e => setGitEvidence({...gitEvidence, branch_name: e.target.value})} style={{ width: "100%", padding: "10px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }} />
-                                    </div>
-                                    <div className="form-group" style={{ margin: 0 }}>
-                                        <label>Commit Hash</label>
-                                        <input type="text" placeholder="e.g., 7ca81a" value={gitEvidence.commit_hash} onChange={e => setGitEvidence({...gitEvidence, commit_hash: e.target.value})} style={{ width: "100%", padding: "10px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }} />
-                                    </div>
-                                    <div className="form-group" style={{ margin: 0 }}>
-                                        <label>Commit URL</label>
-                                        <input type="text" placeholder="https://github.com/.../commit/..." value={gitEvidence.commit_url} onChange={e => setGitEvidence({...gitEvidence, commit_url: e.target.value})} style={{ width: "100%", padding: "10px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }} />
-                                    </div>
-                                    <div className="form-group" style={{ margin: 0 }}>
-                                        <label>Pull Request URL</label>
-                                        <input type="text" placeholder="https://github.com/.../pull/1" value={gitEvidence.pull_request_url} onChange={e => setGitEvidence({...gitEvidence, pull_request_url: e.target.value})} style={{ width: "100%", padding: "10px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }} />
-                                    </div>
-                                </div>
-                                <div className="form-group" style={{ margin: "16px 0 0 0" }}>
-                                    <label>Evidence Notes</label>
-                                    <textarea value={gitEvidence.notes} onChange={e => setGitEvidence({...gitEvidence, notes: e.target.value})} placeholder="Any specific notes about this code submission..." rows="2" style={{ width: "100%", padding: "10px", border: "1px solid #dcdcdc", borderRadius: "8px", resize: "none", fontSize: "14px" }} />
-                                </div>
-                            </div>
-
-                            <div className="form-group" style={{ margin: 0, marginTop: "8px" }}>
-                                <label>Completion Notes / Remarks</label>
-                                <textarea aria-label="Completion Notes" value={empRemarks} onChange={e => setEmpRemarks(e.target.value)}
-                                    placeholder="Describe what you've done, any blockers, or completion notes..."
-                                    rows="4"
-                                    style={{ width: "100%", padding: "12px", border: "1px solid #dcdcdc", borderRadius: "8px", resize: "none", fontSize: "14px" }} />
-                            </div>
-                            <div style={{ display: "flex", gap: "12px" }}>
-                                <button type="submit" disabled={actionLoading} className="btn-save-task"
-                                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--primary, #2563eb)", color: "white", border: "none", padding: "13px 28px", borderRadius: "10px", cursor: "pointer", fontWeight: "700", fontSize: "15px", opacity: actionLoading ? 0.6 : 1 }}>
-                                    <FaCheck /> {actionLoading ? "Saving..." : "Save Changes"}
-                                </button>
-                                <button type="button" onClick={() => setEditing(false)}
-                                    style={{ background: "#f1f5f9", color: "#475569", border: "none", padding: "13px 24px", borderRadius: "10px", cursor: "pointer", fontWeight: "600" }}>
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
                     </div>
                 )}
             </div>
+
+            <TaskCompletionModal 
+                isOpen={showCompletionModal} 
+                onClose={() => setShowCompletionModal(false)} 
+                onSubmit={handleSubmitEvidence} 
+                isSubmitting={submittingEvidence} 
+            />
         </DashboardLayout>
     );
 }

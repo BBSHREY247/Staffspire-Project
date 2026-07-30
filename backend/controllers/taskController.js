@@ -288,12 +288,24 @@ const getTaskById = async (req, res) => {
         
         const task = computeStatus(rows[0]);
 
-        // Fetch git activity
+        // Fetch git activity (legacy)
         const [gitActivity] = await db.promise().query(
             "SELECT * FROM task_git_activity WHERE task_id = ? ORDER BY submitted_at DESC",
             [req.params.id]
         );
         task.git_activity = gitActivity;
+
+        // Fetch submissions
+        const [submissions] = await db.promise().query(
+            "SELECT * FROM task_submissions WHERE task_id = ? ORDER BY submitted_at DESC",
+            [req.params.id]
+        );
+        task.submissions = submissions.map(s => {
+            if (typeof s.file_paths === "string") {
+                try { s.file_paths = JSON.parse(s.file_paths); } catch(e) {}
+            }
+            return s;
+        });
 
         return res.status(200).json({ success: true, task });
     } catch (error) {
@@ -411,7 +423,77 @@ const deleteTask = async (req, res) => {
     }
 };
 
+// Submit Task Evidence (Employee)
+const submitTaskEvidence = async (req, res) => {
+    try {
+        const taskId = req.params.id;
+        const emp = await getEmployeeFromUser(req.user.id);
+        if (!emp) return res.status(403).json({ success: false, message: "Only employees can submit evidence." });
+        
+        const [taskRows] = await db.promise().query("SELECT employee_id FROM tasks WHERE id = ?", [taskId]);
+        if (!taskRows.length) return res.status(404).json({ success: false, message: "Task not found." });
+        
+        if (String(taskRows[0].employee_id) !== String(emp.employee_id) && String(taskRows[0].employee_id) !== String(req.user.id) && String(taskRows[0].employee_id) !== String(req.user.login_id)) {
+            return res.status(403).json({ success: false, message: "Forbidden: You can only submit evidence for your own tasks." });
+        }
+
+        const { summary, notes, evidence_type, repository_url, commit_hash, pull_request_url, branch_name, demo_url } = req.body;
+        
+        let filePaths = [];
+        if (req.files && req.files.length > 0) {
+            filePaths = req.files.map(f => f.filename);
+        }
+
+        // Insert submission
+        await db.promise().query(
+            `INSERT INTO task_submissions 
+            (task_id, employee_id, summary, notes, evidence_type, repository_url, commit_hash, pull_request_url, branch_name, demo_url, file_paths, review_status) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')`,
+            [taskId, emp.employee_id, summary || null, notes || null, evidence_type || null, repository_url || null, commit_hash || null, pull_request_url || null, branch_name || null, demo_url || null, JSON.stringify(filePaths)]
+        );
+
+        // Update task status
+        await db.promise().query("UPDATE tasks SET status = 'Submitted for Review' WHERE id = ?", [taskId]);
+
+        return res.status(200).json({ success: true, message: "Evidence submitted successfully." });
+    } catch (error) {
+        console.error("Submit evidence error:", error);
+        return res.status(500).json({ success: false, message: "Failed to submit evidence." });
+    }
+};
+
+// Review Task Submission (Manager/Admin)
+const reviewTaskSubmission = async (req, res) => {
+    try {
+        const { id, submissionId } = req.params;
+        const { status, review_comments } = req.body; // status: 'Approved' or 'Rejected'
+        
+        if (!['Approved', 'Rejected'].includes(status)) {
+            return res.status(400).json({ success: false, message: "Invalid status." });
+        }
+
+        await db.promise().query(
+            "UPDATE task_submissions SET review_status = ?, review_comments = ?, reviewed_by = ?, reviewed_at = NOW() WHERE id = ?",
+            [status, review_comments || null, req.user.id, submissionId]
+        );
+
+        const taskStatus = status === 'Approved' ? 'Completed' : 'Needs Revision';
+        const completionDate = status === 'Approved' ? new Date().toISOString().split("T")[0] : null;
+
+        await db.promise().query(
+            "UPDATE tasks SET status = ?, completion_date = ? WHERE id = ?",
+            [taskStatus, completionDate, id]
+        );
+
+        return res.status(200).json({ success: true, message: "Submission reviewed successfully." });
+    } catch (error) {
+        console.error("Review submission error:", error);
+        return res.status(500).json({ success: false, message: "Failed to review submission." });
+    }
+};
+
 module.exports = {
     createTask, getAllTasks, getMyTasks, getTaskStats,
-    getEmployeesForAssignment, getTaskById, updateTask, deleteTask
+    getEmployeesForAssignment, getTaskById, updateTask, deleteTask,
+    submitTaskEvidence, reviewTaskSubmission
 };

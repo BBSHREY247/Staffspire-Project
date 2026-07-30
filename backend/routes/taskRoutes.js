@@ -1,10 +1,21 @@
 const express = require("express");
 const router = express.Router();
+const multer = require("multer");
+const path = require("path");
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, "uploads/"),
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + "-" + Math.round(Math.random() * 1E9) + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage });
 const protect = require("../middleware/authMiddleware");
 const { adminOnly } = require("../middleware/roleMiddleware");
 const {
     createTask, getAllTasks, getMyTasks, getTaskStats,
-    getEmployeesForAssignment, getTaskById, updateTask, deleteTask
+    getEmployeesForAssignment, getTaskById, updateTask, deleteTask,
+    submitTaskEvidence, reviewTaskSubmission
 } = require("../controllers/taskController");
 
 // Stats (Admin / Manager / Employee — each sees their own scope)
@@ -30,5 +41,11 @@ router.put("/:id", protect, updateTask);
 
 // Delete task (Admin only)
 router.delete("/:id", protect, adminOnly, deleteTask);
+
+// Submit task evidence (Employee)
+router.post("/:id/submissions", protect, upload.array("attachments", 5), submitTaskEvidence);
+
+// Review task submission (Admin/Manager)
+router.post("/:id/submissions/:submissionId/review", protect, reviewTaskSubmission);
 
 module.exports = router;

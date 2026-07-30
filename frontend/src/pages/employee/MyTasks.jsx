@@ -20,11 +20,13 @@ const priorityConfig = {
 };
 
 const statusConfig = {
-    "Pending":     { color: "#92400e", bg: "#fef9c3", border: "#fde68a", icon: "⏳" },
+    "Pending": { color: "#92400e", bg: "#fef9c3", border: "#fde68a", icon: "🕒" },
     "In Progress": { color: "#1e40af", bg: "#dbeafe", border: "#bfdbfe", icon: "🚧" },
-    "On Hold":     { color: "#374151", bg: "#f3f4f6", border: "#d1d5db", icon: "⏸" },
-    "Completed":   { color: "#14532d", bg: "#dcfce7", border: "#bbf7d0", icon: "✅" },
-    "Overdue":     { color: "#7f1d1d", bg: "#fee2e2", border: "#fecaca", icon: "❌" },
+    "Submitted for Review": { color: "#6b21a8", bg: "#f3e8ff", border: "#e9d5ff", icon: "⏳" },
+    "Needs Revision": { color: "#9a3412", bg: "#ffedd5", border: "#fed7aa", icon: "⚠️" },
+    "On Hold": { color: "#374151", bg: "#f3f4f6", border: "#d1d5db", icon: "⏸️" },
+    "Completed": { color: "#14532d", bg: "#dcfce7", border: "#bbf7d0", icon: "✅" },
+    "Overdue": { color: "#7f1d1d", bg: "#fee2e2", border: "#fecaca", icon: "🚨" }
 };
 
 function StatusBadge({ status }) {
