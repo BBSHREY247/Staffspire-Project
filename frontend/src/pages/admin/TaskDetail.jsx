@@ -40,11 +40,14 @@ function TaskDetail() {
 
     const [task, setTask] = useState(null);
 
-    const isAssignedToMe = isEmployee && task && (
+    const isProjectManager = task && (String(user.login_id) === String(task.project_manager_id) || String(user.id) === String(task.project_manager_id));
+
+    const isAssignedToMe = task && (
         String(task.employee_id) === String(user.login_id) ||
         String(task.employee_id) === String(user.employee_id) ||
         String(task.employee_id) === String(user.id) ||
-        (task.employee_name && user.name && String(task.employee_name).trim().toLowerCase() === String(user.name).trim().toLowerCase())
+        (task.employee_name && user.name && String(task.employee_name).trim().toLowerCase() === String(user.name).trim().toLowerCase()) ||
+        isProjectManager
     );
     const [employees, setEmployees] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -96,9 +99,11 @@ function TaskDetail() {
     }, [empData]);
 
     const targetDept = task?.proj_dept || task?.department || task?.emp_dept || "";
-    const assignableEmployees = targetDept
-        ? employees.filter(emp => emp.department === targetDept || emp.employee_id === task?.employee_id)
-        : employees;
+    const assignableEmployees = task?.project_members?.length > 0
+        ? employees.filter(emp => task.project_members.includes(emp.employee_id) || String(emp.employee_id) === String(task.project_manager_id))
+        : targetDept
+            ? employees.filter(emp => emp.department === targetDept || emp.employee_id === task?.employee_id)
+            : employees;
 
     const handleAdminUpdate = async (e) => {
         e.preventDefault();

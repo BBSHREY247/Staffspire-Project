@@ -275,7 +275,7 @@ const getTaskById = async (req, res) => {
     try {
         const [rows] = await db.promise().query(
             `SELECT t.*, CONCAT(e.first_name, ' ', e.last_name) AS employee_name, e.designation, e.department AS emp_dept, d.department_name AS proj_dept,
-             p.repository_provider, p.repository_url, p.default_branch
+             p.repository_provider, p.repository_url, p.default_branch, p.manager_id AS project_manager_id
              FROM tasks t
              LEFT JOIN employees e ON t.employee_id = e.employee_id
              LEFT JOIN projects p ON t.project_id = p.id
@@ -287,6 +287,13 @@ const getTaskById = async (req, res) => {
         if (!rows.length) return res.status(404).json({ success: false, message: "Task not found." });
         
         const task = computeStatus(rows[0]);
+
+        if (task.project_id) {
+            const [members] = await db.promise().query("SELECT employee_id FROM project_members WHERE project_id = ?", [task.project_id]);
+            task.project_members = members.map(m => m.employee_id);
+        } else {
+            task.project_members = [];
+        }
 
         // Fetch git activity (legacy)
         const [gitActivity] = await db.promise().query(

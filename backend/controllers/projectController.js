@@ -71,7 +71,20 @@ const deleteProject = async (req, res) => {
 
 const getAllProjects = async (req, res) => {
     try {
-        const [projects] = await db.promise().query(`SELECT * FROM projects ORDER BY created_at DESC`);
+        let projects = [];
+        if (req.user.role === 'Employee') {
+            const [rows] = await db.promise().query(`
+                SELECT p.* FROM projects p
+                JOIN project_members pm ON p.id = pm.project_id
+                WHERE pm.employee_id = ?
+                GROUP BY p.id
+                ORDER BY p.created_at DESC
+            `, [req.user.login_id]);
+            projects = rows;
+        } else {
+            const [rows] = await db.promise().query(`SELECT * FROM projects ORDER BY created_at DESC`);
+            projects = rows;
+        }
         
         // Compute progress dynamically
         for (let p of projects) {
@@ -83,9 +96,10 @@ const getAllProjects = async (req, res) => {
             `, [p.id]);
             p.completion_percentage = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
             
-            // fetch member count
-            const [[m]] = await db.promise().query("SELECT COUNT(*) as c FROM project_members WHERE project_id = ?", [p.id]);
-            p.member_count = m.c;
+            // fetch member count and ids
+            const [members] = await db.promise().query("SELECT employee_id FROM project_members WHERE project_id = ?", [p.id]);
+            p.member_count = members.length;
+            p.member_ids = members.map(m => m.employee_id);
         }
 
         res.json({ success: true, projects });
