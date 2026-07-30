@@ -282,11 +282,24 @@ function TaskDetail() {
                                         <div style={{ width: "100%", fontWeight: "600", color: "#475569", marginBottom: "4px" }}>Evidence Type: {sub.evidence_type}</div>
                                         
                                         {sub.branch_name && <div><strong>Branch:</strong> <span style={{ fontFamily: "monospace", backgroundColor: "#f1f5f9", padding: "2px 6px", borderRadius: "4px" }}>{sub.branch_name}</span></div>}
-                                        {sub.commit_hash && sub.repository_url ? (
-                                            <div><strong>Commit:</strong> <a href={`${sub.repository_url.trim().replace(/\.git$/, '').replace(/\/$/, '')}/commit/${sub.commit_hash}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--primary, #2563eb)", fontFamily: "monospace" }}>{sub.commit_hash.substring(0, 7)}</a></div>
-                                        ) : sub.commit_hash ? (
-                                            <div><strong>Commit:</strong> <span style={{ fontFamily: "monospace", backgroundColor: "#f1f5f9", padding: "2px 6px", borderRadius: "4px" }}>{sub.commit_hash.substring(0, 7)}</span></div>
-                                        ) : null}
+                                        {sub.commit_hash && (
+                                            <div>
+                                                <strong>Commits:</strong>{' '}
+                                                {sub.commit_hash.split(',').map(h => h.trim()).filter(Boolean).map((hash, idx) => (
+                                                    <span key={idx} style={{ marginRight: "8px" }}>
+                                                        {sub.repository_url ? (
+                                                            <a href={`${sub.repository_url.trim().replace(/\.git$/, '').replace(/\/$/, '')}/commit/${hash}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--primary, #2563eb)", fontFamily: "monospace" }}>
+                                                                {hash.substring(0, 7)}
+                                                            </a>
+                                                        ) : (
+                                                            <span style={{ fontFamily: "monospace", backgroundColor: "#f1f5f9", padding: "2px 6px", borderRadius: "4px" }}>
+                                                                {hash.substring(0, 7)}
+                                                            </span>
+                                                        )}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
                                         {sub.pull_request_url && <div><strong>PR:</strong> <a href={sub.pull_request_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--primary, #2563eb)" }}>View Pull Request</a></div>}
                                         {sub.demo_url && <div><strong>Demo:</strong> <a href={sub.demo_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--primary, #2563eb)" }}>{sub.demo_url}</a></div>}
                                     </div>
@@ -440,8 +453,8 @@ function TaskDetail() {
                                                 <input type="text" value={editForm.branch_name || ""} onChange={e => setEditForm({ ...editForm, branch_name: e.target.value })} placeholder="main" style={{ width: "100%", padding: "8px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", fontSize: "13px" }} />
                                             </div>
                                             <div>
-                                                <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", color: "#475569" }}>Commit Hash</label>
-                                                <input type="text" value={editForm.commit_hash || ""} onChange={e => setEditForm({ ...editForm, commit_hash: e.target.value })} placeholder="7a8c9b2" style={{ width: "100%", padding: "8px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", fontSize: "13px" }} />
+                                                <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", color: "#475569" }}>Commit Hash(es)</label>
+                                                <input type="text" value={editForm.commit_hash || ""} onChange={e => setEditForm({ ...editForm, commit_hash: e.target.value })} placeholder="7a8c9b2, 1f2b3c4" style={{ width: "100%", padding: "8px 12px", border: "1px solid #cbd5e1", borderRadius: "6px", fontSize: "13px" }} />
                                             </div>
                                             <div>
                                                 <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", color: "#475569" }}>Pull Request URL</label>
