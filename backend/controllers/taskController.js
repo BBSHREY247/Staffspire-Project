@@ -274,7 +274,8 @@ const getEmployeesForAssignment = async (req, res) => {
 const getTaskById = async (req, res) => {
     try {
         const [rows] = await db.promise().query(
-            `SELECT t.*, CONCAT(e.first_name, ' ', e.last_name) AS employee_name, e.designation, e.department AS emp_dept, d.department_name AS proj_dept
+            `SELECT t.*, CONCAT(e.first_name, ' ', e.last_name) AS employee_name, e.designation, e.department AS emp_dept, d.department_name AS proj_dept,
+             p.repository_provider, p.repository_url, p.default_branch
              FROM tasks t
              LEFT JOIN employees e ON t.employee_id = e.employee_id
              LEFT JOIN projects p ON t.project_id = p.id
@@ -284,7 +285,17 @@ const getTaskById = async (req, res) => {
         );
 
         if (!rows.length) return res.status(404).json({ success: false, message: "Task not found." });
-        return res.status(200).json({ success: true, task: computeStatus(rows[0]) });
+        
+        const task = computeStatus(rows[0]);
+
+        // Fetch git activity
+        const [gitActivity] = await db.promise().query(
+            "SELECT * FROM task_git_activity WHERE task_id = ? ORDER BY submitted_at DESC",
+            [req.params.id]
+        );
+        task.git_activity = gitActivity;
+
+        return res.status(200).json({ success: true, task });
     } catch (error) {
         console.error("Get task by ID error:", error);
         return res.status(500).json({ success: false, message: "Failed to fetch task." });
@@ -305,8 +316,8 @@ const updateTask = async (req, res) => {
             if (!emp || (String(task.employee_id) !== String(emp.employee_id) && String(task.employee_id) !== String(req.user.id) && String(task.employee_id) !== String(req.user.login_id))) {
                 return res.status(403).json({ success: false, message: "Forbidden: You can only update tasks assigned to you." });
             }
-            // Employee: only status + remarks
-            const { status, remarks } = req.body;
+            // Employee: only status + remarks + git_evidence
+            const { status, remarks, git_evidence } = req.body;
             const newStatus = status || task.status;
             const completionDate = newStatus === "Completed" ? new Date().toISOString().split("T")[0] : task.completion_date;
 
@@ -314,6 +325,14 @@ const updateTask = async (req, res) => {
                 "UPDATE tasks SET status = ?, remarks = ?, completion_date = ? WHERE id = ?",
                 [newStatus, remarks !== undefined ? remarks : task.remarks, completionDate, req.params.id]
             );
+
+            if (git_evidence && (git_evidence.branch_name || git_evidence.commit_hash || git_evidence.pull_request_url || git_evidence.notes)) {
+                await db.promise().query(
+                    `INSERT INTO task_git_activity (task_id, employee_id, branch_name, commit_hash, commit_url, pull_request_url, notes)
+                     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                    [req.params.id, emp.employee_id, git_evidence.branch_name || null, git_evidence.commit_hash || null, git_evidence.commit_url || null, git_evidence.pull_request_url || null, git_evidence.notes || null]
+                );
+            }
         } else {
             // Admin / Manager: full update
             const { task_title, description, assigned_to, priority, status, deadline, department, remarks, project_id, start_date } = req.body;

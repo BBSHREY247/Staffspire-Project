@@ -59,6 +59,21 @@ const runMigrations = async () => {
             )
         `;
 
+        const createTaskGitActivityTable = `
+            CREATE TABLE IF NOT EXISTS task_git_activity (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                task_id INT NOT NULL,
+                employee_id VARCHAR(50) NOT NULL,
+                branch_name VARCHAR(100),
+                commit_hash VARCHAR(100),
+                commit_url VARCHAR(255),
+                pull_request_url VARCHAR(255),
+                notes TEXT,
+                submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
+            )
+        `;
+
         await db.promise().query(createProjectsTable);
         console.log("Projects table created or already exists.");
 
@@ -67,6 +82,28 @@ const runMigrations = async () => {
 
         await db.promise().query(createProjectMilestonesTable);
         console.log("Project_milestones table created or already exists.");
+
+        // Create task_git_activity table
+        try {
+            await db.promise().query(createTaskGitActivityTable);
+            console.log("task_git_activity table created or already exists.");
+        } catch (err) {
+            console.warn("Could not create task_git_activity table:", err.message);
+        }
+
+        // Alter projects table for GitHub integration
+        try {
+            await db.promise().query("ALTER TABLE projects ADD COLUMN repository_provider VARCHAR(50) DEFAULT 'GitHub'");
+            await db.promise().query("ALTER TABLE projects ADD COLUMN repository_url VARCHAR(255)");
+            await db.promise().query("ALTER TABLE projects ADD COLUMN default_branch VARCHAR(100) DEFAULT 'main'");
+            console.log("Added repository fields to projects table.");
+        } catch (err) {
+            if (err.code === "ER_DUP_FIELDNAME") {
+                console.log("Repository fields already exist in projects table.");
+            } else {
+                console.warn("Could not alter projects table:", err.message);
+            }
+        }
 
         // Alter tasks table
         try {

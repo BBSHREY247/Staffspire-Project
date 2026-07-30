@@ -56,6 +56,7 @@ function TaskDetail() {
     // Employee update state
     const [empStatus, setEmpStatus] = useState("");
     const [empRemarks, setEmpRemarks] = useState("");
+    const [gitEvidence, setGitEvidence] = useState({ branch_name: "", commit_hash: "", commit_url: "", pull_request_url: "", notes: "" });
 
     const token = localStorage.getItem("token");
     const headers = { Authorization: `Bearer ${token}` };
@@ -110,9 +111,10 @@ function TaskDetail() {
         e.preventDefault();
         try {
             setActionLoading(true);
-            await axios.put(`${API}/tasks/${id}`, { status: empStatus, remarks: empRemarks }, { headers });
+            await axios.put(`${API}/tasks/${id}`, { status: empStatus, remarks: empRemarks, git_evidence: gitEvidence }, { headers });
             showNotification("success", "Task updated successfully.");
             setEditing(false);
+            setGitEvidence({ branch_name: "", commit_hash: "", commit_url: "", pull_request_url: "", notes: "" });
             fetchTask();
         } catch (err) {
             showNotification("error", err.response?.data?.message || "Update failed.");
@@ -208,6 +210,37 @@ function TaskDetail() {
                         </div>
                     ))}
                 </div>
+
+                {/* Git Activity / Evidence */}
+                {task.git_activity && task.git_activity.length > 0 && (
+                    <div style={{ background: "white", borderRadius: "12px", padding: "22px 24px", boxShadow: "0 2px 10px rgba(0,0,0,0.05)", marginBottom: "20px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
+                            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "700", color: "#1e293b" }}>Git Activity / Evidence</h3>
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                            {task.git_activity.map((act, index) => (
+                                <div key={act.id} style={{ padding: "16px", backgroundColor: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                                        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                                            <span style={{ fontSize: "13px", fontWeight: "600", color: "#475569" }}>Submission #{task.git_activity.length - index}</span>
+                                            <span style={{ fontSize: "12px", color: "#94a3b8" }}>{new Date(act.submitted_at).toLocaleString()}</span>
+                                        </div>
+                                    </div>
+                                    <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", fontSize: "14px", color: "#1e293b" }}>
+                                        {act.branch_name && <div><strong>Branch:</strong> <span style={{ fontFamily: "monospace", backgroundColor: "#e2e8f0", padding: "2px 6px", borderRadius: "4px" }}>{act.branch_name}</span></div>}
+                                        {act.commit_hash && act.commit_url ? (
+                                            <div><strong>Commit:</strong> <a href={act.commit_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--primary, #2563eb)", fontFamily: "monospace" }}>{act.commit_hash.substring(0, 7)}</a></div>
+                                        ) : act.commit_hash ? (
+                                            <div><strong>Commit:</strong> <span style={{ fontFamily: "monospace", backgroundColor: "#e2e8f0", padding: "2px 6px", borderRadius: "4px" }}>{act.commit_hash.substring(0, 7)}</span></div>
+                                        ) : null}
+                                        {act.pull_request_url && <div><strong>PR:</strong> <a href={act.pull_request_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--primary, #2563eb)" }}>View Pull Request</a></div>}
+                                    </div>
+                                    {act.notes && <p style={{ margin: "10px 0 0", color: "#475569", fontSize: "14px" }}>{act.notes}</p>}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* Description */}
                 {task.description && (
@@ -327,7 +360,51 @@ function TaskDetail() {
                                     {["Pending", "In Progress", "On Hold", "Completed"].map(s => <option key={s}>{s}</option>)}
                                 </select>
                             </div>
-                            <div className="form-group" style={{ margin: 0 }}>
+
+                            {/* Project Repository Context */}
+                            {task.repository_provider && (
+                                <div style={{ padding: "16px", backgroundColor: "#f8fafc", borderRadius: "8px", border: "1px solid #cbd5e1" }}>
+                                    <h4 style={{ margin: "0 0 12px 0", fontSize: "14px", color: "#1e293b" }}>Project Repository</h4>
+                                    <div style={{ display: "flex", gap: "16px", fontSize: "14px", color: "#475569" }}>
+                                        <div><strong>Provider:</strong> {task.repository_provider}</div>
+                                        <div><strong>Default Branch:</strong> <span style={{ fontFamily: "monospace" }}>{task.default_branch || "main"}</span></div>
+                                    </div>
+                                    {task.repository_url && (
+                                        <div style={{ marginTop: "8px" }}>
+                                            <a href={task.repository_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--primary, #2563eb)", fontSize: "14px", fontWeight: "600", textDecoration: "none" }}>Open Repository</a>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Development Evidence Section */}
+                            <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: "16px" }}>
+                                <h3 style={{ margin: "0 0 16px 0", fontSize: "15px", fontWeight: "700", color: "#1e293b" }}>Development Evidence (Optional)</h3>
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                                    <div className="form-group" style={{ margin: 0 }}>
+                                        <label>Branch Name</label>
+                                        <input type="text" placeholder="e.g., feature/login" value={gitEvidence.branch_name} onChange={e => setGitEvidence({...gitEvidence, branch_name: e.target.value})} style={{ width: "100%", padding: "10px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }} />
+                                    </div>
+                                    <div className="form-group" style={{ margin: 0 }}>
+                                        <label>Commit Hash</label>
+                                        <input type="text" placeholder="e.g., 7ca81a" value={gitEvidence.commit_hash} onChange={e => setGitEvidence({...gitEvidence, commit_hash: e.target.value})} style={{ width: "100%", padding: "10px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }} />
+                                    </div>
+                                    <div className="form-group" style={{ margin: 0 }}>
+                                        <label>Commit URL</label>
+                                        <input type="text" placeholder="https://github.com/.../commit/..." value={gitEvidence.commit_url} onChange={e => setGitEvidence({...gitEvidence, commit_url: e.target.value})} style={{ width: "100%", padding: "10px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }} />
+                                    </div>
+                                    <div className="form-group" style={{ margin: 0 }}>
+                                        <label>Pull Request URL</label>
+                                        <input type="text" placeholder="https://github.com/.../pull/1" value={gitEvidence.pull_request_url} onChange={e => setGitEvidence({...gitEvidence, pull_request_url: e.target.value})} style={{ width: "100%", padding: "10px", border: "1px solid #dcdcdc", borderRadius: "8px", fontSize: "14px" }} />
+                                    </div>
+                                </div>
+                                <div className="form-group" style={{ margin: "16px 0 0 0" }}>
+                                    <label>Evidence Notes</label>
+                                    <textarea value={gitEvidence.notes} onChange={e => setGitEvidence({...gitEvidence, notes: e.target.value})} placeholder="Any specific notes about this code submission..." rows="2" style={{ width: "100%", padding: "10px", border: "1px solid #dcdcdc", borderRadius: "8px", resize: "none", fontSize: "14px" }} />
+                                </div>
+                            </div>
+
+                            <div className="form-group" style={{ margin: 0, marginTop: "8px" }}>
                                 <label>Completion Notes / Remarks</label>
                                 <textarea aria-label="Completion Notes" value={empRemarks} onChange={e => setEmpRemarks(e.target.value)}
                                     placeholder="Describe what you've done, any blockers, or completion notes..."

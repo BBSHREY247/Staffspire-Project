@@ -24,7 +24,10 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }) {
         start_date: "",
         end_date: "",
         project_color: "#4f46e5",
-        project_icon: "FaFolder"
+        project_icon: "FaFolder",
+        repository_provider: "GitHub",
+        repository_url: "",
+        default_branch: "main"
     });
 
     const [selectedMembers, setSelectedMembers] = useState([]);
@@ -37,7 +40,8 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }) {
             setFormData({
                 project_name: "", description: "", department_id: "", manager_id: "",
                 priority: "Medium", status: "Active", start_date: "", end_date: "",
-                project_color: "#4f46e5", project_icon: "FaFolder"
+                project_color: "#4f46e5", project_icon: "FaFolder",
+                repository_provider: "GitHub", repository_url: "", default_branch: "main"
             });
             setSelectedMembers([]);
             setError(null);
@@ -101,6 +105,13 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }) {
         if (new Date(formData.end_date) < new Date(formData.start_date)) {
             setError("End date cannot be before start date.");
             return;
+        }
+        if (formData.repository_url) {
+            const urlPattern = /^https:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+$/;
+            if (!urlPattern.test(formData.repository_url)) {
+                setError("Please enter a valid repository URL (e.g., https://github.com/company/repo)");
+                return;
+            }
         }
 
         setIsSubmitting(true);
@@ -233,6 +244,30 @@ export default function CreateProjectModal({ isOpen, onClose, onSuccess }) {
                                             }}
                                         />
                                     ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Development Settings */}
+                        <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: "20px", marginTop: "10px" }}>
+                            <h3 style={{ margin: "0 0 16px 0", fontSize: "1.1rem", color: "#1e293b" }}>Development Settings</h3>
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr 1fr", gap: "16px" }}>
+                                <div>
+                                    <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "600", color: "#334155", marginBottom: "6px" }}>Provider</label>
+                                    <select value={formData.repository_provider} onChange={e => setFormData({...formData, repository_provider: e.target.value})} style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid #cbd5e1" }}>
+                                        <option value="GitHub">GitHub</option>
+                                        <option value="GitLab">GitLab</option>
+                                        <option value="Bitbucket">Bitbucket</option>
+                                        <option value="Azure DevOps">Azure DevOps</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "600", color: "#334155", marginBottom: "6px" }}>Repository URL</label>
+                                    <input type="text" placeholder="https://github.com/company/repo" value={formData.repository_url} onChange={e => setFormData({...formData, repository_url: e.target.value})} style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid #cbd5e1" }} />
+                                </div>
+                                <div>
+                                    <label style={{ display: "block", fontSize: "0.875rem", fontWeight: "600", color: "#334155", marginBottom: "6px" }}>Default Branch</label>
+                                    <input type="text" placeholder="main" value={formData.default_branch} onChange={e => setFormData({...formData, default_branch: e.target.value})} style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid #cbd5e1" }} />
                                 </div>
                             </div>
                         </div>

@@ -4,13 +4,13 @@ const { createNotification } = require("./notificationController");
 // --- PROJECT CRUD ---
 const createProject = async (req, res) => {
     try {
-        const { project_name, description, department_id, manager_id, priority, start_date, end_date, project_color, project_icon } = req.body;
+        const { project_name, description, department_id, manager_id, priority, start_date, end_date, project_color, project_icon, repository_provider, repository_url, default_branch } = req.body;
         if (!project_name) return res.status(400).json({ success: false, message: "Project name is required" });
 
         const [result] = await db.promise().query(
-            `INSERT INTO projects (project_name, description, department_id, manager_id, priority, start_date, end_date, project_color, project_icon, created_by)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [project_name, description, department_id, manager_id, priority, start_date, end_date, project_color, project_icon, req.user.id]
+            `INSERT INTO projects (project_name, description, department_id, manager_id, priority, start_date, end_date, project_color, project_icon, repository_provider, repository_url, default_branch, created_by)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [project_name, description, department_id, manager_id, priority, start_date, end_date, project_color, project_icon, repository_provider || 'GitHub', repository_url || null, default_branch || 'main', req.user.id]
         );
 
         const projectCode = `PRJ${String(result.insertId).padStart(4, "0")}`;
@@ -31,11 +31,11 @@ const createProject = async (req, res) => {
 
 const updateProject = async (req, res) => {
     try {
-        const { project_name, description, department_id, manager_id, priority, status, start_date, end_date, project_color, project_icon } = req.body;
+        const { project_name, description, department_id, manager_id, priority, status, start_date, end_date, project_color, project_icon, repository_provider, repository_url, default_branch } = req.body;
         
         await db.promise().query(
-            `UPDATE projects SET project_name=?, description=?, department_id=?, manager_id=?, priority=?, status=?, start_date=?, end_date=?, project_color=?, project_icon=? WHERE id=?`,
-            [project_name, description, department_id, manager_id, priority, status, start_date, end_date, project_color, project_icon, req.params.id]
+            `UPDATE projects SET project_name=?, description=?, department_id=?, manager_id=?, priority=?, status=?, start_date=?, end_date=?, project_color=?, project_icon=?, repository_provider=?, repository_url=?, default_branch=? WHERE id=?`,
+            [project_name, description, department_id, manager_id, priority, status, start_date, end_date, project_color, project_icon, repository_provider, repository_url, default_branch, req.params.id]
         );
 
         if (status === 'Completed') {

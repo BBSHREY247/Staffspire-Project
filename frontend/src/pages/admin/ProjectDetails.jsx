@@ -328,6 +328,30 @@ export default function ProjectDetails() {
                                         </div>
                                     </div>
                                 </div>
+                                <hr style={{ border: "0", borderTop: "1px solid #e2e8f0", margin: "24px 0" }}/>
+                                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "24px" }}>
+                                    <div>
+                                        <h4 style={{ color: "#1e293b", margin: "0 0 12px 0" }}>Repository</h4>
+                                        <div style={{ padding: "12px", backgroundColor: "#f8fafc", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+                                            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 12px 0", color: "#475569", display: "flex", flexDirection: "column", gap: "6px" }}>
+                                                <li><strong>Provider:</strong> {project.repository_provider || "None"}</li>
+                                                <li><strong>Default Branch:</strong> <span style={{ fontFamily: "monospace", backgroundColor: "#e2e8f0", padding: "2px 6px", borderRadius: "4px" }}>{project.default_branch || "N/A"}</span></li>
+                                            </ul>
+                                            {project.repository_url ? (
+                                                <a 
+                                                    href={project.repository_url} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    style={{ display: "inline-flex", alignItems: "center", gap: "6px", textDecoration: "none", backgroundColor: "var(--primary, #4f46e5)", color: "white", padding: "6px 12px", borderRadius: "6px", fontSize: "0.85rem", fontWeight: "600" }}
+                                                >
+                                                    Open Repository
+                                                </a>
+                                            ) : (
+                                                <span style={{ fontSize: "0.85rem", color: "#94a3b8", fontStyle: "italic" }}>No URL provided</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         )}
 
