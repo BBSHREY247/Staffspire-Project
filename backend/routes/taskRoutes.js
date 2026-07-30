@@ -11,7 +11,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 const protect = require("../middleware/authMiddleware");
-const { adminOnly } = require("../middleware/roleMiddleware");
+const { adminOnly, adminOrManager } = require("../middleware/roleMiddleware");
 const {
     createTask, getAllTasks, getMyTasks, getTaskStats,
     getEmployeesForAssignment, getTaskById, updateTask, deleteTask,
@@ -39,8 +39,8 @@ router.get("/:id", protect, getTaskById);
 // Update task (Admin/Manager: full; Employee: status+remarks)
 router.put("/:id", protect, updateTask);
 
-// Delete task (Admin only)
-router.delete("/:id", protect, adminOnly, deleteTask);
+// Delete task (Admin/Manager)
+router.delete("/:id", protect, adminOrManager, deleteTask);
 
 // Submit task evidence (Employee)
 router.post("/:id/submissions", protect, upload.array("attachments", 5), submitTaskEvidence);

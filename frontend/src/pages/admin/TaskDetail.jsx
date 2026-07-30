@@ -5,7 +5,7 @@ import useSWR from "swr";
 import DashboardLayout from "../layouts/DashboardLayout";
 import {
     FaArrowLeft, FaEdit, FaCheck, FaTimes, FaCalendarAlt,
-    FaUser, FaBuilding, FaFlag, FaStickyNote, FaClock, FaIdBadge
+    FaUser, FaBuilding, FaFlag, FaStickyNote, FaClock, FaIdBadge, FaTrashAlt
 } from "react-icons/fa";
 import TaskCompletionModal from "./components/TaskCompletionModal";
 
@@ -172,6 +172,19 @@ function TaskDetail() {
         }
     };
 
+    const handleDeleteTask = async () => {
+        if (!window.confirm("Are you sure you want to delete this task? This action cannot be undone.")) return;
+        try {
+            setActionLoading(true);
+            await axios.delete(`${API}/tasks/${id}`, { headers });
+            showNotification("success", "Task deleted successfully.");
+            setTimeout(() => navigate(backPath), 1500);
+        } catch (err) {
+            showNotification("error", err.response?.data?.message || "Failed to delete task.");
+            setActionLoading(false);
+        }
+    };
+
     const formatDate = (d) => {
         if (!d) return "—";
         return new Date(d).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
@@ -229,10 +242,16 @@ function TaskDetail() {
                                 {task.status}
                             </span>
                             {(!editing && isAdminOrManager) && (
-                                <button type="button" onClick={() => setEditing(true)} className="btn-edit-task"
-                                    style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--primary, #2563eb)", color: "white", border: "none", padding: "10px 18px", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "13px" }}>
-                                    <FaEdit /> Edit Task
-                                </button>
+                                <>
+                                    <button type="button" onClick={() => setEditing(true)} className="btn-edit-task"
+                                        style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--primary, #2563eb)", color: "white", border: "none", padding: "10px 18px", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "13px" }}>
+                                        <FaEdit /> Edit Task
+                                    </button>
+                                    <button type="button" onClick={handleDeleteTask} className="btn-delete-task"
+                                        style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "#ef4444", color: "white", border: "none", padding: "10px 18px", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "13px" }}>
+                                        <FaTrashAlt /> Delete Task
+                                    </button>
+                                </>
                             )}
                             {(isAssignedToMe && task.status !== "Completed" && task.status !== "Submitted for Review") && (
                                 <button type="button" onClick={() => setShowCompletionModal(true)}
