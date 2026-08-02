@@ -47,6 +47,7 @@ const ResignationRequests = () => {
     const approvedCount = requests.filter(r => r.status === 'Approved').length;
     const rejectedCount = requests.filter(r => r.status === 'Rejected').length;
     const completedCount = requests.filter(r => r.status === 'Completed').length;
+    const cancelReqCount = requests.filter(r => r.status === 'Cancellation Requested').length;
 
     return (
         <DashboardLayout>
@@ -70,6 +71,10 @@ const ResignationRequests = () => {
                     <div className="card" style={{ padding: '20px', borderRadius: '10px', backgroundColor: 'var(--card-bg)', boxShadow: 'var(--shadow)', textAlign: 'center' }}>
                         <h3>Completed</h3>
                         <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#10b981' }}>{completedCount}</p>
+                    </div>
+                    <div className="card" style={{ padding: '20px', borderRadius: '10px', backgroundColor: 'var(--card-bg)', boxShadow: 'var(--shadow)', textAlign: 'center' }}>
+                        <h3>Cancel Reqs</h3>
+                        <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#8b5cf6' }}>{cancelReqCount}</p>
                     </div>
                 </div>
 
@@ -100,7 +105,9 @@ const ResignationRequests = () => {
                                             fontSize: '12px',
                                             backgroundColor: req.status === 'Submitted' ? '#f59e0b' : 
                                                              req.status === 'Approved' ? '#3b82f6' : 
-                                                             req.status === 'Rejected' ? '#ef4444' : '#10b981',
+                                                             req.status === 'Rejected' ? '#ef4444' : 
+                                                             req.status === 'Cancellation Requested' ? '#8b5cf6' : 
+                                                             req.status === 'Cancelled' ? '#6b7280' : '#10b981',
                                             color: 'white'
                                         }}>
                                             {req.status}

@@ -36,7 +36,7 @@ const applyResignation = async (req, res) => {
 
         // Check for duplicates
         const [existing] = await db.promise().query(
-            "SELECT id FROM resignation_requests WHERE employee_id = ? AND status IN ('Submitted', 'Approved')",
+            "SELECT id FROM resignation_requests WHERE employee_id = ? AND status IN ('Submitted', 'Approved', 'Cancellation Requested')",
             [emp.employee_id]
         );
 
@@ -170,7 +170,7 @@ const updateResignationStatus = async (req, res) => {
         const { id } = req.params;
         const { status, review_comments } = req.body;
 
-        if (!['Approved', 'Rejected'].includes(status)) {
+        if (!['Approved', 'Rejected', 'Cancelled'].includes(status)) {
             return res.status(400).json({ success: false, message: "Invalid status." });
         }
 
@@ -205,11 +205,45 @@ const updateResignationStatus = async (req, res) => {
         res.status(500).json({ success: false, message: "Server Error" });
     }
 };
+// 6. Employee: Request Cancellation of Approved Resignation
+const requestCancellation = async (req, res) => {
+    try {
+        const emp = await getEmployeeFromUser(req.user.id);
+        if (!emp) return res.status(404).json({ success: false, message: "Employee not found." });
 
+        const [request] = await db.promise().query(
+            "SELECT * FROM resignation_requests WHERE id = ? AND employee_id = ?",
+            [req.params.id, emp.employee_id]
+        );
+
+        if (!request.length) return res.status(404).json({ success: false, message: "Request not found." });
+
+        if (request[0].status !== 'Approved') {
+            return res.status(400).json({ success: false, message: "Can only request cancellation for Approved resignations." });
+        }
+
+        await db.promise().query(
+            "UPDATE resignation_requests SET status = 'Cancellation Requested' WHERE id = ?",
+            [req.params.id]
+        );
+
+        // Notify Admins
+        const [admins] = await db.promise().query("SELECT id FROM users WHERE role_id = 1");
+        for (const admin of admins) {
+            await createNotification(admin.id, "Cancellation Requested", `Employee ${emp.first_name} ${emp.last_name} has requested to cancel their resignation.`);
+        }
+
+        res.status(200).json({ success: true, message: "Cancellation requested successfully." });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Server Error" });
+    }
+};
 module.exports = {
     applyResignation,
     withdrawResignation,
     getEmployeeResignation,
     getAllResignations,
-    updateResignationStatus
+    updateResignationStatus,
+    requestCancellation
 };

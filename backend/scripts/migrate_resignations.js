@@ -13,7 +13,7 @@ const migrateResignations = async () => {
                 reason VARCHAR(100) NOT NULL,
                 notice_period_days INT NOT NULL,
                 last_working_day DATE NOT NULL,
-                status ENUM('Draft', 'Submitted', 'Approved', 'Rejected', 'Completed', 'Withdrawn') DEFAULT 'Submitted',
+                status ENUM('Draft', 'Submitted', 'Approved', 'Rejected', 'Completed', 'Withdrawn', 'Cancellation Requested', 'Cancelled') DEFAULT 'Submitted',
                 submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 reviewed_by INT DEFAULT NULL,
                 reviewed_at TIMESTAMP NULL,

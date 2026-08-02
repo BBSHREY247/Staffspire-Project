@@ -71,7 +71,7 @@ const ResignationApprovalModal = ({ request, onClose }) => {
                         <div><strong>Last Working Day:</strong> {new Date(request.last_working_day).toLocaleDateString()}</div>
                         <div>
                             <strong>Status:</strong> 
-                            <span style={{ marginLeft: '5px', fontWeight: 'bold', color: request.status === 'Submitted' ? '#f59e0b' : request.status === 'Approved' ? '#3b82f6' : request.status === 'Rejected' ? '#ef4444' : '#10b981' }}>
+                            <span style={{ marginLeft: '5px', fontWeight: 'bold', color: request.status === 'Submitted' ? '#f59e0b' : request.status === 'Approved' ? '#3b82f6' : request.status === 'Rejected' ? '#ef4444' : request.status === 'Cancellation Requested' ? '#8b5cf6' : request.status === 'Cancelled' ? '#6b7280' : '#10b981' }}>
                                 {request.status}
                             </span>
                         </div>
@@ -85,7 +85,7 @@ const ResignationApprovalModal = ({ request, onClose }) => {
                         value={reviewComments}
                         onChange={(e) => setReviewComments(e.target.value)}
                         rows="4"
-                        disabled={request.status !== 'Submitted'}
+                        disabled={request.status !== 'Submitted' && request.status !== 'Cancellation Requested'}
                         style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
                         placeholder="Add comments regarding the approval or rejection..."
                     />
@@ -111,6 +111,24 @@ const ResignationApprovalModal = ({ request, onClose }) => {
                                 style={{ padding: '8px 15px', borderRadius: '5px', border: 'none', cursor: 'pointer', background: '#10b981', color: 'white' }}
                             >
                                 Approve
+                            </button>
+                        </>
+                    )}
+                    {request.status === 'Cancellation Requested' && (
+                        <>
+                            <button 
+                                onClick={() => handleAction('Approved')} 
+                                disabled={loading}
+                                style={{ padding: '8px 15px', borderRadius: '5px', border: 'none', cursor: 'pointer', background: '#ef4444', color: 'white' }}
+                            >
+                                Reject Cancellation
+                            </button>
+                            <button 
+                                onClick={() => handleAction('Cancelled')} 
+                                disabled={loading}
+                                style={{ padding: '8px 15px', borderRadius: '5px', border: 'none', cursor: 'pointer', background: '#8b5cf6', color: 'white' }}
+                            >
+                                Approve Cancellation
                             </button>
                         </>
                     )}

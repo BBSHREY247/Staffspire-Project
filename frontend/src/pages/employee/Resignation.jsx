@@ -8,6 +8,15 @@ const Resignation = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
+    const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: "", message: "", onConfirm: null });
+
+    const openConfirmDialog = (title, message, onConfirm) => {
+        setConfirmDialog({ isOpen: true, title, message, onConfirm });
+    };
+
+    const closeConfirmDialog = () => {
+        setConfirmDialog({ isOpen: false, title: "", message: "", onConfirm: null });
+    };
 
     // Form state
     const [formData, setFormData] = useState({
@@ -76,25 +85,56 @@ const Resignation = () => {
         }
     };
 
-    const handleWithdraw = async (id) => {
-        if (!window.confirm("Are you sure you want to withdraw your resignation request?")) return;
-        
-        try {
-            const token = localStorage.getItem("token");
-            const response = await fetch(`http://localhost:5000/api/resignations/${id}/withdraw`, {
-                method: "PUT",
-                headers: { "Authorization": `Bearer ${token}` }
-            });
-            const data = await response.json();
-            if (data.success) {
-                setSuccess("Resignation withdrawn.");
-                fetchResignation();
-            } else {
-                setError(data.message);
+    const handleWithdraw = (id) => {
+        openConfirmDialog(
+            "Withdraw Resignation",
+            "Are you sure you want to withdraw your resignation request?",
+            async () => {
+                try {
+                    const token = localStorage.getItem("token");
+                    const response = await fetch(`http://localhost:5000/api/resignations/${id}/withdraw`, {
+                        method: "PUT",
+                        headers: { "Authorization": `Bearer ${token}` }
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        setSuccess("Resignation withdrawn.");
+                        fetchResignation();
+                    } else {
+                        setError(data.message);
+                    }
+                } catch (err) {
+                    setError("Failed to withdraw resignation.");
+                }
+                closeConfirmDialog();
             }
-        } catch (err) {
-            setError("Failed to withdraw resignation.");
-        }
+        );
+    };
+
+    const handleRequestCancellation = (id) => {
+        openConfirmDialog(
+            "Request Cancellation",
+            "Are you sure you want to request cancellation of your approved resignation?",
+            async () => {
+                try {
+                    const token = localStorage.getItem("token");
+                    const response = await fetch(`http://localhost:5000/api/resignations/${id}/request-cancellation`, {
+                        method: "PUT",
+                        headers: { "Authorization": `Bearer ${token}` }
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        setSuccess("Cancellation requested successfully.");
+                        fetchResignation();
+                    } else {
+                        setError(data.message);
+                    }
+                } catch (err) {
+                    setError("Failed to request cancellation.");
+                }
+                closeConfirmDialog();
+            }
+        );
     };
 
     if (loading) return <DashboardLayout><div className="loading">Loading...</div></DashboardLayout>;
@@ -115,7 +155,7 @@ const Resignation = () => {
                 {error && <div className="error-message" style={{ color: 'red', marginBottom: '15px' }}>{error}</div>}
                 {success && <div className="success-message" style={{ color: 'green', marginBottom: '15px' }}>{success}</div>}
 
-                {resignationData && resignationData.status !== 'Withdrawn' && resignationData.status !== 'Rejected' ? (
+                {resignationData && resignationData.status !== 'Withdrawn' && resignationData.status !== 'Rejected' && resignationData.status !== 'Cancelled' ? (
                     // Display Active Resignation
                     <div className="card" style={{ padding: '20px', borderRadius: '10px', backgroundColor: 'var(--card-bg)', boxShadow: 'var(--shadow)' }}>
                         <h2 style={{ marginBottom: '15px' }}>Active Resignation Request</h2>
@@ -142,6 +182,15 @@ const Resignation = () => {
                                 style={{ marginTop: '20px', padding: '10px 15px', backgroundColor: '#ef4444', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
                             >
                                 Withdraw Resignation
+                            </button>
+                        )}
+                        
+                        {resignationData.status === 'Approved' && (
+                            <button 
+                                onClick={() => handleRequestCancellation(resignationData.id)}
+                                style={{ marginTop: '20px', padding: '10px 15px', backgroundColor: '#8b5cf6', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+                            >
+                                Request Cancellation
                             </button>
                         )}
                         
@@ -237,6 +286,36 @@ const Resignation = () => {
                     </div>
                 )}
             </div>
+
+            {/* Custom Confirmation Modal */}
+            {confirmDialog.isOpen && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                    backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+                }}>
+                    <div style={{
+                        backgroundColor: 'var(--card-bg)', padding: '25px', borderRadius: '10px',
+                        width: '100%', maxWidth: '400px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                    }}>
+                        <h3 style={{ marginTop: 0, marginBottom: '15px', color: 'var(--text-color)' }}>{confirmDialog.title}</h3>
+                        <p style={{ marginBottom: '25px', color: '#6b7280', lineHeight: '1.5' }}>{confirmDialog.message}</p>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                            <button 
+                                onClick={closeConfirmDialog}
+                                style={{ padding: '8px 16px', borderRadius: '5px', border: '1px solid #d1d5db', cursor: 'pointer', background: 'transparent', color: 'var(--text-color)' }}
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                onClick={confirmDialog.onConfirm}
+                                style={{ padding: '8px 16px', borderRadius: '5px', border: 'none', cursor: 'pointer', background: 'var(--primary-color)', color: 'white', fontWeight: 'bold' }}
+                            >
+                                Confirm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </DashboardLayout>
     );
 };
