@@ -11,7 +11,8 @@ import {
     FaSignOutAlt,
     FaUserCircle,
     FaBell,
-    FaFolder
+    FaFolder,
+    FaUserMinus
 } from "react-icons/fa";
 
 
@@ -36,6 +37,7 @@ function Sidebar() {
         { name: "Leaves", path: "/admin/leaves", icon: <FaClipboardList /> },
         { name: "Tasks", path: "/admin/tasks", icon: <FaTasks /> },
         { name: "Projects", path: "/admin/projects", icon: <FaFolder /> },
+        { name: "Resignations", path: "/admin/resignations", icon: <FaUserMinus /> },
         { name: "Reports", path: "/reports", icon: <FaChartBar /> },
         { name: "Settings", path: "/settings", icon: <FaCog /> },
     ];

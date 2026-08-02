@@ -90,6 +90,14 @@ function MyProfile() {
                     <div style={{ display: "flex", gap: "12px" }}>
                         <button type="button" 
                             className="profile-btn-print" 
+                            onClick={() => navigate('/employee/resignation')}
+                            style={{ backgroundColor: "#ef4444", color: "white", border: "none" }}
+                        >
+                            <span className="material-symbols-outlined" style={{ fontSize: "20px", color: "white" }}>logout</span>
+                            Apply for Resignation
+                        </button>
+                        <button type="button" 
+                            className="profile-btn-print" 
                             onClick={() => navigate('/change-password')}
                             style={{ backgroundColor: "#4f46e5", color: "white", border: "none" }}
                         >

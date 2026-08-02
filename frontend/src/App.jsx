@@ -41,7 +41,8 @@ import AlertsShowcase from "./pages/admin/AlertsShowcase";
 import ProjectDashboard from "./pages/admin/ProjectDashboard";
 import Projects from "./pages/admin/Projects";
 import ProjectDetails from "./pages/admin/ProjectDetails";
-
+import ResignationRequests from "./pages/admin/ResignationRequests";
+import Resignation from "./pages/employee/Resignation";
 
 function App() {
     return (
@@ -128,6 +129,10 @@ function App() {
                     element={<ProjectDetails />}
                 />
                 <Route
+                    path="/admin/resignations"
+                    element={<ResignationRequests />}
+                />
+                <Route
                     path="/employee/projects"
                     element={<Projects />}
                 />
@@ -158,6 +163,10 @@ function App() {
                 <Route
                     path="/employee/leaves"
                     element={<LeaveDashboard />}
+                />
+                <Route
+                    path="/employee/resignation"
+                    element={<Resignation />}
                 />
                 <Route
                     path="/employee/profile"

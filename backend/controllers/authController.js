@@ -57,18 +57,20 @@ const loginUser = (req, res) => {
 
   if (isEmployeeId) {
     sql = `
-      SELECT users.*, roles.role_name
+      SELECT users.*, roles.role_name, employees.status AS emp_status
       FROM users
       JOIN roles ON users.role_id = roles.id
-      WHERE login_id = ?
+      LEFT JOIN employees ON users.login_id = employees.employee_id OR users.email = employees.email
+      WHERE users.login_id = ?
     `;
     queryParam = identifier.toUpperCase();
   } else {
     sql = `
-      SELECT users.*, roles.role_name
+      SELECT users.*, roles.role_name, employees.status AS emp_status
       FROM users
       JOIN roles ON users.role_id = roles.id
-      WHERE email = ?
+      LEFT JOIN employees ON users.login_id = employees.employee_id OR users.email = employees.email
+      WHERE users.email = ?
     `;
     queryParam = identifier.toLowerCase();
   }
@@ -100,6 +102,13 @@ const loginUser = (req, res) => {
       return res.status(401).json({
         success: false,
         message: isEmployeeId ? "Invalid Employee ID or password" : "Invalid email or password"
+      });
+    }
+
+    if (user.emp_status && user.emp_status !== 'Active') {
+      return res.status(403).json({
+        success: false,
+        message: "Your account is inactive. Please contact administration."
       });
     }
 

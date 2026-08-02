@@ -295,13 +295,6 @@ const getTaskById = async (req, res) => {
             task.project_members = [];
         }
 
-        // Fetch git activity (legacy)
-        const [gitActivity] = await db.promise().query(
-            "SELECT * FROM task_git_activity WHERE task_id = ? ORDER BY submitted_at DESC",
-            [req.params.id]
-        );
-        task.git_activity = gitActivity;
-
         // Fetch submissions
         const [submissions] = await db.promise().query(
             "SELECT * FROM task_submissions WHERE task_id = ? ORDER BY submitted_at DESC",

@@ -72,6 +72,9 @@ app.use("/api/reports", reportRoutes);
 const notificationRoutes = require("./routes/notificationRoutes");
 app.use("/api/notifications", notificationRoutes);
 
+const resignationRoutes = require("./routes/resignationRoutes");
+app.use("/api/resignations", resignationRoutes);
+
 const cron = require("node-cron");
 const { autoMarkAbsents } = require("./controllers/attendanceController");
 
@@ -79,6 +82,34 @@ const { autoMarkAbsents } = require("./controllers/attendanceController");
 cron.schedule("45 8 * * *", () => {
     console.log("Running scheduled autoMarkAbsents task...");
     autoMarkAbsents();
+});
+
+// Process approved resignations past their last working day at midnight daily
+cron.schedule("0 0 * * *", async () => {
+    console.log("Running scheduled resignation completion task...");
+    try {
+        const db = require("./config/db");
+        const { createNotification } = require("./controllers/notificationController");
+        
+        const [requests] = await db.promise().query(
+            "SELECT id, employee_id FROM resignation_requests WHERE status = 'Approved' AND last_working_day <= CURRENT_DATE"
+        );
+        
+        for (const req of requests) {
+            await db.promise().query("UPDATE resignation_requests SET status = 'Completed' WHERE id = ?", [req.id]);
+            await db.promise().query("UPDATE employees SET status = 'Resigned' WHERE employee_id = ?", [req.employee_id]);
+            
+            const [users] = await db.promise().query(
+                "SELECT u.id FROM users u JOIN employees e ON u.login_id = e.employee_id OR u.email = e.email WHERE e.employee_id = ?",
+                [req.employee_id]
+            );
+            if (users.length > 0) {
+                await createNotification(users[0].id, "Resignation Completed", "Your last working day has passed. Your account is now marked as Resigned.");
+            }
+        }
+    } catch (err) {
+        console.error("Error in resignation cron job:", err);
+    }
 });
 
 const PORT = process.env.PORT || 5000;
