@@ -294,21 +294,21 @@ const Resignation = () => {
                     backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
                 }}>
                     <div style={{
-                        backgroundColor: 'var(--card-bg)', padding: '25px', borderRadius: '10px',
+                        backgroundColor: '#ffffff', padding: '25px', borderRadius: '10px',
                         width: '100%', maxWidth: '400px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
                     }}>
-                        <h3 style={{ marginTop: 0, marginBottom: '15px', color: 'var(--text-color)' }}>{confirmDialog.title}</h3>
-                        <p style={{ marginBottom: '25px', color: '#6b7280', lineHeight: '1.5' }}>{confirmDialog.message}</p>
+                        <h3 style={{ marginTop: 0, marginBottom: '15px', color: '#111827' }}>{confirmDialog.title}</h3>
+                        <p style={{ marginBottom: '25px', color: '#374151', lineHeight: '1.5' }}>{confirmDialog.message}</p>
                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                             <button 
                                 onClick={closeConfirmDialog}
-                                style={{ padding: '8px 16px', borderRadius: '5px', border: '1px solid #d1d5db', cursor: 'pointer', background: 'transparent', color: 'var(--text-color)' }}
+                                style={{ padding: '8px 16px', borderRadius: '5px', border: '1px solid #d1d5db', cursor: 'pointer', background: 'transparent', color: '#374151', fontWeight: '500' }}
                             >
                                 Cancel
                             </button>
                             <button 
                                 onClick={confirmDialog.onConfirm}
-                                style={{ padding: '8px 16px', borderRadius: '5px', border: 'none', cursor: 'pointer', background: 'var(--primary-color)', color: 'white', fontWeight: 'bold' }}
+                                style={{ padding: '8px 16px', borderRadius: '5px', border: 'none', cursor: 'pointer', background: '#3b82f6', color: 'white', fontWeight: 'bold' }}
                             >
                                 Confirm
                             </button>
